@@ -1,0 +1,6 @@
+name: COS301DNDBackend
+version: 0.0.1
+description: >-
+  Runs the api server
+dependencies:
+  protobuf: "^0.7.2"

@@ -1,7 +1,4 @@
 syntax = "proto3";
-
-package server;
-
 // The Session service definition.
 service SessionManager {
   rpc new (Session) returns (Session) {}
