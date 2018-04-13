@@ -19,10 +19,41 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='server.proto',
   package='server',
   syntax='proto3',
-  serialized_pb=_b('\n\x0cserver.proto\x12\x06server\"\x1c\n\x0bListRequest\x12\r\n\x05limit\x18\x01 \x01(\r\".\n\tListReply\x12!\n\x08sessions\x18\x01 \x03(\x0b\x32\x0f.server.Session\"\x1d\n\nLeaveReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\"\x1f\n\rSetMaxPlayers\x12\x0e\n\x06number\x18\x01 \x01(\r\" \n\x0bJoinRequest\x12\x11\n\tsessionId\x18\x01 \x01(\t\"*\n\x07Session\x12\x11\n\tsessionId\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t2\x81\x02\n\x0eSessionManager\x12)\n\x03new\x12\x0f.server.Session\x1a\x0f.server.Session\"\x00\x12.\n\x04join\x12\x13.server.JoinRequest\x1a\x0f.server.Session\"\x00\x12.\n\x05leave\x12\x0f.server.Session\x1a\x12.server.LeaveReply\"\x00\x12\x32\n\x06setMax\x12\x15.server.SetMaxPlayers\x1a\x0f.server.Session\"\x00\x12\x30\n\x04list\x12\x13.server.ListRequest\x1a\x11.server.ListReply\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0cserver.proto\x12\x06server\"\x1a\n\nnewSession\x12\x0c\n\x04name\x18\x01 \x01(\t\"\x1c\n\x0bListRequest\x12\r\n\x05limit\x18\x01 \x01(\r\".\n\tListReply\x12!\n\x08sessions\x18\x01 \x03(\x0b\x32\x0f.server.Session\"!\n\x0cLeaveRequest\x12\x11\n\tsessionId\x18\x01 \x01(\t\"\x1d\n\nLeaveReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\"\x1f\n\rSetMaxPlayers\x12\x0e\n\x06number\x18\x01 \x01(\r\" \n\x0bJoinRequest\x12\x11\n\tsessionId\x18\x01 \x01(\t\"*\n\x07Session\x12\x11\n\tsessionId\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t2\x8c\x02\n\x0eSessionManager\x12/\n\x06\x63reate\x12\x12.server.newSession\x1a\x0f.server.Session\"\x00\x12.\n\x04join\x12\x13.server.JoinRequest\x1a\x0f.server.Session\"\x00\x12\x33\n\x05leave\x12\x14.server.LeaveRequest\x1a\x12.server.LeaveReply\"\x00\x12\x32\n\x06setMax\x12\x15.server.SetMaxPlayers\x1a\x0f.server.Session\"\x00\x12\x30\n\x04list\x12\x13.server.ListRequest\x1a\x11.server.ListReply\"\x00\x42%\n\x0eio.grpc.serverB\x0bServerProtoP\x01\xa2\x02\x03HLWb\x06proto3')
 )
 
 
+
+
+_NEWSESSION = _descriptor.Descriptor(
+  name='newSession',
+  full_name='server.newSession',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='server.newSession.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=24,
+  serialized_end=50,
+)
 
 
 _LISTREQUEST = _descriptor.Descriptor(
@@ -51,8 +82,8 @@ _LISTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=24,
-  serialized_end=52,
+  serialized_start=52,
+  serialized_end=80,
 )
 
 
@@ -82,8 +113,39 @@ _LISTREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=54,
-  serialized_end=100,
+  serialized_start=82,
+  serialized_end=128,
+)
+
+
+_LEAVEREQUEST = _descriptor.Descriptor(
+  name='LeaveRequest',
+  full_name='server.LeaveRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='sessionId', full_name='server.LeaveRequest.sessionId', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=130,
+  serialized_end=163,
 )
 
 
@@ -113,8 +175,8 @@ _LEAVEREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=102,
-  serialized_end=131,
+  serialized_start=165,
+  serialized_end=194,
 )
 
 
@@ -144,8 +206,8 @@ _SETMAXPLAYERS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=133,
-  serialized_end=164,
+  serialized_start=196,
+  serialized_end=227,
 )
 
 
@@ -175,8 +237,8 @@ _JOINREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=166,
-  serialized_end=198,
+  serialized_start=229,
+  serialized_end=261,
 )
 
 
@@ -213,18 +275,27 @@ _SESSION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=200,
-  serialized_end=242,
+  serialized_start=263,
+  serialized_end=305,
 )
 
 _LISTREPLY.fields_by_name['sessions'].message_type = _SESSION
+DESCRIPTOR.message_types_by_name['newSession'] = _NEWSESSION
 DESCRIPTOR.message_types_by_name['ListRequest'] = _LISTREQUEST
 DESCRIPTOR.message_types_by_name['ListReply'] = _LISTREPLY
+DESCRIPTOR.message_types_by_name['LeaveRequest'] = _LEAVEREQUEST
 DESCRIPTOR.message_types_by_name['LeaveReply'] = _LEAVEREPLY
 DESCRIPTOR.message_types_by_name['SetMaxPlayers'] = _SETMAXPLAYERS
 DESCRIPTOR.message_types_by_name['JoinRequest'] = _JOINREQUEST
 DESCRIPTOR.message_types_by_name['Session'] = _SESSION
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+newSession = _reflection.GeneratedProtocolMessageType('newSession', (_message.Message,), dict(
+  DESCRIPTOR = _NEWSESSION,
+  __module__ = 'server_pb2'
+  # @@protoc_insertion_point(class_scope:server.newSession)
+  ))
+_sym_db.RegisterMessage(newSession)
 
 ListRequest = _reflection.GeneratedProtocolMessageType('ListRequest', (_message.Message,), dict(
   DESCRIPTOR = _LISTREQUEST,
@@ -239,6 +310,13 @@ ListReply = _reflection.GeneratedProtocolMessageType('ListReply', (_message.Mess
   # @@protoc_insertion_point(class_scope:server.ListReply)
   ))
 _sym_db.RegisterMessage(ListReply)
+
+LeaveRequest = _reflection.GeneratedProtocolMessageType('LeaveRequest', (_message.Message,), dict(
+  DESCRIPTOR = _LEAVEREQUEST,
+  __module__ = 'server_pb2'
+  # @@protoc_insertion_point(class_scope:server.LeaveRequest)
+  ))
+_sym_db.RegisterMessage(LeaveRequest)
 
 LeaveReply = _reflection.GeneratedProtocolMessageType('LeaveReply', (_message.Message,), dict(
   DESCRIPTOR = _LEAVEREPLY,
@@ -269,6 +347,8 @@ Session = _reflection.GeneratedProtocolMessageType('Session', (_message.Message,
 _sym_db.RegisterMessage(Session)
 
 
+DESCRIPTOR.has_options = True
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\016io.grpc.serverB\013ServerProtoP\001\242\002\003HLW'))
 
 _SESSIONMANAGER = _descriptor.ServiceDescriptor(
   name='SessionManager',
@@ -276,15 +356,15 @@ _SESSIONMANAGER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=245,
-  serialized_end=502,
+  serialized_start=308,
+  serialized_end=576,
   methods=[
   _descriptor.MethodDescriptor(
-    name='new',
-    full_name='server.SessionManager.new',
+    name='create',
+    full_name='server.SessionManager.create',
     index=0,
     containing_service=None,
-    input_type=_SESSION,
+    input_type=_NEWSESSION,
     output_type=_SESSION,
     options=None,
   ),
@@ -302,7 +382,7 @@ _SESSIONMANAGER = _descriptor.ServiceDescriptor(
     full_name='server.SessionManager.leave',
     index=2,
     containing_service=None,
-    input_type=_SESSION,
+    input_type=_LEAVEREQUEST,
     output_type=_LEAVEREPLY,
     options=None,
   ),

@@ -14,9 +14,9 @@ class SessionManagerStub(object):
     Args:
       channel: A grpc.Channel.
     """
-    self.new = channel.unary_unary(
-        '/server.SessionManager/new',
-        request_serializer=server__pb2.Session.SerializeToString,
+    self.create = channel.unary_unary(
+        '/server.SessionManager/create',
+        request_serializer=server__pb2.newSession.SerializeToString,
         response_deserializer=server__pb2.Session.FromString,
         )
     self.join = channel.unary_unary(
@@ -26,7 +26,7 @@ class SessionManagerStub(object):
         )
     self.leave = channel.unary_unary(
         '/server.SessionManager/leave',
-        request_serializer=server__pb2.Session.SerializeToString,
+        request_serializer=server__pb2.LeaveRequest.SerializeToString,
         response_deserializer=server__pb2.LeaveReply.FromString,
         )
     self.setMax = channel.unary_unary(
@@ -45,7 +45,7 @@ class SessionManagerServicer(object):
   """The Session service definition.
   """
 
-  def new(self, request, context):
+  def create(self, request, context):
     # missing associated documentation comment in .proto file
     pass
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -83,9 +83,9 @@ class SessionManagerServicer(object):
 
 def add_SessionManagerServicer_to_server(servicer, server):
   rpc_method_handlers = {
-      'new': grpc.unary_unary_rpc_method_handler(
-          servicer.new,
-          request_deserializer=server__pb2.Session.FromString,
+      'create': grpc.unary_unary_rpc_method_handler(
+          servicer.create,
+          request_deserializer=server__pb2.newSession.FromString,
           response_serializer=server__pb2.Session.SerializeToString,
       ),
       'join': grpc.unary_unary_rpc_method_handler(
@@ -95,7 +95,7 @@ def add_SessionManagerServicer_to_server(servicer, server):
       ),
       'leave': grpc.unary_unary_rpc_method_handler(
           servicer.leave,
-          request_deserializer=server__pb2.Session.FromString,
+          request_deserializer=server__pb2.LeaveRequest.FromString,
           response_serializer=server__pb2.LeaveReply.SerializeToString,
       ),
       'setMax': grpc.unary_unary_rpc_method_handler(
