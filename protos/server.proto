@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package server;
+
+// The Session service definition.
+service SessionManager {
+  rpc new (Session) returns (Session) {}
+  rpc join (JoinRequest) returns (Session) {}
+  rpc leave (Session) returns (LeaveReply) {}
+  rpc setMax (SetMaxPlayers) returns (Session) {}
+  rpc list (ListRequest) returns (ListReply) {}
+}
+
+message ListRequest {
+  uint32 limit = 1;
+}
+
+message ListReply {
+  repeated Session sessions = 1;
+}
+
+message LeaveReply {
+  bool success = 1;
+}
+
+message SetMaxPlayers {
+  uint32 number = 1;
+}
+
+message JoinRequest {
+  string sessionId = 1;
+}
+
+message Session {
+  string sessionId = 1;
+  string name = 2;
+  //required string 
+}
