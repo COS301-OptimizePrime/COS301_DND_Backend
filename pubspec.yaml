@@ -2,5 +2,16 @@ name: COS301DNDBackend
 version: 0.0.1
 description: >-
   Runs the api server
+environment:
+  sdk: '>=1.24.3 <2.0.0'
+
 dependencies:
-  protobuf: "^0.7.2"
+  async: '>=1.13.3 <3.0.0'
+  protobuf: ^0.7.2
+  http: ^0.11.3+16
+  http2: ^0.1.7
+  grpc:
+    path: ../grpc-dart
+
+dev_dependencies:
+  test: ^0.12.0

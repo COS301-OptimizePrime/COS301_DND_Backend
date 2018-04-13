@@ -1,11 +1,23 @@
 syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.server";
+option java_outer_classname = "ServerProto";
+option objc_class_prefix = "HLW";
+
+package server;
+
 // The Session service definition.
 service SessionManager {
-  rpc new (Session) returns (Session) {}
+  rpc create (newSession) returns (Session) {}
   rpc join (JoinRequest) returns (Session) {}
-  rpc leave (Session) returns (LeaveReply) {}
+  rpc leave (LeaveRequest) returns (LeaveReply) {}
   rpc setMax (SetMaxPlayers) returns (Session) {}
   rpc list (ListRequest) returns (ListReply) {}
+}
+
+message newSession {
+  string name = 1;
 }
 
 message ListRequest {
@@ -14,6 +26,10 @@ message ListRequest {
 
 message ListReply {
   repeated Session sessions = 1;
+}
+
+message LeaveRequest {
+  string sessionId = 1;
 }
 
 message LeaveReply {
