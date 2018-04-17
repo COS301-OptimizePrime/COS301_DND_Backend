@@ -1,51 +1,79 @@
 syntax = "proto3";
 
-option java_multiple_files = true;
-option java_package = "io.grpc.server";
-option java_outer_classname = "ServerProto";
-option objc_class_prefix = "HLW";
+package session;
 
-package server;
-
-// The Session service definition.
-service SessionManager {
-  rpc create (newSession) returns (Session) {}
-  rpc join (JoinRequest) returns (Session) {}
-  rpc leave (LeaveRequest) returns (LeaveReply) {}
-  rpc setMax (SetMaxPlayers) returns (Session) {}
-  rpc list (ListRequest) returns (ListReply) {}
+// The sessions manager service definition.
+service SessionsManager {
+  // Creates a new session.
+  rpc Create (NewSessionRequest) returns (Session) {}
+  // Join a session.
+  rpc Join (JoinRequest) returns (Session) {}
+  // Leave a session.
+  rpc Leave (LeaveRequest) returns (LeaveReply) {}
+  // Set the max amount of players that can be in the session.
+  rpc SetMax (SetMaxPlayersRequest) returns (Session) {}
+  // List available sessions.
+  rpc List (ListRequest) returns (ListReply) {}
 }
 
-message newSession {
-  string name = 1;
+/*
+  Requires the firebase id token.
+  Requires the name of the new session.
+*/
+message NewSessionRequest {
+  string auth_id_token = 1;
+  string name = 2;
 }
 
+/*
+  Requires the firebase id token.
+  Requires the number of sessions to list.
+*/
 message ListRequest {
-  uint32 limit = 1;
+  string auth_id_token = 1;
+  uint32 limit = 2;
+}
+
+/*
+  Requires the firebase id token.
+  Requires the uuid of the session to leave.
+*/
+message LeaveRequest {
+  string auth_id_token = 1;
+  string session_id = 2;
+}
+
+/*
+  Requires the firebase id token.
+  Requires the uuid of the session to join.
+*/
+message JoinRequest {
+  string auth_id_token = 1;
+  string session_id = 2;
+}
+
+/*
+  Requires the firebase id token.
+  Requires the number of max players the session may have.
+*/
+message SetMaxPlayersRequest {
+  string auth_id_token = 1;
+  uint32 number = 2;
 }
 
 message ListReply {
   repeated Session sessions = 1;
-}
-
-message LeaveRequest {
-  string sessionId = 1;
+  string status = 2;
 }
 
 message LeaveReply {
   bool success = 1;
-}
-
-message SetMaxPlayers {
-  uint32 number = 1;
-}
-
-message JoinRequest {
-  string sessionId = 1;
+  string status = 2;
 }
 
 message Session {
-  string sessionId = 1;
-  string name = 2;
-  //required string 
+  string status = 1;
+  string session_id = 2;
+  string name = 3;
+  // string 
 }
