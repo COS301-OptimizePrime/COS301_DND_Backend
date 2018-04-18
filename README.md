@@ -1,4 +1,6 @@
 # COS301-DND-Backend
+[![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=develop)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend)
+
 Backed API Server
 
 The implementation of the API uses gRPC (https://grpc.io/)
