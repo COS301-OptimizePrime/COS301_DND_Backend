@@ -1,6 +1,6 @@
 .PHONY: test upload clean bootstrap
 test:
-	cd ./test; python main.py
+	sh -c 'python ./test/main.py'
 
 run:
 	sh -c 'python ./server/main.py'
