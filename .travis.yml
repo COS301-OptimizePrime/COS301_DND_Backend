@@ -9,8 +9,9 @@ branches:
   - stable
   - develop
 
-language: python
-  python:
-    - "3.6"
-  script:
-    - pythn /test/main.py
+language: python, node
+python:
+  - "3.6"
+script:
+  - make run
+  - make test
