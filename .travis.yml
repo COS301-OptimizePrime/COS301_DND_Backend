@@ -1,18 +1,18 @@
-
 language: python, node
 python:
-  - "3.6"
-
+- '3.6'
 install:
-  - pip install --user -r requirements.txt
-  - npm install
-
+- pip install --user -r requirements.txt
+- npm install
 branches:
   only:
   - master
   - stable
   - develop
-
 script:
-  - make run
-  - make test
+- make run
+- make test
+before_install:
+- openssl aes-256-cbc -K $encrypted_34882cc58842_key -iv $encrypted_34882cc58842_iv
+  -in dnd-game-manager-firebase-adminsdk-34ek4-cccabd3dd6.json.enc -out dnd-game-manager-firebase-adminsdk-34ek4-cccabd3dd6.json
+  -d
