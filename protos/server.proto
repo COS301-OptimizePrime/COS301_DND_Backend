@@ -14,6 +14,13 @@ service SessionsManager {
   rpc SetMax (SetMaxPlayersRequest) returns (Session) {}
   // List available sessions.
   rpc List (ListRequest) returns (ListReply) {}
+  // Get session by ID
+  rpc Get (GetSessionRequest) returns (Session) {}
+}
+
+message GetSessionRequest {
+  string auth_id_token = 1;
+  string session_id = 2;
 }
 
 /*
@@ -59,6 +66,7 @@ message JoinRequest {
 message SetMaxPlayersRequest {
   string auth_id_token = 1;
   uint32 number = 2;
+  Session session = 3;
 }
 
 message ListReply {
@@ -78,7 +86,8 @@ message Session {
   string name = 4;
   User dungeon_master = 5;
   int64 date_created = 6;
-  repeated User users = 7;
+  uint32 max_players = 7;
+  repeated User users = 8;
 }
 
 message User {

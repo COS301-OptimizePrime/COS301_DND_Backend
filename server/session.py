@@ -46,6 +46,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             u'name': _name,
             u'date_created': _date_created,
             u'dungeon_master': uid,
+            u'max_players': 7,
             u'users': []
         })
 
@@ -64,7 +65,24 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         return server_pb2.Session(sessionId='idS!', name=request.name)
 
     def SetMax(self, request, context):
-        return server_pb2.Session(sessionId='idS!', name=request.name)
+        logger = logging.getLogger('cos301-DND')
+        logger.info('SetMax called!')
+
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = auth.verify_id_token(_auth_id_token)
+            uid = decoded_token['uid']
+        except ValueError:
+            logger.error("Failed to verify login!")
+
+        session = request.session
+
+        _number = request.number
+        session.max_players = _number
+
+        return session
+
 
     def List(self, request, context):
         logger = logging.getLogger('cos301-DND')
