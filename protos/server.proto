@@ -73,7 +73,15 @@ message LeaveReply {
 
 message Session {
   string status = 1;
-  string session_id = 2;
-  string name = 3;
-  // string 
+  string status_message = 2;
+  string session_id = 3;
+  string name = 4;
+  User dungeon_master = 5;
+  int64 date_created = 6;
+  repeated User users = 7;
+}
+
+message User {
+  string uid = 1;
+  string name = 2;
 }

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='server.proto',
   package='session',
   syntax='proto3',
-  serialized_pb=_b('\n\x0cserver.proto\x12\x07session\"8\n\x11NewSessionRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"3\n\x0bListRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\r\"9\n\x0cLeaveRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"8\n\x0bJoinRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"=\n\x14SetMaxPlayersRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0e\n\x06number\x18\x02 \x01(\r\"?\n\tListReply\x12\"\n\x08sessions\x18\x01 \x03(\x0b\x32\x10.session.Session\x12\x0e\n\x06status\x18\x02 \x01(\t\"-\n\nLeaveReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0e\n\x06status\x18\x02 \x01(\t\";\n\x07Session\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t2\xa5\x02\n\x0fSessionsManager\x12\x38\n\x06\x43reate\x12\x1a.session.NewSessionRequest\x1a\x10.session.Session\"\x00\x12\x30\n\x04Join\x12\x14.session.JoinRequest\x1a\x10.session.Session\"\x00\x12\x35\n\x05Leave\x12\x15.session.LeaveRequest\x1a\x13.session.LeaveReply\"\x00\x12;\n\x06SetMax\x12\x1d.session.SetMaxPlayersRequest\x1a\x10.session.Session\"\x00\x12\x32\n\x04List\x12\x14.session.ListRequest\x1a\x12.session.ListReply\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0cserver.proto\x12\x07session\"8\n\x11NewSessionRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"3\n\x0bListRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\r\"9\n\x0cLeaveRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"8\n\x0bJoinRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"=\n\x14SetMaxPlayersRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0e\n\x06number\x18\x02 \x01(\r\"?\n\tListReply\x12\"\n\x08sessions\x18\x01 \x03(\x0b\x32\x10.session.Session\x12\x0e\n\x06status\x18\x02 \x01(\t\"-\n\nLeaveReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0e\n\x06status\x18\x02 \x01(\t\"\xae\x01\n\x07Session\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\x12\x12\n\nsession_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\x12%\n\x0e\x64ungeon_master\x18\x05 \x01(\x0b\x32\r.session.User\x12\x14\n\x0c\x64\x61te_created\x18\x06 \x01(\x03\x12\x1c\n\x05users\x18\x07 \x03(\x0b\x32\r.session.User\"!\n\x04User\x12\x0b\n\x03uid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t2\xa5\x02\n\x0fSessionsManager\x12\x38\n\x06\x43reate\x12\x1a.session.NewSessionRequest\x1a\x10.session.Session\"\x00\x12\x30\n\x04Join\x12\x14.session.JoinRequest\x1a\x10.session.Session\"\x00\x12\x35\n\x05Leave\x12\x15.session.LeaveRequest\x1a\x13.session.LeaveReply\"\x00\x12;\n\x06SetMax\x12\x1d.session.SetMaxPlayersRequest\x1a\x10.session.Session\"\x00\x12\x32\n\x04List\x12\x14.session.ListRequest\x1a\x12.session.ListReply\"\x00\x62\x06proto3')
 )
 
 
@@ -306,15 +306,81 @@ _SESSION = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='session_id', full_name='session.Session.session_id', index=1,
+      name='status_message', full_name='session.Session.status_message', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='name', full_name='session.Session.name', index=2,
+      name='session_id', full_name='session.Session.session_id', index=2,
       number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='name', full_name='session.Session.name', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='dungeon_master', full_name='session.Session.dungeon_master', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='date_created', full_name='session.Session.date_created', index=5,
+      number=6, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='users', full_name='session.Session.users', index=6,
+      number=7, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=429,
+  serialized_end=603,
+)
+
+
+_USER = _descriptor.Descriptor(
+  name='User',
+  full_name='session.User',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='uid', full_name='session.User.uid', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='name', full_name='session.User.name', index=1,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -331,11 +397,13 @@ _SESSION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=428,
-  serialized_end=487,
+  serialized_start=605,
+  serialized_end=638,
 )
 
 _LISTREPLY.fields_by_name['sessions'].message_type = _SESSION
+_SESSION.fields_by_name['dungeon_master'].message_type = _USER
+_SESSION.fields_by_name['users'].message_type = _USER
 DESCRIPTOR.message_types_by_name['NewSessionRequest'] = _NEWSESSIONREQUEST
 DESCRIPTOR.message_types_by_name['ListRequest'] = _LISTREQUEST
 DESCRIPTOR.message_types_by_name['LeaveRequest'] = _LEAVEREQUEST
@@ -344,6 +412,7 @@ DESCRIPTOR.message_types_by_name['SetMaxPlayersRequest'] = _SETMAXPLAYERSREQUEST
 DESCRIPTOR.message_types_by_name['ListReply'] = _LISTREPLY
 DESCRIPTOR.message_types_by_name['LeaveReply'] = _LEAVEREPLY
 DESCRIPTOR.message_types_by_name['Session'] = _SESSION
+DESCRIPTOR.message_types_by_name['User'] = _USER
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 NewSessionRequest = _reflection.GeneratedProtocolMessageType('NewSessionRequest', (_message.Message,), dict(
@@ -402,6 +471,13 @@ Session = _reflection.GeneratedProtocolMessageType('Session', (_message.Message,
   ))
 _sym_db.RegisterMessage(Session)
 
+User = _reflection.GeneratedProtocolMessageType('User', (_message.Message,), dict(
+  DESCRIPTOR = _USER,
+  __module__ = 'server_pb2'
+  # @@protoc_insertion_point(class_scope:session.User)
+  ))
+_sym_db.RegisterMessage(User)
+
 
 
 _SESSIONSMANAGER = _descriptor.ServiceDescriptor(
@@ -410,8 +486,8 @@ _SESSIONSMANAGER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=490,
-  serialized_end=783,
+  serialized_start=641,
+  serialized_end=934,
   methods=[
   _descriptor.MethodDescriptor(
     name='Create',
