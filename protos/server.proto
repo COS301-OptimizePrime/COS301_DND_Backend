@@ -15,7 +15,9 @@ service SessionsManager {
   // List available sessions.
   rpc List (ListRequest) returns (ListReply) {}
   // Get session by ID
-  rpc Get (GetSessionRequest) returns (Session) {}
+  rpc GetSessionById (GetSessionRequest) returns (Session) {}
+  // Updates the remote session to match the local session object. Will be validated.
+  rpc Update (Session) returns (Session) {}
 }
 
 message GetSessionRequest {

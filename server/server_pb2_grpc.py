@@ -39,9 +39,14 @@ class SessionsManagerStub(object):
         request_serializer=server__pb2.ListRequest.SerializeToString,
         response_deserializer=server__pb2.ListReply.FromString,
         )
-    self.Get = channel.unary_unary(
-        '/session.SessionsManager/Get',
+    self.GetSessionById = channel.unary_unary(
+        '/session.SessionsManager/GetSessionById',
         request_serializer=server__pb2.GetSessionRequest.SerializeToString,
+        response_deserializer=server__pb2.Session.FromString,
+        )
+    self.Update = channel.unary_unary(
+        '/session.SessionsManager/Update',
+        request_serializer=server__pb2.Session.SerializeToString,
         response_deserializer=server__pb2.Session.FromString,
         )
 
@@ -85,8 +90,15 @@ class SessionsManagerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
-  def Get(self, request, context):
+  def GetSessionById(self, request, context):
     """Get session by ID
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def Update(self, request, context):
+    """Updates the remote session to match the local session object. Will be validated.
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -120,9 +132,14 @@ def add_SessionsManagerServicer_to_server(servicer, server):
           request_deserializer=server__pb2.ListRequest.FromString,
           response_serializer=server__pb2.ListReply.SerializeToString,
       ),
-      'Get': grpc.unary_unary_rpc_method_handler(
-          servicer.Get,
+      'GetSessionById': grpc.unary_unary_rpc_method_handler(
+          servicer.GetSessionById,
           request_deserializer=server__pb2.GetSessionRequest.FromString,
+          response_serializer=server__pb2.Session.SerializeToString,
+      ),
+      'Update': grpc.unary_unary_rpc_method_handler(
+          servicer.Update,
+          request_deserializer=server__pb2.Session.FromString,
           response_serializer=server__pb2.Session.SerializeToString,
       ),
   }
