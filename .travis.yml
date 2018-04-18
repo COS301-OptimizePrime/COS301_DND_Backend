@@ -1,5 +1,10 @@
+
+language: python, node
+python:
+  - "3.6"
+
 install:
-  - pip3 install --user -r requirements.txt
+  - pip install --user -r requirements.txt
   - npm install
 
 branches:
@@ -8,9 +13,6 @@ branches:
   - stable
   - develop
 
-language: python, node
-python:
-  - "3.6"
 script:
   - make run
   - make test
