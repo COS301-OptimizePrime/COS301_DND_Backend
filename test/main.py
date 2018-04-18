@@ -18,18 +18,15 @@ cred = credentials.Certificate("dnd-game-manager-firebase-adminsdk-34ek4-cccabd3
 firebase = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+
 class TestSessionManager(unittest.TestCase):
     def setUp(self):
         self.uid = 'mT8HzwXWjDc1FX472qTfcsUUcQt1'
 
     def test_create_rpc_good_login(self):
         auth.revoke_refresh_tokens(self.uid)
-
-        #process = subprocess.Popen('node login.mjs', stdout=subprocess.PIPE)
-        #out, err = process.communicate()
-        #stdoutdata = subprocess.getoutput("node login.mjs")
-        out = subprocess.getoutput("node login.mjs")
-        token = str(out)
+        
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
         channel = grpc.insecure_channel('localhost:50051')
         stub = server_pb2_grpc.SessionsManagerStub(channel)
@@ -52,8 +49,7 @@ class TestSessionManager(unittest.TestCase):
     def test_list_rpc_good_login(self):
         auth.revoke_refresh_tokens(self.uid)
 
-        out = subprocess.getoutput("node login.mjs")
-        token = str(out)
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
         channel = grpc.insecure_channel('localhost:50051')
         stub = server_pb2_grpc.SessionsManagerStub(channel)
