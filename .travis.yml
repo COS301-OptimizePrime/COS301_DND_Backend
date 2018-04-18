@@ -10,7 +10,7 @@ branches:
   - stable
   - develop
 script:
-- make run
+- make run&
 - make test
 before_install:
 - openssl aes-256-cbc -K $encrypted_34882cc58842_key -iv $encrypted_34882cc58842_iv
