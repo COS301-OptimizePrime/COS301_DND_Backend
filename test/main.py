@@ -25,8 +25,11 @@ class TestSessionManager(unittest.TestCase):
     def test_create_rpc_good_login(self):
         auth.revoke_refresh_tokens(self.uid)
 
-        stdoutdata = subprocess.getoutput("node login.mjs")
-        token = str(stdoutdata.split()[0])
+        #process = subprocess.Popen('node login.mjs', stdout=subprocess.PIPE)
+        #out, err = process.communicate()
+        #stdoutdata = subprocess.getoutput("node login.mjs")
+        out = subprocess.getoutput("node login.mjs")
+        token = str(out)
 
         channel = grpc.insecure_channel('localhost:50051')
         stub = server_pb2_grpc.SessionsManagerStub(channel)
@@ -49,8 +52,8 @@ class TestSessionManager(unittest.TestCase):
     def test_list_rpc_good_login(self):
         auth.revoke_refresh_tokens(self.uid)
 
-        stdoutdata = subprocess.getoutput("node login.mjs")
-        token = str(stdoutdata.split()[0])
+        out = subprocess.getoutput("node login.mjs")
+        token = str(out)
 
         channel = grpc.insecure_channel('localhost:50051')
         stub = server_pb2_grpc.SessionsManagerStub(channel)
