@@ -1,0 +1,16 @@
+install:
+  - pip install .
+  - pip install -r requirements.txt
+  - npm install
+
+branches:
+  only:
+  - master
+  - stable
+  - develop
+
+language: python
+  python:
+    - "3.6"
+  script:
+    - pythn /test/main.py
