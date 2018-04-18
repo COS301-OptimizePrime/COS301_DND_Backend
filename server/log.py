@@ -7,7 +7,7 @@ def setup_custom_logger(name):
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
 
-    fh = logging.handlers.RotatingFileHandler('./logtest.log', maxBytes=10240, backupCount=5)
+    fh = logging.handlers.RotatingFileHandler('./logtest.log', maxBytes=10240)
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
 
