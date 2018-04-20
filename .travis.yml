@@ -4,10 +4,10 @@ python:
 dart:
 # Install the latest stable release
 - stable
-install:
-- pub get
-- npm install
-- pip install --user -r requirements.txt
+#install:
+#- pub get
+#- npm install
+#- pip install --user -r requirements.txt
 branches:
   only:
   - master

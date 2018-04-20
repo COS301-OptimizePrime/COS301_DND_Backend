@@ -6,5 +6,6 @@ run:
 	sh -c 'python ./server/main.py'
 
 install:
+	cd ./test; pub get
 	npm install
 	pip install --user -r requirements.txt
