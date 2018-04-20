@@ -1,7 +1,8 @@
-language: python, node
+language: python, node, dart
 python:
 - '3.6.5'
 install:
+- pub get
 - npm install
 - pip install --user -r requirements.txt
 branches:
@@ -10,6 +11,7 @@ branches:
   - stable
   - develop
 script:
+- make install
 - make run&
 - make test
 before_install:

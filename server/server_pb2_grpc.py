@@ -49,6 +49,11 @@ class SessionsManagerStub(object):
         request_serializer=server__pb2.Session.SerializeToString,
         response_deserializer=server__pb2.Session.FromString,
         )
+    self.Kick = channel.unary_unary(
+        '/session.SessionsManager/Kick',
+        request_serializer=server__pb2.User.SerializeToString,
+        response_deserializer=server__pb2.Session.FromString,
+        )
 
 
 class SessionsManagerServicer(object):
@@ -104,6 +109,13 @@ class SessionsManagerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def Kick(self, request, context):
+    """Kick player
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_SessionsManagerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -140,6 +152,11 @@ def add_SessionsManagerServicer_to_server(servicer, server):
       'Update': grpc.unary_unary_rpc_method_handler(
           servicer.Update,
           request_deserializer=server__pb2.Session.FromString,
+          response_serializer=server__pb2.Session.SerializeToString,
+      ),
+      'Kick': grpc.unary_unary_rpc_method_handler(
+          servicer.Kick,
+          request_deserializer=server__pb2.User.FromString,
           response_serializer=server__pb2.Session.SerializeToString,
       ),
   }

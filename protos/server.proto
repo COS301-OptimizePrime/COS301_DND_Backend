@@ -18,6 +18,8 @@ service SessionsManager {
   rpc GetSessionById (GetSessionRequest) returns (Session) {}
   // Updates the remote session to match the local session object. Will be validated.
   rpc Update (Session) returns (Session) {}
+  // Kick player
+  rpc Kick (User) returns (Session) {}
 }
 
 message GetSessionRequest {

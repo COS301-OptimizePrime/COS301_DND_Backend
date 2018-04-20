@@ -1,4 +1,4 @@
-name: COS301-DND-Backend
+name: COS301_DND_Backend
 version: 0.0.1
 description: >-
   Runs the api server
@@ -10,8 +10,10 @@ dependencies:
   protobuf: ^0.7.2
   http: ^0.11.3+16
   http2: ^0.1.7
-  grpc:
-    path: ../grpc-dart
+  grpc: "^0.4.1"
+  firebase: '^4.3.0'
+  js: ^0.6.0
+  protoc_plugin: "^0.7.11"
 
 dev_dependencies:
   test: ^0.12.0
