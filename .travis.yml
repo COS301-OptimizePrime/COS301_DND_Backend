@@ -1,4 +1,4 @@
-language: python, node, dart
+language: dart
 python:
 - '3.6.5'
 dart:
