@@ -1,6 +1,9 @@
 language: python, node, dart
 python:
 - '3.6.5'
+dart:
+# Install the latest stable release
+- stable
 install:
 - pub get
 - npm install
