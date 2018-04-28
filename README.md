@@ -11,9 +11,9 @@ https://developers.google.com/protocol-buffers/docs/proto3
 ## Requirements
 ```bash
 sudo apt-get update
-sudo apt install python3
-sudo apt install pip3
-sudo apt install nodejs
+sudo apt-get install python3
+sudo apt-get install pip3
+sudo apt-get install nodejs
 sudo apt-get install dart
 ```
 
