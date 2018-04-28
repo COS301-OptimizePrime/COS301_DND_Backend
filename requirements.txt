@@ -1,2 +1,3 @@
 grpcio-tools
 firebase-admin
+SQLAlchemy
