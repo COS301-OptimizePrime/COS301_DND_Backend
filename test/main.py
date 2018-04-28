@@ -9,15 +9,15 @@ import unittest
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import auth
-from firebase_admin import firestore
 
 import subprocess
 
 # Mock user mT8HzwXWjDc1FX472qTfcsUUcQt1
 cred = credentials.Certificate("dnd-game-manager-firebase-adminsdk-34ek4-cccabd3dd6.json")
 firebase = firebase_admin.initialize_app(cred)
-db = firestore.client()
 
+#import database.db as db
+#conn = db.connect()
 
 class TestSessionManager(unittest.TestCase):
     def setUp(self):
@@ -56,10 +56,10 @@ class TestSessionManager(unittest.TestCase):
         response = stub.List(server_pb2.ListRequest(auth_id_token=token, limit=3))
 
         # validate with firebase
-        for session in response.sessions:
+        #for session in response.sessions:
             # check if the session actually exists in the database
-            for result in db.collection(u'sessions').where(u'session_id', u'==', session.session_id).limit(1).get():
-                self.assertEqual(result.get('session_id'), session.session_id)
+        #    for result in db.collection(u'sessions').where(u'session_id', u'==', session.session_id).limit(1).get():
+        #        self.assertEqual(result.get('session_id'), session.session_id)
         
         self.assertEqual(response.status, 'SUCCESS')
 

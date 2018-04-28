@@ -2,8 +2,8 @@ import "package:test/test.dart";
 import "package:grpc/grpc.dart";
 import 'dart:io';
 
-import 'server.pb.dart';
-import 'server.pbgrpc.dart';
+import 'lib/server.pb.dart';
+import 'lib/server.pbgrpc.dart';
 
 void main() {
   test("test_create_rpc_good_login", () async {

@@ -77,7 +77,7 @@ const Session$json = const {
     const {'1': 'session_id', '3': 3, '4': 1, '5': 9, '10': 'sessionId'},
     const {'1': 'name', '3': 4, '4': 1, '5': 9, '10': 'name'},
     const {'1': 'dungeon_master', '3': 5, '4': 1, '5': 11, '6': '.session.User', '10': 'dungeonMaster'},
-    const {'1': 'date_created', '3': 6, '4': 1, '5': 3, '10': 'dateCreated'},
+    const {'1': 'date_created', '3': 6, '4': 1, '5': 9, '10': 'dateCreated'},
     const {'1': 'max_players', '3': 7, '4': 1, '5': 13, '10': 'maxPlayers'},
     const {'1': 'users', '3': 8, '4': 3, '5': 11, '6': '.session.User', '10': 'users'},
   ],

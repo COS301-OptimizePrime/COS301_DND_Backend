@@ -89,7 +89,7 @@ message Session {
   string session_id = 3;
   string name = 4;
   User dungeon_master = 5;
-  int64 date_created = 6;
+  string date_created = 6;
   uint32 max_players = 7;
   repeated User users = 8;
 }

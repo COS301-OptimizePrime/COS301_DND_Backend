@@ -10,12 +10,17 @@ from session import Session
 
 import log
 
+#import database.db as db
+
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 def serve():
     logger = log.setup_custom_logger('cos301-DND')
 
     logger.info('Starting...')
+
+    #logger.info("Connecting to sqlite databse...")
+    #db.connect()
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     server_pb2_grpc.add_SessionsManagerServicer_to_server(Session(), server)

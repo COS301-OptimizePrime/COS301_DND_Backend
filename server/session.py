@@ -11,12 +11,14 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
 
-from datetime import datetime
+import datetime
 import calendar
 
 cred = credentials.Certificate("dnd-game-manager-firebase-adminsdk-34ek4-cccabd3dd6.json")
 firebase = firebase_admin.initialize_app(cred)
-firestoreClient = firestore.client()
+#firestoreClient = firestore.client()
+
+import database.db as db
 
 class Session(server_pb2_grpc.SessionsManagerServicer):
 
@@ -28,9 +30,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _name = request.name
         _auth_id_token = request.auth_id_token
 
-        d = datetime.utcnow()
-        _date_created = calendar.timegm(d.utctimetuple())
-        
+        _date_created = datetime.datetime.utcnow()
+
         try:
             decoded_token = auth.verify_id_token(_auth_id_token)
             uid = decoded_token['uid']
@@ -40,20 +41,22 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         logger.info('Successfully verified token! UID=' + uid)
 
-        doc_ref = firestoreClient.collection(u'sessions').document(_session_id)
-        doc_ref.set({
-            u'session_id': _session_id,
-            u'name': _name,
-            u'date_created': _date_created,
-            u'dungeon_master': uid,
-            u'max_players': 7,
-            u'users': []
-        })
+        conn = db.connect()
+        user = conn.query(db.User).filter(db.User.uid == uid).first()
+        if not user:
+            user = db.User(uid=uid, name=auth.get_user(uid).email)
+            conn.add(user)
+            conn.commit()
+
+        session = db.Session(session_id=_session_id, name=_name, dungeon_master_id=user.id, max_players=7) 
+        conn.add(session)
+        conn.commit()
+        conn.remove()
 
         _dungeon_master = server_pb2.User()
         _dungeon_master.uid = uid
 
-        return server_pb2.Session(session_id = _session_id, name = _name, status="SUCCESS", dungeon_master=_dungeon_master, date_created=_date_created)
+        return server_pb2.Session(session_id = _session_id, name = _name, status="SUCCESS", dungeon_master=_dungeon_master, date_created=str(_date_created))
 
     def Join(self, request, context):
         logger = logging.getLogger('cos301-DND')
@@ -101,25 +104,28 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         logger.info('Successfully verified token! UID=' + uid)
 
         # Query firebase
-        sessions_ref = firestoreClient.collection(u'sessions')
+        #sessions_ref = firestoreClient.collection(u'sessions')
+
+        conn = db.connect()
+        _sessions_query = conn.query(db.Session).limit(_limit)
 
         _sessions = []
 
-        for _session in sessions_ref.limit(_limit).get():
-            logger.debug(_session.get('session_id'))
+        for _session in _sessions_query:
+            logger.debug(_session.session_id)
 
             sessionObj = server_pb2.Session()
-            sessionObj.name = _session.get('name')
-            sessionObj.session_id = _session.get('session_id')
-            sessionObj.dungeon_master.uid = _session.get('dungeon_master')
-            sessionObj.date_created = _session.get('date_created')
+            sessionObj.name = _session.name
+            sessionObj.session_id = _session.session_id
+            sessionObj.dungeon_master.uid = _session.dungeon_master.uid
+            sessionObj.date_created = str(_session.date_created)
 
-            for _user in _session.get('users'):
+            for _user in _session.users_in_session:
                 userInSession = server_pb2.User()
                 userInSession.uid = _user.uid
                 sessionObj.users.append(userInSession)
 
             _sessions.append(sessionObj)
 
-
+        conn.remove()
         return server_pb2.ListReply(status='SUCCESS', sessions=_sessions)

@@ -7,7 +7,6 @@ library session_server;
 // ignore: UNUSED_SHOWN_NAME
 import 'dart:core' show int, bool, double, String, List, override;
 
-import 'package:fixnum/fixnum.dart';
 import 'package:protobuf/protobuf.dart';
 
 class GetSessionRequest extends GeneratedMessage {
@@ -308,7 +307,7 @@ class Session extends GeneratedMessage {
     ..aOS(3, 'sessionId')
     ..aOS(4, 'name')
     ..a<User>(5, 'dungeonMaster', PbFieldType.OM, User.getDefault, User.create)
-    ..aInt64(6, 'dateCreated')
+    ..aOS(6, 'dateCreated')
     ..a<int>(7, 'maxPlayers', PbFieldType.OU3)
     ..pp<User>(8, 'users', PbFieldType.PM, User.$checkItem, User.create)
     ..hasRequiredFields = false
@@ -355,8 +354,8 @@ class Session extends GeneratedMessage {
   bool hasDungeonMaster() => $_has(4);
   void clearDungeonMaster() => clearField(5);
 
-  Int64 get dateCreated => $_getI64(5);
-  set dateCreated(Int64 v) { $_setInt64(5, v); }
+  String get dateCreated => $_getS(5, '');
+  set dateCreated(String v) { $_setString(5, v); }
   bool hasDateCreated() => $_has(5);
   void clearDateCreated() => clearField(6);
 
