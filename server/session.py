@@ -16,9 +16,9 @@ import calendar
 
 cred = credentials.Certificate("dnd-game-manager-firebase-adminsdk-34ek4-cccabd3dd6.json")
 firebase = firebase_admin.initialize_app(cred)
-#firestoreClient = firestore.client()
 
 import database.db as db
+from sqlalchemy import and_
 
 class Session(server_pb2_grpc.SessionsManagerServicer):
 
@@ -118,7 +118,41 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                                         max_players=sessionObj.max_players)
     
     def Leave(self, request, context):
-        return server_pb2.Session(sessionId='idS!', name=request.name)
+        logger = logging.getLogger('cos301-DND')
+        logger.info('Leave request called!')
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = auth.verify_id_token(_auth_id_token)
+            uid = decoded_token['uid']
+        except ValueError:
+            logger.error("Failed to verify login!")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED')
+
+        logger.info('Successfully verified token! UID=' + uid)
+
+        _session_id = request.session_id
+
+        conn = db.connect()
+        session = conn.query(db.Session).filter(db.Session.session_id == _session_id).first()
+
+        if not session:
+            logger.error("Failed to leave session, that ID does not exist!")
+            return server_pb2.Session(status='FAILED', status_message='[Leave] No session with that ID exists!')
+        
+        user = conn.query(db.User).filter(and_(db.Session.session_id == _session_id, db.Session.users_in_session.any(db.User.uid == uid))).first()
+
+        if not user:
+            logger.error("User does not exist! This should not happen!")
+            return server_pb2.Session(status='FAILED', status_message='[Leave] No user with that ID exists!')
+
+        #logger.debug(user)
+
+        session.users_in_session.remove(user)
+        conn.commit()
+        conn.remove()
+
+        return server_pb2.LeaveReply(status='SUCCESS')
 
     def SetMax(self, request, context):
         logger = logging.getLogger('cos301-DND')

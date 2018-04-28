@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='server.proto',
   package='session',
   syntax='proto3',
-  serialized_pb=_b('\n\x0cserver.proto\x12\x07session\">\n\x11GetSessionRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"8\n\x11NewSessionRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"3\n\x0bListRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\r\"9\n\x0cLeaveRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"8\n\x0bJoinRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"Q\n\x14SetMaxPlayersRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0e\n\x06number\x18\x02 \x01(\r\x12\x12\n\nsession_id\x18\x03 \x01(\t\"?\n\tListReply\x12\"\n\x08sessions\x18\x01 \x03(\x0b\x32\x10.session.Session\x12\x0e\n\x06status\x18\x02 \x01(\t\"-\n\nLeaveReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0e\n\x06status\x18\x02 \x01(\t\"\xc3\x01\n\x07Session\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\x12\x12\n\nsession_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\x12%\n\x0e\x64ungeon_master\x18\x05 \x01(\x0b\x32\r.session.User\x12\x14\n\x0c\x64\x61te_created\x18\x06 \x01(\t\x12\x13\n\x0bmax_players\x18\x07 \x01(\r\x12\x1c\n\x05users\x18\x08 \x03(\x0b\x32\r.session.User\"!\n\x04User\x12\x0b\n\x03uid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t2\x92\x03\n\x0fSessionsManager\x12\x38\n\x06\x43reate\x12\x1a.session.NewSessionRequest\x1a\x10.session.Session\"\x00\x12\x30\n\x04Join\x12\x14.session.JoinRequest\x1a\x10.session.Session\"\x00\x12\x35\n\x05Leave\x12\x15.session.LeaveRequest\x1a\x13.session.LeaveReply\"\x00\x12;\n\x06SetMax\x12\x1d.session.SetMaxPlayersRequest\x1a\x10.session.Session\"\x00\x12\x32\n\x04List\x12\x14.session.ListRequest\x1a\x12.session.ListReply\"\x00\x12@\n\x0eGetSessionById\x12\x1a.session.GetSessionRequest\x1a\x10.session.Session\"\x00\x12)\n\x04Kick\x12\r.session.User\x1a\x10.session.Session\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0cserver.proto\x12\x07session\">\n\x11GetSessionRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"8\n\x11NewSessionRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"A\n\x0bListRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\r\x12\x0c\n\x04\x66ull\x18\x03 \x01(\x08\"9\n\x0cLeaveRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"8\n\x0bJoinRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"Q\n\x14SetMaxPlayersRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0e\n\x06number\x18\x02 \x01(\r\x12\x12\n\nsession_id\x18\x03 \x01(\t\"?\n\tListReply\x12\"\n\x08sessions\x18\x01 \x03(\x0b\x32\x10.session.Session\x12\x0e\n\x06status\x18\x02 \x01(\t\"4\n\nLeaveReply\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x16\n\x0estatus_message\x18\x03 \x01(\t\"\xc3\x01\n\x07Session\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\x12\x12\n\nsession_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\x12%\n\x0e\x64ungeon_master\x18\x05 \x01(\x0b\x32\r.session.User\x12\x14\n\x0c\x64\x61te_created\x18\x06 \x01(\t\x12\x13\n\x0bmax_players\x18\x07 \x01(\r\x12\x1c\n\x05users\x18\x08 \x03(\x0b\x32\r.session.User\"!\n\x04User\x12\x0b\n\x03uid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t2\x92\x03\n\x0fSessionsManager\x12\x38\n\x06\x43reate\x12\x1a.session.NewSessionRequest\x1a\x10.session.Session\"\x00\x12\x30\n\x04Join\x12\x14.session.JoinRequest\x1a\x10.session.Session\"\x00\x12\x35\n\x05Leave\x12\x15.session.LeaveRequest\x1a\x13.session.LeaveReply\"\x00\x12;\n\x06SetMax\x12\x1d.session.SetMaxPlayersRequest\x1a\x10.session.Session\"\x00\x12\x32\n\x04List\x12\x14.session.ListRequest\x1a\x12.session.ListReply\"\x00\x12@\n\x0eGetSessionById\x12\x1a.session.GetSessionRequest\x1a\x10.session.Session\"\x00\x12)\n\x04Kick\x12\r.session.User\x1a\x10.session.Session\"\x00\x62\x06proto3')
 )
 
 
@@ -122,6 +122,13 @@ _LISTREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='full', full_name='session.ListRequest.full', index=2,
+      number=3, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -135,7 +142,7 @@ _LISTREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=147,
-  serialized_end=198,
+  serialized_end=212,
 )
 
 
@@ -172,8 +179,8 @@ _LEAVEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=200,
-  serialized_end=257,
+  serialized_start=214,
+  serialized_end=271,
 )
 
 
@@ -210,8 +217,8 @@ _JOINREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=259,
-  serialized_end=315,
+  serialized_start=273,
+  serialized_end=329,
 )
 
 
@@ -255,8 +262,8 @@ _SETMAXPLAYERSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=317,
-  serialized_end=398,
+  serialized_start=331,
+  serialized_end=412,
 )
 
 
@@ -293,8 +300,8 @@ _LISTREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=400,
-  serialized_end=463,
+  serialized_start=414,
+  serialized_end=477,
 )
 
 
@@ -306,15 +313,15 @@ _LEAVEREPLY = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='success', full_name='session.LeaveReply.success', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      name='status', full_name='session.LeaveReply.status', index=0,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='status', full_name='session.LeaveReply.status', index=1,
-      number=2, type=9, cpp_type=9, label=1,
+      name='status_message', full_name='session.LeaveReply.status_message', index=1,
+      number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -331,8 +338,8 @@ _LEAVEREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=465,
-  serialized_end=510,
+  serialized_start=479,
+  serialized_end=531,
 )
 
 
@@ -411,8 +418,8 @@ _SESSION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=513,
-  serialized_end=708,
+  serialized_start=534,
+  serialized_end=729,
 )
 
 
@@ -449,8 +456,8 @@ _USER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=710,
-  serialized_end=743,
+  serialized_start=731,
+  serialized_end=764,
 )
 
 _LISTREPLY.fields_by_name['sessions'].message_type = _SESSION
@@ -546,8 +553,8 @@ _SESSIONSMANAGER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=746,
-  serialized_end=1148,
+  serialized_start=767,
+  serialized_end=1169,
   methods=[
   _descriptor.MethodDescriptor(
     name='Create',

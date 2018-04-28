@@ -74,6 +74,18 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(len(response.session_id), 36)
         self.assertEqual(response.status, 'SUCCESS')
 
+    def test_join_rpc_good_login_leave_session(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+        response = stub.Leave(server_pb2.LeaveRequest(auth_id_token=token, session_id=self.__class__.test_session_id))
+
+        self.assertEqual(response.status, 'SUCCESS')
+
     def test_join_rpc_good_login_nonexisting_session(self):
         auth.revoke_refresh_tokens(self.uid)
         

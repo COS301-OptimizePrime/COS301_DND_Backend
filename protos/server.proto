@@ -41,6 +41,7 @@ message NewSessionRequest {
 message ListRequest {
   string auth_id_token = 1;
   uint32 limit = 2;
+  bool full = 3;
 }
 
 /*
@@ -77,8 +78,8 @@ message ListReply {
 }
 
 message LeaveReply {
-  bool success = 1;
   string status = 2;
+  string status_message = 3;
 }
 
 message Session {

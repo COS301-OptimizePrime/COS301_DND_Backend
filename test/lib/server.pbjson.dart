@@ -25,6 +25,7 @@ const ListRequest$json = const {
   '2': const [
     const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
     const {'1': 'limit', '3': 2, '4': 1, '5': 13, '10': 'limit'},
+    const {'1': 'full', '3': 3, '4': 1, '5': 8, '10': 'full'},
   ],
 };
 
@@ -64,8 +65,8 @@ const ListReply$json = const {
 const LeaveReply$json = const {
   '1': 'LeaveReply',
   '2': const [
-    const {'1': 'success', '3': 1, '4': 1, '5': 8, '10': 'success'},
     const {'1': 'status', '3': 2, '4': 1, '5': 9, '10': 'status'},
+    const {'1': 'status_message', '3': 3, '4': 1, '5': 9, '10': 'statusMessage'},
   ],
 };
 

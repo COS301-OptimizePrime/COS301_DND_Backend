@@ -85,6 +85,7 @@ class ListRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ListRequest')
     ..aOS(1, 'authIdToken')
     ..a<int>(2, 'limit', PbFieldType.OU3)
+    ..aOB(3, 'full')
     ..hasRequiredFields = false
   ;
 
@@ -113,6 +114,11 @@ class ListRequest extends GeneratedMessage {
   set limit(int v) { $_setUnsignedInt32(1, v); }
   bool hasLimit() => $_has(1);
   void clearLimit() => clearField(2);
+
+  bool get full => $_get(2, false);
+  set full(bool v) { $_setBool(2, v); }
+  bool hasFull() => $_has(2);
+  void clearFull() => clearField(3);
 }
 
 class _ReadonlyListRequest extends ListRequest with ReadonlyMessageMixin {}
@@ -266,8 +272,8 @@ class _ReadonlyListReply extends ListReply with ReadonlyMessageMixin {}
 
 class LeaveReply extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('LeaveReply')
-    ..aOB(1, 'success')
     ..aOS(2, 'status')
+    ..aOS(3, 'statusMessage')
     ..hasRequiredFields = false
   ;
 
@@ -287,15 +293,15 @@ class LeaveReply extends GeneratedMessage {
     if (v is! LeaveReply) checkItemFailed(v, 'LeaveReply');
   }
 
-  bool get success => $_get(0, false);
-  set success(bool v) { $_setBool(0, v); }
-  bool hasSuccess() => $_has(0);
-  void clearSuccess() => clearField(1);
-
-  String get status => $_getS(1, '');
-  set status(String v) { $_setString(1, v); }
-  bool hasStatus() => $_has(1);
+  String get status => $_getS(0, '');
+  set status(String v) { $_setString(0, v); }
+  bool hasStatus() => $_has(0);
   void clearStatus() => clearField(2);
+
+  String get statusMessage => $_getS(1, '');
+  set statusMessage(String v) { $_setString(1, v); }
+  bool hasStatusMessage() => $_has(1);
+  void clearStatusMessage() => clearField(3);
 }
 
 class _ReadonlyLeaveReply extends LeaveReply with ReadonlyMessageMixin {}
