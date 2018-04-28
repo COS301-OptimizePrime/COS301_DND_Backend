@@ -61,8 +61,61 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
     def Join(self, request, context):
         logger = logging.getLogger('cos301-DND')
         logger.info('Join requested!')
+        _auth_id_token = request.auth_id_token
 
-        return server_pb2.Session(sessionId='idS!', name=request.name)
+        try:
+            decoded_token = auth.verify_id_token(_auth_id_token)
+            uid = decoded_token['uid']
+        except ValueError:
+            logger.error("Failed to verify login!")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED')
+
+        logger.info('Successfully verified token! UID=' + uid)
+
+        _session_id = request.session_id
+
+        conn = db.connect()
+        session = conn.query(db.Session).filter(db.Session.session_id == _session_id).first()
+
+        if not session:
+            logger.error("Failed to join session, that ID does not exist!")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[JOIN] No session with that ID exists!')
+
+        if len(session.users_in_session) >= session.max_players:
+            logger.error("Failed to join session, this session is full!")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[JOIN] This session is full!')
+
+        user = conn.query(db.User).filter(db.User.uid == uid).first()
+        if not user:
+            user = db.User(uid=uid, name=auth.get_user(uid).email)
+            conn.add(user)
+            conn.commit()
+        
+        session.users_in_session.append(user)
+        conn.commit()
+
+        sessionObj = server_pb2.Session()
+        sessionObj.session_id = session.session_id
+        sessionObj.name = session.name
+        sessionObj.dungeon_master.uid = session.dungeon_master.uid
+        sessionObj.date_created = str(session.date_created)
+        sessionObj.max_players = session.max_players
+        sessionObj.users.extend([])
+
+        for _user in session.users_in_session:
+            userInSession = server_pb2.User()
+            userInSession.uid = _user.uid
+            userInSession.name = _user.name
+            sessionObj.users.extend([userInSession])
+
+        conn.remove()
+        return server_pb2.Session(session_id = sessionObj.session_id,
+                                        name = sessionObj.name,
+                                        status="SUCCESS", 
+                                        dungeon_master=sessionObj.dungeon_master, 
+                                        date_created=sessionObj.date_created, 
+                                        users=sessionObj.users, 
+                                        max_players=sessionObj.max_players)
     
     def Leave(self, request, context):
         return server_pb2.Session(sessionId='idS!', name=request.name)
@@ -79,12 +132,41 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         except ValueError:
             logger.error("Failed to verify login!")
 
-        session = request.session
+        _session_id = request.session_id
 
-        _number = request.number
-        session.max_players = _number
+        conn = db.connect()
+        session = conn.query(db.Session).filter(db.Session.session_id == _session_id).first()
 
-        return session
+        if not session:
+            logger.error("[SetMax] Failed to update max players of session, that ID does not exist!")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetMax] No session with that ID exists!')
+
+        session.max_players = request.number
+        conn.commit()
+
+        sessionObj = server_pb2.Session()
+        sessionObj.session_id = session.session_id
+        sessionObj.name = session.name
+        sessionObj.dungeon_master.uid = session.dungeon_master.uid
+        sessionObj.date_created = str(session.date_created)
+        sessionObj.max_players = session.max_players
+        sessionObj.users.extend([])
+
+        for _user in session.users_in_session:
+            userInSession = server_pb2.User()
+            userInSession.uid = _user.uid
+            userInSession.name = _user.name
+            sessionObj.users.extend([userInSession])
+
+        conn.remove()
+
+        return server_pb2.Session(session_id = sessionObj.session_id,
+                                        name = sessionObj.name,
+                                        status="SUCCESS", 
+                                        dungeon_master=sessionObj.dungeon_master, 
+                                        date_created=sessionObj.date_created, 
+                                        users=sessionObj.users, 
+                                        max_players=sessionObj.max_players)
 
 
     def List(self, request, context):
@@ -115,15 +197,18 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             logger.debug(_session.session_id)
 
             sessionObj = server_pb2.Session()
-            sessionObj.name = _session.name
             sessionObj.session_id = _session.session_id
+            sessionObj.name = _session.name
             sessionObj.dungeon_master.uid = _session.dungeon_master.uid
             sessionObj.date_created = str(_session.date_created)
+            sessionObj.max_players = _session.max_players
+            sessionObj.users.extend([])
 
             for _user in _session.users_in_session:
                 userInSession = server_pb2.User()
                 userInSession.uid = _user.uid
-                sessionObj.users.append(userInSession)
+                userInSession.name = _user.name
+                sessionObj.users.extend([userInSession])
 
             _sessions.append(sessionObj)
 

@@ -10,7 +10,7 @@ import datetime
 Base = declarative_base()
 
 def connect():
-    engine = create_engine('sqlite:///./dnd_backend.db', echo=False)
+    engine = create_engine('sqlite:///./dnd_backend.db', echo=False, connect_args={'check_same_thread':False})
     Base.metadata.create_all(engine)
     
     session_factory = sessionmaker(bind=engine)
@@ -60,3 +60,6 @@ class Session(Base):
 
     def __repr__(self):
         return "<Session(id='%s', session_id='%s', name='%s', dungeon_master='%s')>" % (self.id, self.session_id, self.name, self.dungeon_master)
+
+#class Party(Base):
+#class Combat(Base):

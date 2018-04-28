@@ -49,7 +49,7 @@ const SetMaxPlayersRequest$json = const {
   '2': const [
     const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
     const {'1': 'number', '3': 2, '4': 1, '5': 13, '10': 'number'},
-    const {'1': 'session', '3': 3, '4': 1, '5': 11, '6': '.session.Session', '10': 'session'},
+    const {'1': 'session_id', '3': 3, '4': 1, '5': 9, '10': 'sessionId'},
   ],
 };
 

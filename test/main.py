@@ -20,6 +20,8 @@ firebase = firebase_admin.initialize_app(cred)
 #conn = db.connect()
 
 class TestSessionManager(unittest.TestCase):
+    test_session_id = ''
+
     def setUp(self):
         self.uid = 'mT8HzwXWjDc1FX472qTfcsUUcQt1'
 
@@ -31,6 +33,8 @@ class TestSessionManager(unittest.TestCase):
         channel = grpc.insecure_channel('localhost:50051')
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         response = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token))
+
+        self.__class__.test_session_id = response.session_id
 
         self.assertEqual(response.name, 'mysession')
         self.assertEqual(len(response.session_id), 36)
@@ -55,13 +59,66 @@ class TestSessionManager(unittest.TestCase):
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         response = stub.List(server_pb2.ListRequest(auth_id_token=token, limit=3))
 
-        # validate with firebase
-        #for session in response.sessions:
-            # check if the session actually exists in the database
-        #    for result in db.collection(u'sessions').where(u'session_id', u'==', session.session_id).limit(1).get():
-        #        self.assertEqual(result.get('session_id'), session.session_id)
-        
         self.assertEqual(response.status, 'SUCCESS')
+
+    def test_join_rpc_good_login_existing_session(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+        response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id=self.__class__.test_session_id))
+
+        self.assertEqual(response.name, 'mysession')
+        self.assertEqual(len(response.session_id), 36)
+        self.assertEqual(response.status, 'SUCCESS')
+
+    def test_join_rpc_good_login_nonexisting_session(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+        response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id='invalid_id'))
+
+        self.assertEqual(response.name, 'NULL')
+        self.assertEqual(response.session_id, 'NULL')
+        self.assertEqual(response.status, 'FAILED')
+        self.assertEqual(response.status_message, '[JOIN] No session with that ID exists!')
+
+    def test_join_rpc_good_login_setmax_session(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+        
+        response = stub.SetMax(server_pb2.SetMaxPlayersRequest(auth_id_token=token, session_id=self.__class__.test_session_id, number=0))
+
+        self.assertEqual(response.name, 'mysession')
+        self.assertEqual(len(response.session_id), 36)
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(response.max_players, 0)
+
+    def test_join_rpc_good_login_full_session(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+        stub.SetMax(server_pb2.SetMaxPlayersRequest(auth_id_token=token, session_id=self.__class__.test_session_id, number=0))
+        response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id=self.__class__.test_session_id))
+
+        self.assertEqual(response.name, 'NULL')
+        self.assertEqual(response.session_id, 'NULL')
+        self.assertEqual(response.status, 'FAILED')
+        self.assertEqual(response.status_message, '[JOIN] This session is full!')
 
 if __name__ == '__main__':
     unittest.main()

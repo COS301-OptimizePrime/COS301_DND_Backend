@@ -16,8 +16,6 @@ service SessionsManager {
   rpc List (ListRequest) returns (ListReply) {}
   // Get session by ID
   rpc GetSessionById (GetSessionRequest) returns (Session) {}
-  // Updates the remote session to match the local session object. Will be validated.
-  rpc Update (Session) returns (Session) {}
   // Kick player
   rpc Kick (User) returns (Session) {}
 }
@@ -70,7 +68,7 @@ message JoinRequest {
 message SetMaxPlayersRequest {
   string auth_id_token = 1;
   uint32 number = 2;
-  Session session = 3;
+  string session_id = 3;
 }
 
 message ListReply {

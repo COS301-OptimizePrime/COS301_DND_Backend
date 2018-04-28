@@ -36,10 +36,6 @@ class SessionsManagerClient extends Client {
       '/session.SessionsManager/GetSessionById',
       (GetSessionRequest value) => value.writeToBuffer(),
       (List<int> value) => new Session.fromBuffer(value));
-  static final _$update = new ClientMethod<Session, Session>(
-      '/session.SessionsManager/Update',
-      (Session value) => value.writeToBuffer(),
-      (List<int> value) => new Session.fromBuffer(value));
   static final _$kick = new ClientMethod<User, Session>(
       '/session.SessionsManager/Kick',
       (User value) => value.writeToBuffer(),
@@ -85,12 +81,6 @@ class SessionsManagerClient extends Client {
       {CallOptions options}) {
     final call = $createCall(
         _$getSessionById, new Stream.fromIterable([request]),
-        options: options);
-    return new ResponseFuture(call);
-  }
-
-  ResponseFuture<Session> update(Session request, {CallOptions options}) {
-    final call = $createCall(_$update, new Stream.fromIterable([request]),
         options: options);
     return new ResponseFuture(call);
   }
@@ -148,13 +138,6 @@ abstract class SessionsManagerServiceBase extends Service {
         false,
         (List<int> value) => new GetSessionRequest.fromBuffer(value),
         (Session value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<Session, Session>(
-        'Update',
-        update_Pre,
-        false,
-        false,
-        (List<int> value) => new Session.fromBuffer(value),
-        (Session value) => value.writeToBuffer()));
     $addMethod(new ServiceMethod<User, Session>(
         'Kick',
         kick_Pre,
@@ -188,10 +171,6 @@ abstract class SessionsManagerServiceBase extends Service {
     return getSessionById(call, await request);
   }
 
-  Future<Session> update_Pre(ServiceCall call, Future request) async {
-    return update(call, await request);
-  }
-
   Future<Session> kick_Pre(ServiceCall call, Future request) async {
     return kick(call, await request);
   }
@@ -202,6 +181,5 @@ abstract class SessionsManagerServiceBase extends Service {
   Future<Session> setMax(ServiceCall call, SetMaxPlayersRequest request);
   Future<ListReply> list(ServiceCall call, ListRequest request);
   Future<Session> getSessionById(ServiceCall call, GetSessionRequest request);
-  Future<Session> update(ServiceCall call, Session request);
   Future<Session> kick(ServiceCall call, User request);
 }

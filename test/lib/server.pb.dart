@@ -193,7 +193,7 @@ class SetMaxPlayersRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('SetMaxPlayersRequest')
     ..aOS(1, 'authIdToken')
     ..a<int>(2, 'number', PbFieldType.OU3)
-    ..a<Session>(3, 'session', PbFieldType.OM, Session.getDefault, Session.create)
+    ..aOS(3, 'sessionId')
     ..hasRequiredFields = false
   ;
 
@@ -223,10 +223,10 @@ class SetMaxPlayersRequest extends GeneratedMessage {
   bool hasNumber() => $_has(1);
   void clearNumber() => clearField(2);
 
-  Session get session => $_getN(2);
-  set session(Session v) { setField(3, v); }
-  bool hasSession() => $_has(2);
-  void clearSession() => clearField(3);
+  String get sessionId => $_getS(2, '');
+  set sessionId(String v) { $_setString(2, v); }
+  bool hasSessionId() => $_has(2);
+  void clearSessionId() => clearField(3);
 }
 
 class _ReadonlySetMaxPlayersRequest extends SetMaxPlayersRequest with ReadonlyMessageMixin {}
