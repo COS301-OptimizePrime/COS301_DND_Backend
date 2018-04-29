@@ -143,8 +143,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         user = conn.query(db.User).filter(and_(db.Session.session_id == _session_id, db.Session.users_in_session.any(db.User.uid == uid))).first()
 
         if not user:
-            logger.error("User does not exist! This should not happen!")
-            return server_pb2.Session(status='FAILED', status_message='[Leave] No user with that ID exists!')
+            logger.error("User does not exist. This could mean that the user is not in the session")
+            return server_pb2.Session(status='FAILED', status_message='[Leave] User is not in the session!')
 
         #logger.debug(user)
 
@@ -219,9 +219,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         logger.info('Successfully verified token! UID=' + uid)
 
-        # Query firebase
-        #sessions_ref = firestoreClient.collection(u'sessions')
-
         conn = db.connect()
         _sessions_query = conn.query(db.Session).limit(_limit)
 
@@ -248,3 +245,50 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         conn.remove()
         return server_pb2.ListReply(status='SUCCESS', sessions=_sessions)
+
+    def GetSessionById(self, request, context):
+        logger = logging.getLogger('cos301-DND')
+        logger.info('GetSessionById called!')
+
+        _session_id = request.session_id
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = auth.verify_id_token(_auth_id_token)
+            uid = decoded_token['uid']
+        except ValueError:
+            logger.error("Failed to verify login!")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[GetSessionById] Failed to verify token!')
+
+        logger.info('Successfully verified token! UID=' + uid)
+
+        conn = db.connect()
+        session = conn.query(db.Session).filter(db.Session.session_id == _session_id).first()
+
+        if not session:
+            logger.error("[GetSessionById] Failed to get session, that ID does not exist!")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[GetSessionById] No session with that ID exists!')
+
+        sessionObj = server_pb2.Session()
+        sessionObj.session_id = session.session_id
+        sessionObj.name = session.name
+        sessionObj.dungeon_master.uid = session.dungeon_master.uid
+        sessionObj.date_created = str(session.date_created)
+        sessionObj.max_players = session.max_players
+        sessionObj.users.extend([])
+
+        for _user in session.users_in_session:
+            userInSession = server_pb2.User()
+            userInSession.uid = _user.uid
+            userInSession.name = _user.name
+            sessionObj.users.extend([userInSession])
+
+        conn.remove()
+
+        return server_pb2.Session(session_id = sessionObj.session_id,
+                                        name = sessionObj.name,
+                                        status="SUCCESS", 
+                                        dungeon_master=sessionObj.dungeon_master, 
+                                        date_created=sessionObj.date_created, 
+                                        users=sessionObj.users, 
+                                        max_players=sessionObj.max_players)

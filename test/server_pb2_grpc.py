@@ -98,9 +98,7 @@ class SessionsManagerServicer(object):
     raise NotImplementedError('Method not implemented!')
 
   def Kick(self, request, context):
-    """rpc Update (SessionUpdateRequest) returns (Session) {}
-
-    Kick player
+    """Kick player
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')

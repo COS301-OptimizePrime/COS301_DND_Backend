@@ -78,8 +78,8 @@ message ListReply {
 }
 
 message LeaveReply {
-  string status = 2;
-  string status_message = 3;
+  string status = 1;
+  string status_message = 2;
 }
 
 message Session {

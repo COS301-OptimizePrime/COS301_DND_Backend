@@ -272,8 +272,8 @@ class _ReadonlyListReply extends ListReply with ReadonlyMessageMixin {}
 
 class LeaveReply extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('LeaveReply')
-    ..aOS(2, 'status')
-    ..aOS(3, 'statusMessage')
+    ..aOS(1, 'status')
+    ..aOS(2, 'statusMessage')
     ..hasRequiredFields = false
   ;
 
@@ -296,12 +296,12 @@ class LeaveReply extends GeneratedMessage {
   String get status => $_getS(0, '');
   set status(String v) { $_setString(0, v); }
   bool hasStatus() => $_has(0);
-  void clearStatus() => clearField(2);
+  void clearStatus() => clearField(1);
 
   String get statusMessage => $_getS(1, '');
   set statusMessage(String v) { $_setString(1, v); }
   bool hasStatusMessage() => $_has(1);
-  void clearStatusMessage() => clearField(3);
+  void clearStatusMessage() => clearField(2);
 }
 
 class _ReadonlyLeaveReply extends LeaveReply with ReadonlyMessageMixin {}

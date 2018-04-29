@@ -12,4 +12,6 @@ install:
 
 generate:
 	python -m grpc.tools.protoc -I./protos --python_out=./server --grpc_python_out=./server ./protos/server.proto
+	cp ./server/server_pb2.py ./test/server_pb2.py
+	cp ./server/server_pb2_grpc.py ./test/server_pb2_grpc.py
 	protoc -I protos/ protos/server.proto --dart_out=grpc:test/lib/
