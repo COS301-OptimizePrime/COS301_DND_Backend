@@ -17,6 +17,7 @@ const NewSessionRequest$json = const {
   '2': const [
     const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
     const {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
+    const {'1': 'max_players', '3': 3, '4': 1, '5': 13, '10': 'maxPlayers'},
   ],
 };
 
@@ -91,6 +92,7 @@ const Session$json = const {
     const {'1': 'max_players', '3': 7, '4': 1, '5': 13, '10': 'maxPlayers'},
     const {'1': 'users', '3': 8, '4': 3, '5': 11, '6': '.session.User', '10': 'users'},
     const {'1': 'private', '3': 9, '4': 1, '5': 8, '10': 'private'},
+    const {'1': 'full', '3': 10, '4': 1, '5': 8, '10': 'full'},
   ],
 };
 

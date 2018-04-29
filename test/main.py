@@ -31,7 +31,7 @@ class TestSessionManager(unittest.TestCase):
 
         channel = grpc.insecure_channel('localhost:50051')
         stub = server_pb2_grpc.SessionsManagerStub(channel)
-        response = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token))
+        response = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=7))
 
         self.__class__.test_session_id = response.session_id
 
@@ -59,6 +59,7 @@ class TestSessionManager(unittest.TestCase):
         response = stub.List(server_pb2.ListRequest(auth_id_token=token, limit=3))
 
         self.assertEqual(response.status, 'SUCCESS')
+        self.assertLessEqual(len(response.sessions), 3)
 
     def test_rpc_good_login_leave_if_not_in_session(self):
         auth.revoke_refresh_tokens(self.uid)
@@ -143,6 +144,7 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(response.session_id, 'NULL')
         self.assertEqual(response.status, 'FAILED')
         self.assertEqual(response.status_message, '[JOIN] This session is full!')
+        self.assertEqual(response.full, True)
 
     def test_rpc_good_login_get_session_by_id(self):
         auth.revoke_refresh_tokens(self.uid)
@@ -155,7 +157,7 @@ class TestSessionManager(unittest.TestCase):
         response = stub.GetSessionById(server_pb2.GetSessionRequest(auth_id_token=token, session_id=self.__class__.test_session_id))
 
         self.assertEqual(response.name, 'mysession')
-        self.assertEqual(len(response.session_id), 36)
+        self.assertEqual(response.session_id, self.__class__.test_session_id)
         self.assertEqual(response.status, 'SUCCESS')
 
     def test_setmax_rpc_good_login_setmax_session_invalid_user(self):
@@ -171,6 +173,21 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(response.name, 'NULL')
         self.assertEqual(response.status_message, '[SetMax] You must be the dungeon master to use this command!')
         self.assertEqual(response.status, 'FAILED')
+
+    def test_list_rpc_good_login_list_sessions_that_are_full(self):
+        auth.revoke_refresh_tokens(self.uid)
+
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+        # Add new session in case none exist.
+        stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=0))
+        response = stub.List(server_pb2.ListRequest(auth_id_token=token, limit=3, full=True))
+
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(response.sessions[0].full, True)
+        self.assertLessEqual(len(response.sessions), 3)
 
 if __name__ == '__main__':
     unittest.main()

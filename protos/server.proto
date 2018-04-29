@@ -34,6 +34,7 @@ message GetSessionRequest {
 message NewSessionRequest {
   string auth_id_token = 1;
   string name = 2;
+  uint32 max_players = 3;
 }
 
 /*
@@ -43,6 +44,7 @@ message NewSessionRequest {
 message ListRequest {
   string auth_id_token = 1;
   uint32 limit = 2;
+  // This will include sessions that are full.
   bool full = 3;
 }
 
@@ -104,6 +106,7 @@ message Session {
   repeated User users = 8;
   // Determines if the session is public or private
   bool private = 9;
+  bool full = 10;
 }
 
 message User {

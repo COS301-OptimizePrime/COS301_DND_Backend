@@ -1,9 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Table, Column, DateTime, Integer, SmallInteger, String, ForeignKey
+from sqlalchemy import Table, Column, DateTime, Integer, SmallInteger, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import scoped_session
+from sqlalchemy.ext.associationproxy import association_proxy
 import datetime
 
 
@@ -17,7 +18,7 @@ def connect():
     session = scoped_session(session_factory)
     return session
 
-association_table = Table('usersessions', Base.metadata,
+user_sessions = Table('usersessions', Base.metadata,
     Column('users_id', Integer, ForeignKey('users.id')),
     Column('sessions_id', Integer, ForeignKey('sessions.id'))
 )
@@ -34,7 +35,7 @@ class User(Base):
     session_dungeon_masters = relationship("Session", back_populates="dungeon_master")
     
     # User has many sessions
-    joined_sessions = relationship("Session", secondary=association_table)
+    joined_sessions = relationship("Session", secondary=user_sessions)
 
     def __repr__(self):
         return "<User(id='%s', uid='%s', name='%s')>" % (self.id, self.uid, self.name)
@@ -47,7 +48,8 @@ class Session(Base):
     name = Column(String(100), nullable=False)
     date_created = Column(DateTime, nullable=False, default=datetime.datetime.now)
     max_players = Column(SmallInteger, nullable=False)
-    
+    full = Column(Boolean, nullable=False, default=False)
+
     # Session has only one dungeon master
     dungeon_master_id = Column(Integer, ForeignKey('users.id'))
     dungeon_master = relationship("User", back_populates="session_dungeon_masters")
@@ -55,8 +57,10 @@ class Session(Base):
     # Session has many users
     users_in_session = relationship(
         "User",
-        secondary=association_table,
+        secondary=user_sessions,
         back_populates="joined_sessions")
+
+    users = association_proxy('users_in_session','user')
 
     def __repr__(self):
         return "<Session(id='%s', session_id='%s', name='%s', dungeon_master='%s')>" % (self.id, self.session_id, self.name, self.dungeon_master)

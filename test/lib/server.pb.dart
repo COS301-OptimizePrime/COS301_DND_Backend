@@ -49,6 +49,7 @@ class NewSessionRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('NewSessionRequest')
     ..aOS(1, 'authIdToken')
     ..aOS(2, 'name')
+    ..a<int>(3, 'maxPlayers', PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
 
@@ -77,6 +78,11 @@ class NewSessionRequest extends GeneratedMessage {
   set name(String v) { $_setString(1, v); }
   bool hasName() => $_has(1);
   void clearName() => clearField(2);
+
+  int get maxPlayers => $_get(2, 0);
+  set maxPlayers(int v) { $_setUnsignedInt32(2, v); }
+  bool hasMaxPlayers() => $_has(2);
+  void clearMaxPlayers() => clearField(3);
 }
 
 class _ReadonlyNewSessionRequest extends NewSessionRequest with ReadonlyMessageMixin {}
@@ -359,6 +365,7 @@ class Session extends GeneratedMessage {
     ..a<int>(7, 'maxPlayers', PbFieldType.OU3)
     ..pp<User>(8, 'users', PbFieldType.PM, User.$checkItem, User.create)
     ..aOB(9, 'private')
+    ..aOB(10, 'full')
     ..hasRequiredFields = false
   ;
 
@@ -419,6 +426,11 @@ class Session extends GeneratedMessage {
   set private(bool v) { $_setBool(8, v); }
   bool hasPrivate() => $_has(8);
   void clearPrivate() => clearField(9);
+
+  bool get full => $_get(9, false);
+  set full(bool v) { $_setBool(9, v); }
+  bool hasFull() => $_has(9);
+  void clearFull() => clearField(10);
 }
 
 class _ReadonlySession extends Session with ReadonlyMessageMixin {}
