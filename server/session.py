@@ -19,6 +19,7 @@ firebase = firebase_admin.initialize_app(cred)
 
 import database.db as db
 from sqlalchemy import and_
+from sqlalchemy import desc
 
 class Session(server_pb2_grpc.SessionsManagerServicer):
 
@@ -225,7 +226,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         logger.info('Successfully verified token! UID=' + uid)
 
         conn = db.connect()
-        _sessions_query = conn.query(db.Session).limit(_limit)
+        _sessions_query = conn.query(db.Session).order_by(desc(db.Session.date_created)).limit(_limit)
 
         _sessions = []
 
