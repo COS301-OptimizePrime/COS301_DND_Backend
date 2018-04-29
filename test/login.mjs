@@ -7,7 +7,13 @@ var config = {
 
 firebase.initializeApp(config);
 
-firebase.auth().signInWithEmailAndPassword('mockuser@test.co.za', '123456').catch(function(error) {
+var user = 'mockuser@test.co.za'
+
+if (process.argv.length >= 3) {
+    user = process.argv[2].trim();
+}
+
+firebase.auth().signInWithEmailAndPassword(user, '123456').catch(function(error) {
     var errorCode = error.code;
     var errorMessage = error.message;
 });

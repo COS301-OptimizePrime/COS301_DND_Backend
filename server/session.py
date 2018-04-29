@@ -154,6 +154,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         return server_pb2.LeaveReply(status='SUCCESS')
 
+    # This is a Dungeon Master only command.
     def SetMax(self, request, context):
         logger = logging.getLogger('cos301-DND')
         logger.info('SetMax called!')
@@ -174,6 +175,10 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         if not session:
             logger.error("[SetMax] Failed to update max players of session, that ID does not exist!")
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetMax] No session with that ID exists!')
+
+        if session.dungeon_master.uid != uid:
+            logger.error("[SetMax] Unauthorised user tried to modify (Not the dungeon master")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetMax] You must be the dungeon master to use this command!')
 
         session.max_players = request.number
         conn.commit()

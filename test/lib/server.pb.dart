@@ -237,6 +237,48 @@ class SetMaxPlayersRequest extends GeneratedMessage {
 
 class _ReadonlySetMaxPlayersRequest extends SetMaxPlayersRequest with ReadonlyMessageMixin {}
 
+class SetNameRequest extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('SetNameRequest')
+    ..aOS(1, 'authIdToken')
+    ..aOS(2, 'sessionId')
+    ..aOS(3, 'name')
+    ..hasRequiredFields = false
+  ;
+
+  SetNameRequest() : super();
+  SetNameRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  SetNameRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  SetNameRequest clone() => new SetNameRequest()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static SetNameRequest create() => new SetNameRequest();
+  static PbList<SetNameRequest> createRepeated() => new PbList<SetNameRequest>();
+  static SetNameRequest getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlySetNameRequest();
+    return _defaultInstance;
+  }
+  static SetNameRequest _defaultInstance;
+  static void $checkItem(SetNameRequest v) {
+    if (v is! SetNameRequest) checkItemFailed(v, 'SetNameRequest');
+  }
+
+  String get authIdToken => $_getS(0, '');
+  set authIdToken(String v) { $_setString(0, v); }
+  bool hasAuthIdToken() => $_has(0);
+  void clearAuthIdToken() => clearField(1);
+
+  String get sessionId => $_getS(1, '');
+  set sessionId(String v) { $_setString(1, v); }
+  bool hasSessionId() => $_has(1);
+  void clearSessionId() => clearField(2);
+
+  String get name => $_getS(2, '');
+  set name(String v) { $_setString(2, v); }
+  bool hasName() => $_has(2);
+  void clearName() => clearField(3);
+}
+
+class _ReadonlySetNameRequest extends SetNameRequest with ReadonlyMessageMixin {}
+
 class ListReply extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ListReply')
     ..pp<Session>(1, 'sessions', PbFieldType.PM, Session.$checkItem, Session.create)
@@ -316,6 +358,7 @@ class Session extends GeneratedMessage {
     ..aOS(6, 'dateCreated')
     ..a<int>(7, 'maxPlayers', PbFieldType.OU3)
     ..pp<User>(8, 'users', PbFieldType.PM, User.$checkItem, User.create)
+    ..aOB(9, 'private')
     ..hasRequiredFields = false
   ;
 
@@ -371,6 +414,11 @@ class Session extends GeneratedMessage {
   void clearMaxPlayers() => clearField(7);
 
   List<User> get users => $_getList(7);
+
+  bool get private => $_get(8, false);
+  set private(bool v) { $_setBool(8, v); }
+  bool hasPrivate() => $_has(8);
+  void clearPrivate() => clearField(9);
 }
 
 class _ReadonlySession extends Session with ReadonlyMessageMixin {}

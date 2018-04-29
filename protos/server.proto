@@ -12,12 +12,14 @@ service SessionsManager {
   rpc Leave (LeaveRequest) returns (LeaveReply) {}
   // Set the max amount of players that can be in the session.
   rpc SetMax (SetMaxPlayersRequest) returns (Session) {}
+  // Kick player.
+  rpc Kick (User) returns (Session) {}
+  // Set the name of the session.
+  rpc SetName (SetNameRequest) returns (Session) {}
   // List available sessions.
   rpc List (ListRequest) returns (ListReply) {}
   // Get session by ID
   rpc GetSessionById (GetSessionRequest) returns (Session) {}
-  // Kick player
-  rpc Kick (User) returns (Session) {}
 }
 
 message GetSessionRequest {
@@ -72,6 +74,12 @@ message SetMaxPlayersRequest {
   string session_id = 3;
 }
 
+message SetNameRequest {
+  string auth_id_token = 1;
+  string session_id = 2;
+  string name = 3;
+}
+
 message ListReply {
   repeated Session sessions = 1;
   string status = 2;
@@ -85,12 +93,17 @@ message LeaveReply {
 message Session {
   string status = 1;
   string status_message = 2;
+  // Session uuid
   string session_id = 3;
+  // The session's name
   string name = 4;
+  // The dungeon master: UID of user
   User dungeon_master = 5;
   string date_created = 6;
   uint32 max_players = 7;
   repeated User users = 8;
+  // Determines if the session is public or private
+  bool private = 9;
 }
 
 message User {

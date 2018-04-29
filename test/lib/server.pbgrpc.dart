@@ -28,6 +28,14 @@ class SessionsManagerClient extends Client {
       '/session.SessionsManager/SetMax',
       (SetMaxPlayersRequest value) => value.writeToBuffer(),
       (List<int> value) => new Session.fromBuffer(value));
+  static final _$kick = new ClientMethod<User, Session>(
+      '/session.SessionsManager/Kick',
+      (User value) => value.writeToBuffer(),
+      (List<int> value) => new Session.fromBuffer(value));
+  static final _$setName = new ClientMethod<SetNameRequest, Session>(
+      '/session.SessionsManager/SetName',
+      (SetNameRequest value) => value.writeToBuffer(),
+      (List<int> value) => new Session.fromBuffer(value));
   static final _$list = new ClientMethod<ListRequest, ListReply>(
       '/session.SessionsManager/List',
       (ListRequest value) => value.writeToBuffer(),
@@ -35,10 +43,6 @@ class SessionsManagerClient extends Client {
   static final _$getSessionById = new ClientMethod<GetSessionRequest, Session>(
       '/session.SessionsManager/GetSessionById',
       (GetSessionRequest value) => value.writeToBuffer(),
-      (List<int> value) => new Session.fromBuffer(value));
-  static final _$kick = new ClientMethod<User, Session>(
-      '/session.SessionsManager/Kick',
-      (User value) => value.writeToBuffer(),
       (List<int> value) => new Session.fromBuffer(value));
 
   SessionsManagerClient(ClientChannel channel, {CallOptions options})
@@ -71,6 +75,19 @@ class SessionsManagerClient extends Client {
     return new ResponseFuture(call);
   }
 
+  ResponseFuture<Session> kick(User request, {CallOptions options}) {
+    final call = $createCall(_$kick, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<Session> setName(SetNameRequest request,
+      {CallOptions options}) {
+    final call = $createCall(_$setName, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
   ResponseFuture<ListReply> list(ListRequest request, {CallOptions options}) {
     final call = $createCall(_$list, new Stream.fromIterable([request]),
         options: options);
@@ -81,12 +98,6 @@ class SessionsManagerClient extends Client {
       {CallOptions options}) {
     final call = $createCall(
         _$getSessionById, new Stream.fromIterable([request]),
-        options: options);
-    return new ResponseFuture(call);
-  }
-
-  ResponseFuture<Session> kick(User request, {CallOptions options}) {
-    final call = $createCall(_$kick, new Stream.fromIterable([request]),
         options: options);
     return new ResponseFuture(call);
   }
@@ -124,6 +135,20 @@ abstract class SessionsManagerServiceBase extends Service {
         false,
         (List<int> value) => new SetMaxPlayersRequest.fromBuffer(value),
         (Session value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<User, Session>(
+        'Kick',
+        kick_Pre,
+        false,
+        false,
+        (List<int> value) => new User.fromBuffer(value),
+        (Session value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<SetNameRequest, Session>(
+        'SetName',
+        setName_Pre,
+        false,
+        false,
+        (List<int> value) => new SetNameRequest.fromBuffer(value),
+        (Session value) => value.writeToBuffer()));
     $addMethod(new ServiceMethod<ListRequest, ListReply>(
         'List',
         list_Pre,
@@ -137,13 +162,6 @@ abstract class SessionsManagerServiceBase extends Service {
         false,
         false,
         (List<int> value) => new GetSessionRequest.fromBuffer(value),
-        (Session value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<User, Session>(
-        'Kick',
-        kick_Pre,
-        false,
-        false,
-        (List<int> value) => new User.fromBuffer(value),
         (Session value) => value.writeToBuffer()));
   }
 
@@ -163,6 +181,14 @@ abstract class SessionsManagerServiceBase extends Service {
     return setMax(call, await request);
   }
 
+  Future<Session> kick_Pre(ServiceCall call, Future request) async {
+    return kick(call, await request);
+  }
+
+  Future<Session> setName_Pre(ServiceCall call, Future request) async {
+    return setName(call, await request);
+  }
+
   Future<ListReply> list_Pre(ServiceCall call, Future request) async {
     return list(call, await request);
   }
@@ -171,15 +197,12 @@ abstract class SessionsManagerServiceBase extends Service {
     return getSessionById(call, await request);
   }
 
-  Future<Session> kick_Pre(ServiceCall call, Future request) async {
-    return kick(call, await request);
-  }
-
   Future<Session> create(ServiceCall call, NewSessionRequest request);
   Future<Session> join(ServiceCall call, JoinRequest request);
   Future<LeaveReply> leave(ServiceCall call, LeaveRequest request);
   Future<Session> setMax(ServiceCall call, SetMaxPlayersRequest request);
+  Future<Session> kick(ServiceCall call, User request);
+  Future<Session> setName(ServiceCall call, SetNameRequest request);
   Future<ListReply> list(ServiceCall call, ListRequest request);
   Future<Session> getSessionById(ServiceCall call, GetSessionRequest request);
-  Future<Session> kick(ServiceCall call, User request);
 }
