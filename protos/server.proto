@@ -13,7 +13,7 @@ service SessionsManager {
   // Set the max amount of players that can be in the session.
   rpc SetMax (SetMaxPlayersRequest) returns (Session) {}
   // Kick player.
-  rpc Kick (User) returns (Session) {}
+  rpc Kick (KickPlayerRequest) returns (Session) {}
   // Set the name of the session.
   rpc SetName (SetNameRequest) returns (Session) {}
   // List available sessions.
@@ -64,6 +64,12 @@ message LeaveRequest {
 message JoinRequest {
   string auth_id_token = 1;
   string session_id = 2;
+}
+
+message KickPlayerRequest {
+  string auth_id_token = 1;
+  string session_id = 2;
+  User user = 3;
 }
 
 /*

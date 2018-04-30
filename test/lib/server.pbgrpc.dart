@@ -28,9 +28,9 @@ class SessionsManagerClient extends Client {
       '/session.SessionsManager/SetMax',
       (SetMaxPlayersRequest value) => value.writeToBuffer(),
       (List<int> value) => new Session.fromBuffer(value));
-  static final _$kick = new ClientMethod<User, Session>(
+  static final _$kick = new ClientMethod<KickPlayerRequest, Session>(
       '/session.SessionsManager/Kick',
-      (User value) => value.writeToBuffer(),
+      (KickPlayerRequest value) => value.writeToBuffer(),
       (List<int> value) => new Session.fromBuffer(value));
   static final _$setName = new ClientMethod<SetNameRequest, Session>(
       '/session.SessionsManager/SetName',
@@ -75,7 +75,8 @@ class SessionsManagerClient extends Client {
     return new ResponseFuture(call);
   }
 
-  ResponseFuture<Session> kick(User request, {CallOptions options}) {
+  ResponseFuture<Session> kick(KickPlayerRequest request,
+      {CallOptions options}) {
     final call = $createCall(_$kick, new Stream.fromIterable([request]),
         options: options);
     return new ResponseFuture(call);
@@ -135,12 +136,12 @@ abstract class SessionsManagerServiceBase extends Service {
         false,
         (List<int> value) => new SetMaxPlayersRequest.fromBuffer(value),
         (Session value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<User, Session>(
+    $addMethod(new ServiceMethod<KickPlayerRequest, Session>(
         'Kick',
         kick_Pre,
         false,
         false,
-        (List<int> value) => new User.fromBuffer(value),
+        (List<int> value) => new KickPlayerRequest.fromBuffer(value),
         (Session value) => value.writeToBuffer()));
     $addMethod(new ServiceMethod<SetNameRequest, Session>(
         'SetName',
@@ -201,7 +202,7 @@ abstract class SessionsManagerServiceBase extends Service {
   Future<Session> join(ServiceCall call, JoinRequest request);
   Future<LeaveReply> leave(ServiceCall call, LeaveRequest request);
   Future<Session> setMax(ServiceCall call, SetMaxPlayersRequest request);
-  Future<Session> kick(ServiceCall call, User request);
+  Future<Session> kick(ServiceCall call, KickPlayerRequest request);
   Future<Session> setName(ServiceCall call, SetNameRequest request);
   Future<ListReply> list(ServiceCall call, ListRequest request);
   Future<Session> getSessionById(ServiceCall call, GetSessionRequest request);

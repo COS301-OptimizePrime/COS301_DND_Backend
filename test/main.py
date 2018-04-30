@@ -99,6 +99,44 @@ class TestSessionManager(unittest.TestCase):
 
         self.assertEqual(response.status, 'SUCCESS')
 
+    def test_leave_rpc_good_login_leave_session_multiple_already_joined(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+        # Add new session in case none exist.
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2))
+        response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id=session.session_id))
+
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(len(response.users), 1)
+        self.assertEqual(response.users[0].name, 'mockuser@test.co.za')
+
+        # Second player join
+        token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id=session.session_id))
+
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(len(response.users), 2)
+        self.assertEqual(response.users[0].name, 'mockuser@test.co.za')
+        self.assertEqual(response.users[1].name, 'mockuser2@test.co.za')
+
+        # Second player leaves
+        token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.Leave(server_pb2.LeaveRequest(auth_id_token=token, session_id=session.session_id))
+
+        self.assertEqual(response.status, 'SUCCESS')
+
+        # get session
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.GetSessionById(server_pb2.GetSessionRequest(auth_id_token=token, session_id=session.session_id))
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(len(response.users), 1)
+        self.assertEqual(response.users[0].name, 'mockuser@test.co.za')
+
     def test_join_rpc_good_login_nonexisting_session(self):
         auth.revoke_refresh_tokens(self.uid)
         
@@ -188,6 +226,77 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(response.status, 'SUCCESS')
         self.assertEqual(response.sessions[0].full, True)
         self.assertLessEqual(len(response.sessions), 3)
+
+    def test_kick_good_login(self):
+        auth.revoke_refresh_tokens(self.uid)
+
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+        # Add new session in case none exist.
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2))
+        response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id=session.session_id))
+
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(len(response.users), 1)
+        self.assertEqual(response.users[0].name, 'mockuser@test.co.za')
+
+        # Second player join
+        token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id=session.session_id))
+
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(len(response.users), 2)
+        self.assertEqual(response.users[0].name, 'mockuser@test.co.za')
+        self.assertEqual(response.users[1].name, 'mockuser2@test.co.za')
+
+        user2 = response.users[1]
+
+        # kick player 2
+        # login as DM
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.Kick(server_pb2.KickPlayerRequest(auth_id_token=token, session_id=session.session_id, user=user2))
+
+        # check if user still in session
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(len(response.users), 1)
+        self.assertEqual(response.users[0].name, 'mockuser@test.co.za')
+
+    def test_kick_unauthorised_good_login(self):
+        auth.revoke_refresh_tokens(self.uid)
+
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+        # Add new session in case none exist.
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2))
+        response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id=session.session_id))
+
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(len(response.users), 1)
+        self.assertEqual(response.users[0].name, 'mockuser@test.co.za')
+
+        # Second player join
+        token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id=session.session_id))
+
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(len(response.users), 2)
+        self.assertEqual(response.users[0].name, 'mockuser@test.co.za')
+        self.assertEqual(response.users[1].name, 'mockuser2@test.co.za')
+
+        user2 = response.users[1]
+
+        # kick player 2
+        # login as player 2
+        token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.Kick(server_pb2.KickPlayerRequest(auth_id_token=token, session_id=session.session_id, user=user2))
+
+        # should fail
+        self.assertEqual(response.status, 'FAILED')
+        self.assertEqual(response.status_message, '[Kick] You must be the dungeon master to use this command!')
 
 if __name__ == '__main__':
     unittest.main()

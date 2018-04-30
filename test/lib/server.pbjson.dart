@@ -46,6 +46,15 @@ const JoinRequest$json = const {
   ],
 };
 
+const KickPlayerRequest$json = const {
+  '1': 'KickPlayerRequest',
+  '2': const [
+    const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
+    const {'1': 'session_id', '3': 2, '4': 1, '5': 9, '10': 'sessionId'},
+    const {'1': 'user', '3': 3, '4': 1, '5': 11, '6': '.session.User', '10': 'user'},
+  ],
+};
+
 const SetMaxPlayersRequest$json = const {
   '1': 'SetMaxPlayersRequest',
   '2': const [

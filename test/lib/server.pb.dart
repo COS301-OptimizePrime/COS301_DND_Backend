@@ -201,6 +201,48 @@ class JoinRequest extends GeneratedMessage {
 
 class _ReadonlyJoinRequest extends JoinRequest with ReadonlyMessageMixin {}
 
+class KickPlayerRequest extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('KickPlayerRequest')
+    ..aOS(1, 'authIdToken')
+    ..aOS(2, 'sessionId')
+    ..a<User>(3, 'user', PbFieldType.OM, User.getDefault, User.create)
+    ..hasRequiredFields = false
+  ;
+
+  KickPlayerRequest() : super();
+  KickPlayerRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  KickPlayerRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  KickPlayerRequest clone() => new KickPlayerRequest()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static KickPlayerRequest create() => new KickPlayerRequest();
+  static PbList<KickPlayerRequest> createRepeated() => new PbList<KickPlayerRequest>();
+  static KickPlayerRequest getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlyKickPlayerRequest();
+    return _defaultInstance;
+  }
+  static KickPlayerRequest _defaultInstance;
+  static void $checkItem(KickPlayerRequest v) {
+    if (v is! KickPlayerRequest) checkItemFailed(v, 'KickPlayerRequest');
+  }
+
+  String get authIdToken => $_getS(0, '');
+  set authIdToken(String v) { $_setString(0, v); }
+  bool hasAuthIdToken() => $_has(0);
+  void clearAuthIdToken() => clearField(1);
+
+  String get sessionId => $_getS(1, '');
+  set sessionId(String v) { $_setString(1, v); }
+  bool hasSessionId() => $_has(1);
+  void clearSessionId() => clearField(2);
+
+  User get user => $_getN(2);
+  set user(User v) { setField(3, v); }
+  bool hasUser() => $_has(2);
+  void clearUser() => clearField(3);
+}
+
+class _ReadonlyKickPlayerRequest extends KickPlayerRequest with ReadonlyMessageMixin {}
+
 class SetMaxPlayersRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('SetMaxPlayersRequest')
     ..aOS(1, 'authIdToken')

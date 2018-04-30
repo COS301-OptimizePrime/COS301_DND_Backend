@@ -36,7 +36,7 @@ class SessionsManagerStub(object):
         )
     self.Kick = channel.unary_unary(
         '/session.SessionsManager/Kick',
-        request_serializer=server__pb2.User.SerializeToString,
+        request_serializer=server__pb2.KickPlayerRequest.SerializeToString,
         response_deserializer=server__pb2.Session.FromString,
         )
     self.SetName = channel.unary_unary(
@@ -141,7 +141,7 @@ def add_SessionsManagerServicer_to_server(servicer, server):
       ),
       'Kick': grpc.unary_unary_rpc_method_handler(
           servicer.Kick,
-          request_deserializer=server__pb2.User.FromString,
+          request_deserializer=server__pb2.KickPlayerRequest.FromString,
           response_serializer=server__pb2.Session.SerializeToString,
       ),
       'SetName': grpc.unary_unary_rpc_method_handler(
