@@ -31,6 +31,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _name = request.name
         _auth_id_token = request.auth_id_token
         _max_players = request.max_players
+        _private = request.private
 
         _date_created = datetime.datetime.utcnow()
 
@@ -50,7 +51,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             conn.add(user)
             conn.commit()
 
-        session = db.Session(session_id=_session_id, name=_name, dungeon_master_id=user.id, max_players=_max_players)
+        session = db.Session(session_id=_session_id, name=_name, dungeon_master_id=user.id, max_players=_max_players, private=_private)
         if session.max_players <= len(session.users_in_session):
             session.full = True
         conn.add(session)
@@ -63,6 +64,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         sessionObj.date_created = str(session.date_created)
         sessionObj.max_players = session.max_players
         sessionObj.full = session.full
+        sessionObj.private = session.private
         sessionObj.users.extend([])
 
         for _user in session.users_in_session:
@@ -79,7 +81,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                                         date_created = sessionObj.date_created, 
                                         full = sessionObj.full,
                                         users = sessionObj.users, 
-                                        max_players = sessionObj.max_players)
+                                        max_players = sessionObj.max_players,
+                                        private = sessionObj.private)
 
     def Join(self, request, context):
         logger = logging.getLogger('cos301-DND')
@@ -336,9 +339,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         conn = db.connect()
 
         if _full:
-            _sessions_query = conn.query(db.Session).order_by(desc(db.Session.date_created)).limit(_limit)
+            _sessions_query = conn.query(db.Session).filter(db.Session.private == False).order_by(desc(db.Session.date_created)).limit(_limit)
         else:
-            _sessions_query = conn.query(db.Session).filter(db.Session.full != True).order_by(desc(db.Session.date_created)).limit(_limit)
+            _sessions_query = conn.query(db.Session).filter(and_(db.Session.private == False, db.Session.full != True)).order_by(desc(db.Session.date_created)).limit(_limit)
 
         _sessions = []
 

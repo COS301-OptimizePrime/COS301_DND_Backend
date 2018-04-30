@@ -36,6 +36,10 @@ class SessionsManagerClient extends Client {
       '/session.SessionsManager/SetName',
       (SetNameRequest value) => value.writeToBuffer(),
       (List<int> value) => new Session.fromBuffer(value));
+  static final _$setPrivate = new ClientMethod<SetPrivateRequest, Session>(
+      '/session.SessionsManager/SetPrivate',
+      (SetPrivateRequest value) => value.writeToBuffer(),
+      (List<int> value) => new Session.fromBuffer(value));
   static final _$list = new ClientMethod<ListRequest, ListReply>(
       '/session.SessionsManager/List',
       (ListRequest value) => value.writeToBuffer(),
@@ -85,6 +89,13 @@ class SessionsManagerClient extends Client {
   ResponseFuture<Session> setName(SetNameRequest request,
       {CallOptions options}) {
     final call = $createCall(_$setName, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<Session> setPrivate(SetPrivateRequest request,
+      {CallOptions options}) {
+    final call = $createCall(_$setPrivate, new Stream.fromIterable([request]),
         options: options);
     return new ResponseFuture(call);
   }
@@ -150,6 +161,13 @@ abstract class SessionsManagerServiceBase extends Service {
         false,
         (List<int> value) => new SetNameRequest.fromBuffer(value),
         (Session value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<SetPrivateRequest, Session>(
+        'SetPrivate',
+        setPrivate_Pre,
+        false,
+        false,
+        (List<int> value) => new SetPrivateRequest.fromBuffer(value),
+        (Session value) => value.writeToBuffer()));
     $addMethod(new ServiceMethod<ListRequest, ListReply>(
         'List',
         list_Pre,
@@ -190,6 +208,10 @@ abstract class SessionsManagerServiceBase extends Service {
     return setName(call, await request);
   }
 
+  Future<Session> setPrivate_Pre(ServiceCall call, Future request) async {
+    return setPrivate(call, await request);
+  }
+
   Future<ListReply> list_Pre(ServiceCall call, Future request) async {
     return list(call, await request);
   }
@@ -204,6 +226,7 @@ abstract class SessionsManagerServiceBase extends Service {
   Future<Session> setMax(ServiceCall call, SetMaxPlayersRequest request);
   Future<Session> kick(ServiceCall call, KickPlayerRequest request);
   Future<Session> setName(ServiceCall call, SetNameRequest request);
+  Future<Session> setPrivate(ServiceCall call, SetPrivateRequest request);
   Future<ListReply> list(ServiceCall call, ListRequest request);
   Future<Session> getSessionById(ServiceCall call, GetSessionRequest request);
 }

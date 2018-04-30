@@ -44,6 +44,11 @@ class SessionsManagerStub(object):
         request_serializer=server__pb2.SetNameRequest.SerializeToString,
         response_deserializer=server__pb2.Session.FromString,
         )
+    self.SetPrivate = channel.unary_unary(
+        '/session.SessionsManager/SetPrivate',
+        request_serializer=server__pb2.SetPrivateRequest.SerializeToString,
+        response_deserializer=server__pb2.Session.FromString,
+        )
     self.List = channel.unary_unary(
         '/session.SessionsManager/List',
         request_serializer=server__pb2.ListRequest.SerializeToString,
@@ -102,6 +107,13 @@ class SessionsManagerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def SetPrivate(self, request, context):
+    """Set the privacy status of the session.
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
   def List(self, request, context):
     """List available sessions.
     """
@@ -147,6 +159,11 @@ def add_SessionsManagerServicer_to_server(servicer, server):
       'SetName': grpc.unary_unary_rpc_method_handler(
           servicer.SetName,
           request_deserializer=server__pb2.SetNameRequest.FromString,
+          response_serializer=server__pb2.Session.SerializeToString,
+      ),
+      'SetPrivate': grpc.unary_unary_rpc_method_handler(
+          servicer.SetPrivate,
+          request_deserializer=server__pb2.SetPrivateRequest.FromString,
           response_serializer=server__pb2.Session.SerializeToString,
       ),
       'List': grpc.unary_unary_rpc_method_handler(

@@ -50,6 +50,7 @@ class NewSessionRequest extends GeneratedMessage {
     ..aOS(1, 'authIdToken')
     ..aOS(2, 'name')
     ..a<int>(3, 'maxPlayers', PbFieldType.OU3)
+    ..aOB(4, 'private')
     ..hasRequiredFields = false
   ;
 
@@ -83,6 +84,11 @@ class NewSessionRequest extends GeneratedMessage {
   set maxPlayers(int v) { $_setUnsignedInt32(2, v); }
   bool hasMaxPlayers() => $_has(2);
   void clearMaxPlayers() => clearField(3);
+
+  bool get private => $_get(3, false);
+  set private(bool v) { $_setBool(3, v); }
+  bool hasPrivate() => $_has(3);
+  void clearPrivate() => clearField(4);
 }
 
 class _ReadonlyNewSessionRequest extends NewSessionRequest with ReadonlyMessageMixin {}
@@ -242,6 +248,48 @@ class KickPlayerRequest extends GeneratedMessage {
 }
 
 class _ReadonlyKickPlayerRequest extends KickPlayerRequest with ReadonlyMessageMixin {}
+
+class SetPrivateRequest extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('SetPrivateRequest')
+    ..aOS(1, 'authIdToken')
+    ..aOS(2, 'sessionId')
+    ..aOB(3, 'private')
+    ..hasRequiredFields = false
+  ;
+
+  SetPrivateRequest() : super();
+  SetPrivateRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  SetPrivateRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  SetPrivateRequest clone() => new SetPrivateRequest()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static SetPrivateRequest create() => new SetPrivateRequest();
+  static PbList<SetPrivateRequest> createRepeated() => new PbList<SetPrivateRequest>();
+  static SetPrivateRequest getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlySetPrivateRequest();
+    return _defaultInstance;
+  }
+  static SetPrivateRequest _defaultInstance;
+  static void $checkItem(SetPrivateRequest v) {
+    if (v is! SetPrivateRequest) checkItemFailed(v, 'SetPrivateRequest');
+  }
+
+  String get authIdToken => $_getS(0, '');
+  set authIdToken(String v) { $_setString(0, v); }
+  bool hasAuthIdToken() => $_has(0);
+  void clearAuthIdToken() => clearField(1);
+
+  String get sessionId => $_getS(1, '');
+  set sessionId(String v) { $_setString(1, v); }
+  bool hasSessionId() => $_has(1);
+  void clearSessionId() => clearField(2);
+
+  bool get private => $_get(2, false);
+  set private(bool v) { $_setBool(2, v); }
+  bool hasPrivate() => $_has(2);
+  void clearPrivate() => clearField(3);
+}
+
+class _ReadonlySetPrivateRequest extends SetPrivateRequest with ReadonlyMessageMixin {}
 
 class SetMaxPlayersRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('SetMaxPlayersRequest')

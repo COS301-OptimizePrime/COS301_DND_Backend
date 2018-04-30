@@ -49,6 +49,7 @@ class Session(Base):
     date_created = Column(DateTime, nullable=False, default=datetime.datetime.now)
     max_players = Column(SmallInteger, nullable=False)
     full = Column(Boolean, nullable=False, default=False)
+    private = Column(Boolean, nullable=False, default=False)
 
     # Session has only one dungeon master
     dungeon_master_id = Column(Integer, ForeignKey('users.id'))

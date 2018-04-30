@@ -16,6 +16,8 @@ service SessionsManager {
   rpc Kick (KickPlayerRequest) returns (Session) {}
   // Set the name of the session.
   rpc SetName (SetNameRequest) returns (Session) {}
+  // Set the privacy status of the session.
+  rpc SetPrivate (SetPrivateRequest) returns (Session) {}
   // List available sessions.
   rpc List (ListRequest) returns (ListReply) {}
   // Get session by ID
@@ -35,6 +37,7 @@ message NewSessionRequest {
   string auth_id_token = 1;
   string name = 2;
   uint32 max_players = 3;
+  bool private = 4;
 }
 
 /*
@@ -70,6 +73,12 @@ message KickPlayerRequest {
   string auth_id_token = 1;
   string session_id = 2;
   User user = 3;
+}
+
+message SetPrivateRequest {
+  string auth_id_token = 1;
+  string session_id = 2;
+  bool private = 3;
 }
 
 /*

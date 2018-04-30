@@ -298,5 +298,33 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(response.status, 'FAILED')
         self.assertEqual(response.status_message, '[Kick] You must be the dungeon master to use this command!')
 
+    def test_private_session_should_not_be_listed(self):
+        auth.revoke_refresh_tokens(self.uid)
+
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+        # Add new session in case none exist.
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=True))
+        # should be first result, if something is wrong
+        response = stub.List(server_pb2.ListRequest(auth_id_token=token, limit=1))
+
+        self.assertNotEqual(response.sessions[0].session_id, session.session_id)
+
+    def test_non_private_session_should_be_listed(self):
+        auth.revoke_refresh_tokens(self.uid)
+
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+        # Add new session in case none exist.
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
+        # should be first result
+        response = stub.List(server_pb2.ListRequest(auth_id_token=token, limit=1))
+
+        self.assertEqual(response.sessions[0].session_id, session.session_id)
+
 if __name__ == '__main__':
     unittest.main()
