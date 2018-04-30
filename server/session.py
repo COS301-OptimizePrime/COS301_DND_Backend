@@ -77,6 +77,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         # Check how many sessions the user has.
         if len(user.session_dungeon_masters) >= 100:
             logger.error("Failed to create new session, user has reached max sessions")
+            conn.remove()
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[Create] User has too many sessions already!')
 
         session = db.Session(session_id=_session_id, name=_name, dungeon_master_id=user.id, max_players=_max_players, private=_private)
@@ -165,6 +166,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error("Failed to leave session, that ID does not exist!")
+            conn.remove()
             return server_pb2.Session(status='FAILED', status_message='[Leave] No session with that ID exists!')
         
         if uid == session.dungeon_master.uid:
@@ -189,6 +191,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not user:
             logger.error("User does not exist. This could mean that the user is not in the session")
+            conn.remove()
             return server_pb2.Session(status='FAILED', status_message='[Leave] User is not in the session!')
 
         logger.debug(user)
@@ -227,16 +230,19 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error("Failed to leave session, that ID does not exist!")
+            conn.remove()
             return server_pb2.Session(status='FAILED', status_message='[Kick] No session with that ID exists!')
         
         if session.dungeon_master.uid != uid:
             logger.error("[Kick] Unauthorised user tried to modify (Not the dungeon master)")
+            conn.remove()
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[Kick] You must be the dungeon master to use this command!')
 
         player_to_kick = request.user
 
         if player_to_kick.uid == uid:
             logger.error("[Kick] Attempted to kick dungeon master!")
+            conn.remove()
             return server_pb2.Session(status='FAILED', status_message='[Kick] Attempted to kick dungeon master!') 
 
         user = conn.query(db.User).filter(and_(db.Session.session_id == _session_id, db.User.uid == player_to_kick.uid)).first()
@@ -245,6 +251,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not user:
             logger.error("User does not exist. This could mean that the user is not in the session")
+            conn.remove()
             return server_pb2.Session(status='FAILED', status_message='[Kick] User is not in the session!')
 
         session.users_in_session.remove(user)
@@ -278,10 +285,12 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error("[SetMax] Failed to update max players of session, that ID does not exist!")
+            conn.remove()
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetMax] No session with that ID exists!')
 
         if session.dungeon_master.uid != uid:
             logger.error("[SetMax] Unauthorised user tried to modify (Not the dungeon master")
+            conn.remove()
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetMax] You must be the dungeon master to use this command!')
 
         session.max_players = request.number
@@ -315,10 +324,12 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error("[SetName] Failed to update name of session, that ID does not exist!")
+            conn.remove()
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetName] No session with that ID exists!')
 
         if session.dungeon_master.uid != uid:
             logger.error("[SetName] Unauthorised user tried to modify (Not the dungeon master")
+            conn.remove()
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetName] You must be the dungeon master to use this command!')
 
         session.name = request.name
@@ -351,10 +362,12 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error("[SetPrivate] Failed to update privacy state of session, that ID does not exist!")
+            conn.remove()
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetPrivate] No session with that ID exists!')
 
         if session.dungeon_master.uid != uid:
             logger.error("[SetPrivate] Unauthorised user tried to modify (Not the dungeon master")
+            conn.remove()
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetPrivate] You must be the dungeon master to use this command!')
 
         session.private = request.private
@@ -438,6 +451,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error("[GetSessionById] Failed to get session, that ID does not exist!")
+            conn.remove()
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[GetSessionById] No session with that ID exists!')
 
         grpcSession = self._convertToGrpcSession(session, "SUCCESS")

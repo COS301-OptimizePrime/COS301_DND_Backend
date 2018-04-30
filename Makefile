@@ -3,7 +3,10 @@ test:
 	cd ./test; echo "===Runing python tests!==="; sh -c 'python ./main.py'; echo "===Runing dart tests!==="; dart test.dart;
 
 run:
-	sh -c 'python ./server/main.py'
+	export ENV=dev; sh -c 'python ./server/main.py'
+
+prod:
+	export ENV=prod; sh -c 'python ./server/main.py'
 
 install:
 	cd ./test; pub get

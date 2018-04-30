@@ -7,11 +7,16 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.ext.associationproxy import association_proxy
 import datetime
 
+import os
 
 Base = declarative_base()
 
 def connect():
-    engine = create_engine('sqlite:///./dnd_backend.db', echo=False, connect_args={'check_same_thread':False})
+    if os.environ['ENV'] == 'prod':
+        engine = create_engine('postgresql://dnd_backend:dnd_backend@localhost:5432/dnd_backend')
+    else:
+        engine = create_engine('sqlite:///./dnd_backend.db', echo=False, connect_args={'check_same_thread':False})
+
     Base.metadata.create_all(engine)
     
     session_factory = sessionmaker(bind=engine)
