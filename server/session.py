@@ -326,7 +326,41 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         return grpcSession 
 
+    # This is a Dungeon Master only command.
+    def SetPrivate(self, request, context):
+        logger = logging.getLogger('cos301-DND')
+        logger.info('SetPrivate called!')
 
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = auth.verify_id_token(_auth_id_token)
+            uid = decoded_token['uid']
+        except ValueError:
+            logger.error("Failed to verify login!")
+
+        _session_id = request.session_id
+
+        conn = db.connect()
+        session = conn.query(db.Session).filter(db.Session.session_id == _session_id).first()
+
+        if not session:
+            logger.error("[SetPrivate] Failed to update privacy state of session, that ID does not exist!")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetPrivate] No session with that ID exists!')
+
+        if session.dungeon_master.uid != uid:
+            logger.error("[SetPrivate] Unauthorised user tried to modify (Not the dungeon master")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetPrivate] You must be the dungeon master to use this command!')
+
+        session.private = request.private
+
+        conn.commit()
+
+        grpcSession = self._convertToGrpcSession(session, "SUCCESS")
+        
+        conn.remove()
+
+        return grpcSession 
 
     def List(self, request, context):
         logger = logging.getLogger('cos301-DND')

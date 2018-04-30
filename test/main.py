@@ -407,5 +407,55 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(response.status, 'SUCCESS')
         self.assertEqual(response.name, 'newNameForMySession')
 
+    def test_setname_rpc_unauthorised_user(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
+
+        self.assertEqual(session.status, 'SUCCESS')
+
+        token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.SetName(server_pb2.SetNameRequest(session_id=session.session_id, name='newNameForMySession', auth_id_token=token))
+
+        self.assertEqual(response.status, 'FAILED')
+        self.assertEqual(response.status_message, '[SetName] You must be the dungeon master to use this command!')
+
+    def test_setprivate_rpc(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
+
+        self.assertEqual(session.status, 'SUCCESS')
+
+        response = stub.SetPrivate(server_pb2.SetPrivateRequest(session_id=session.session_id, private=True, auth_id_token=token))
+
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(response.private, True)
+
+    def test_setprivate_rpc_unauthorised_user(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
+
+        self.assertEqual(session.status, 'SUCCESS')
+
+        token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.SetPrivate(server_pb2.SetPrivateRequest(session_id=session.session_id, private=True, auth_id_token=token))
+
+        self.assertEqual(response.status, 'FAILED')
+        self.assertEqual(response.status_message, '[SetPrivate] You must be the dungeon master to use this command!')
+    
 if __name__ == '__main__':
     unittest.main()
