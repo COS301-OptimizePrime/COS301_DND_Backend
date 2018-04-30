@@ -180,6 +180,24 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             logger.error("Failed to leave session, that ID does not exist!")
             return server_pb2.Session(status='FAILED', status_message='[Leave] No session with that ID exists!')
         
+        if uid == session.dungeon_master.uid:
+            if len(session.users_in_session) == 0:
+                logger.info("No users left in this session, deleting the session!")
+                conn.delete(session)
+                conn.commit()
+                conn.remove()
+                return server_pb2.LeaveReply(status='SUCCESS')
+            elif len(session.users_in_session) > 0:
+                # Assign new dungeon master.
+                logger.info("Original Dungeon Master left assigning a new one!")
+                new_DM = conn.query(db.User).join(db.User.joined_sessions).filter(db.Session.session_id == _session_id).first()
+                session.dungeon_master = new_DM
+                # Remove DM from users array.
+                session.users_in_session.remove(new_DM)
+                conn.commit()
+                conn.remove()
+                return server_pb2.LeaveReply(status='SUCCESS')             
+
         user = conn.query(db.User).join(db.User.joined_sessions).filter(and_(db.Session.session_id == _session_id, db.User.uid == uid)).first()
 
         if not user:
@@ -191,6 +209,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         session.users_in_session.remove(user)
         if session.max_players > len(session.users_in_session):
             session.full = False
+
+        if len(session.users_in_session) == 0:
+            logger.info("No users left in this session, deleting the session!")
+            conn.delete(session)
+
         conn.commit()
         conn.remove()
 
@@ -407,6 +430,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         sessionObj.session_id = session.session_id
         sessionObj.name = session.name
         sessionObj.dungeon_master.uid = session.dungeon_master.uid
+        sessionObj.dungeon_master.name = session.dungeon_master.name
         sessionObj.date_created = str(session.date_created)
         sessionObj.max_players = session.max_players
         sessionObj.full = session.full
