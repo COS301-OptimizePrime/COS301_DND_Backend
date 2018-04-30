@@ -391,5 +391,21 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(response.dungeon_master.name, 'mockuser2@test.co.za')
         self.assertEqual(len(response.users), 0)
 
+    def test_setname_rpc(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
+
+        self.assertEqual(session.status, 'SUCCESS')
+
+        response = stub.SetName(server_pb2.SetNameRequest(session_id=session.session_id, name='newNameForMySession', auth_id_token=token))
+
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(response.name, 'newNameForMySession')
+
 if __name__ == '__main__':
     unittest.main()
