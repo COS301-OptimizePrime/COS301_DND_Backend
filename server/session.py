@@ -23,6 +23,29 @@ from sqlalchemy import desc
 
 class Session(server_pb2_grpc.SessionsManagerServicer):
 
+    # Converts a Database Session object to a grpc Session object
+    def _convertToGrpcSession(self, session, status):
+        sessionObj = server_pb2.Session()
+        sessionObj.session_id = session.session_id
+        sessionObj.name = session.name
+        sessionObj.dungeon_master.uid = session.dungeon_master.uid
+        sessionObj.dungeon_master.name = session.dungeon_master.name
+        sessionObj.date_created = str(session.date_created)
+        sessionObj.max_players = session.max_players
+        sessionObj.full = session.full
+        sessionObj.private = session.private
+        sessionObj.users.extend([])
+
+        for _user in session.users_in_session:
+            userInSession = server_pb2.User()
+            userInSession.uid = _user.uid
+            userInSession.name = _user.name
+            sessionObj.users.extend([userInSession])
+
+        sessionObj.status = status
+
+        return sessionObj
+
     def Create(self, request, context):
         logger = logging.getLogger('cos301-DND')
         logger.info('Create new session called!')
@@ -57,32 +80,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         conn.add(session)
         conn.commit()
 
-        sessionObj = server_pb2.Session()
-        sessionObj.session_id = session.session_id
-        sessionObj.name = session.name
-        sessionObj.dungeon_master.uid = session.dungeon_master.uid
-        sessionObj.date_created = str(session.date_created)
-        sessionObj.max_players = session.max_players
-        sessionObj.full = session.full
-        sessionObj.private = session.private
-        sessionObj.users.extend([])
-
-        for _user in session.users_in_session:
-            userInSession = server_pb2.User()
-            userInSession.uid = _user.uid
-            userInSession.name = _user.name
-            sessionObj.users.extend([userInSession])
+        grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
         conn.remove()
-        return server_pb2.Session(session_id = sessionObj.session_id,
-                                        name = sessionObj.name,
-                                        status="SUCCESS", 
-                                        dungeon_master = sessionObj.dungeon_master, 
-                                        date_created = sessionObj.date_created, 
-                                        full = sessionObj.full,
-                                        users = sessionObj.users, 
-                                        max_players = sessionObj.max_players,
-                                        private = sessionObj.private)
+
+        return grpcSession 
 
     def Join(self, request, context):
         logger = logging.getLogger('cos301-DND')
@@ -130,32 +132,12 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             session.full = True
         conn.commit()
 
-        sessionObj = server_pb2.Session()
-        sessionObj.session_id = session.session_id
-        sessionObj.name = session.name
-        sessionObj.dungeon_master.uid = session.dungeon_master.uid
-        sessionObj.date_created = str(session.date_created)
-        sessionObj.max_players = session.max_players
-        sessionObj.full = session.full
-        sessionObj.private = session.private
-        sessionObj.users.extend([])
-
-        for _user in session.users_in_session:
-            userInSession = server_pb2.User()
-            userInSession.uid = _user.uid
-            userInSession.name = _user.name
-            sessionObj.users.extend([userInSession])
+        grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
         conn.remove()
-        return server_pb2.Session(session_id = sessionObj.session_id,
-                                        name = sessionObj.name,
-                                        status="SUCCESS", 
-                                        dungeon_master = sessionObj.dungeon_master, 
-                                        date_created = sessionObj.date_created, 
-                                        full = sessionObj.full,
-                                        private = sessionObj.private,
-                                        users = sessionObj.users, 
-                                        max_players = sessionObj.max_players)
+
+        return grpcSession 
+
     
     def Leave(self, request, context):
         logger = logging.getLogger('cos301-DND')
@@ -264,34 +246,12 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         if session.max_players > len(session.users_in_session):
             session.full = False
         conn.commit()
-        
-        sessionObj = server_pb2.Session()
-        sessionObj.session_id = session.session_id
-        sessionObj.name = session.name
-        sessionObj.dungeon_master.uid = session.dungeon_master.uid
-        sessionObj.date_created = str(session.date_created)
-        sessionObj.max_players = session.max_players
-        sessionObj.full = session.full
-        sessionObj.private = session.private
-        sessionObj.users.extend([])
 
-        for _user in session.users_in_session:
-            userInSession = server_pb2.User()
-            userInSession.uid = _user.uid
-            userInSession.name = _user.name
-            sessionObj.users.extend([userInSession])
+        grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
         conn.remove()
 
-        return server_pb2.Session(session_id = sessionObj.session_id,
-                                        name = sessionObj.name,
-                                        status="SUCCESS", 
-                                        dungeon_master = sessionObj.dungeon_master, 
-                                        date_created = sessionObj.date_created, 
-                                        full = sessionObj.full,
-                                        private = sessionObj.private,
-                                        users = sessionObj.users, 
-                                        max_players = sessionObj.max_players)
+        return grpcSession 
 
     # This is a Dungeon Master only command.
     def SetMax(self, request, context):
@@ -324,33 +284,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             session.full = True
         conn.commit()
 
-        sessionObj = server_pb2.Session()
-        sessionObj.session_id = session.session_id
-        sessionObj.name = session.name
-        sessionObj.dungeon_master.uid = session.dungeon_master.uid
-        sessionObj.date_created = str(session.date_created)
-        sessionObj.max_players = session.max_players
-        sessionObj.full = session.full
-        sessionObj.private = session.private
-        sessionObj.users.extend([])
-
-        for _user in session.users_in_session:
-            userInSession = server_pb2.User()
-            userInSession.uid = _user.uid
-            userInSession.name = _user.name
-            sessionObj.users.extend([userInSession])
+        grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
         conn.remove()
 
-        return server_pb2.Session(session_id = sessionObj.session_id,
-                                        name = sessionObj.name,
-                                        status="SUCCESS", 
-                                        dungeon_master = sessionObj.dungeon_master, 
-                                        date_created = sessionObj.date_created, 
-                                        full = sessionObj.full,
-                                        private = sessionObj.private,
-                                        users = sessionObj.users, 
-                                        max_players = sessionObj.max_players)
+        return grpcSession 
 
     # This is a Dungeon Master only command.
     def SetName(self, request, context):
@@ -379,35 +317,15 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[SetName] You must be the dungeon master to use this command!')
 
         session.name = request.name
+
         conn.commit()
 
-        sessionObj = server_pb2.Session()
-        sessionObj.session_id = session.session_id
-        sessionObj.name = session.name
-        sessionObj.dungeon_master.uid = session.dungeon_master.uid
-        sessionObj.date_created = str(session.date_created)
-        sessionObj.max_players = session.max_players
-        sessionObj.full = session.full
-        sessionObj.private = session.private
-        sessionObj.users.extend([])
-
-        for _user in session.users_in_session:
-            userInSession = server_pb2.User()
-            userInSession.uid = _user.uid
-            userInSession.name = _user.name
-            sessionObj.users.extend([userInSession])
-
+        grpcSession = self._convertToGrpcSession(session, "SUCCESS")
+        
         conn.remove()
 
-        return server_pb2.Session(session_id = sessionObj.session_id,
-                                        name = sessionObj.name,
-                                        status="SUCCESS", 
-                                        dungeon_master = sessionObj.dungeon_master, 
-                                        date_created = sessionObj.date_created, 
-                                        full = sessionObj.full,
-                                        private = sessionObj.private,
-                                        users = sessionObj.users, 
-                                        max_players = sessionObj.max_players)
+        return grpcSession 
+
 
 
     def List(self, request, context):
@@ -437,7 +355,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _sessions = []
 
         for _session in _sessions_query:
-            logger.debug(_session.session_id)
+            #logger.debug(_session.session_id)
 
             sessionObj = server_pb2.Session()
             sessionObj.session_id = _session.session_id
@@ -483,31 +401,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             logger.error("[GetSessionById] Failed to get session, that ID does not exist!")
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[GetSessionById] No session with that ID exists!')
 
-        sessionObj = server_pb2.Session()
-        sessionObj.session_id = session.session_id
-        sessionObj.name = session.name
-        sessionObj.dungeon_master.uid = session.dungeon_master.uid
-        sessionObj.dungeon_master.name = session.dungeon_master.name
-        sessionObj.date_created = str(session.date_created)
-        sessionObj.max_players = session.max_players
-        sessionObj.full = session.full
-        sessionObj.private = session.private
-        sessionObj.users.extend([])
-
-        for _user in session.users_in_session:
-            userInSession = server_pb2.User()
-            userInSession.uid = _user.uid
-            userInSession.name = _user.name
-            sessionObj.users.extend([userInSession])
+        grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
         conn.remove()
 
-        return server_pb2.Session(session_id = sessionObj.session_id,
-                                        name = sessionObj.name,
-                                        status="SUCCESS", 
-                                        dungeon_master=sessionObj.dungeon_master, 
-                                        date_created=sessionObj.date_created, 
-                                        users=sessionObj.users,
-                                        full=sessionObj.full,
-                                        private = sessionObj.private, 
-                                        max_players=sessionObj.max_players)
+        return grpcSession 
