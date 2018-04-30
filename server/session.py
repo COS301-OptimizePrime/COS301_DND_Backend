@@ -108,6 +108,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             logger.error("Failed to join session, that ID does not exist!")
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[JOIN] No session with that ID exists!')
 
+        if uid == session.dungeon_master.uid:
+            conn.remove()
+            logger.error("Failed to join session, you can not join your own session!")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[JOIN] You can not join your own session!')
+
         if len(session.users_in_session) >= session.max_players:
             session.full = True
             conn.remove()
@@ -132,6 +137,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         sessionObj.date_created = str(session.date_created)
         sessionObj.max_players = session.max_players
         sessionObj.full = session.full
+        sessionObj.private = session.private
         sessionObj.users.extend([])
 
         for _user in session.users_in_session:
@@ -147,6 +153,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                                         dungeon_master = sessionObj.dungeon_master, 
                                         date_created = sessionObj.date_created, 
                                         full = sessionObj.full,
+                                        private = sessionObj.private,
                                         users = sessionObj.users, 
                                         max_players = sessionObj.max_players)
     
@@ -242,6 +249,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         sessionObj.date_created = str(session.date_created)
         sessionObj.max_players = session.max_players
         sessionObj.full = session.full
+        sessionObj.private = session.private
         sessionObj.users.extend([])
 
         for _user in session.users_in_session:
@@ -258,6 +266,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                                         dungeon_master = sessionObj.dungeon_master, 
                                         date_created = sessionObj.date_created, 
                                         full = sessionObj.full,
+                                        private = sessionObj.private,
                                         users = sessionObj.users, 
                                         max_players = sessionObj.max_players)
 
@@ -299,6 +308,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         sessionObj.date_created = str(session.date_created)
         sessionObj.max_players = session.max_players
         sessionObj.full = session.full
+        sessionObj.private = session.private
         sessionObj.users.extend([])
 
         for _user in session.users_in_session:
@@ -315,6 +325,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                                         dungeon_master = sessionObj.dungeon_master, 
                                         date_created = sessionObj.date_created, 
                                         full = sessionObj.full,
+                                        private = sessionObj.private,
                                         users = sessionObj.users, 
                                         max_players = sessionObj.max_players)
 
@@ -355,6 +366,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             sessionObj.date_created = str(_session.date_created)
             sessionObj.max_players = _session.max_players
             sessionObj.full = _session.full
+            sessionObj.private = _session.private
             sessionObj.users.extend([])
 
             for _user in _session.users_in_session:
@@ -398,6 +410,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         sessionObj.date_created = str(session.date_created)
         sessionObj.max_players = session.max_players
         sessionObj.full = session.full
+        sessionObj.private = session.private
         sessionObj.users.extend([])
 
         for _user in session.users_in_session:
@@ -414,5 +427,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                                         dungeon_master=sessionObj.dungeon_master, 
                                         date_created=sessionObj.date_created, 
                                         users=sessionObj.users,
-                                        full=sessionObj.full, 
+                                        full=sessionObj.full,
+                                        private = sessionObj.private, 
                                         max_players=sessionObj.max_players)
