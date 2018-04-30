@@ -63,7 +63,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             uid = decoded_token['uid']
         except ValueError:
             logger.error("Failed to verify login!")
-            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED')
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[Create] Failed to verify user token!')
 
         logger.debug('Successfully verified token! UID=' + uid)
 
@@ -73,6 +73,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             user = db.User(uid=uid, name=auth.get_user(uid).email)
             conn.add(user)
             conn.commit()
+
+        # Check how many sessions the user has.
+        if len(user.session_dungeon_masters) >= 100:
+            logger.error("Failed to create new session, user has reached max sessions")
+            return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[Create] User has too many sessions already!')
 
         session = db.Session(session_id=_session_id, name=_name, dungeon_master_id=user.id, max_players=_max_players, private=_private)
         if session.max_players <= len(session.users_in_session):

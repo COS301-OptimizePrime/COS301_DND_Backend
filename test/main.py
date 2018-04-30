@@ -15,9 +15,6 @@ import subprocess
 cred = credentials.Certificate("dnd-game-manager-firebase-adminsdk-34ek4-cccabd3dd6.json")
 firebase = firebase_admin.initialize_app(cred)
 
-#import database.db as db
-#conn = db.connect()
-
 class TestSessionManager(unittest.TestCase):
     test_session_id = ''
 
@@ -457,5 +454,21 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(response.status, 'FAILED')
         self.assertEqual(response.status_message, '[SetPrivate] You must be the dungeon master to use this command!')
     
+    #def test_max_sessions_for_user(self):
+    #    auth.revoke_refresh_tokens(self.uid)
+        
+    #    channel = grpc.insecure_channel('localhost:50051')
+    #    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    #    token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        
+    #    for i in range(0, 9):
+    #        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
+    #        self.assertEqual(session.status, 'SUCCESS')
+
+    #    response = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
+
+    #    self.assertEqual(response.status, 'FAILED')
+    #    self.assertEqual(response.status_message, '[Create] User has too many sessions already!')
 if __name__ == '__main__':
     unittest.main()
