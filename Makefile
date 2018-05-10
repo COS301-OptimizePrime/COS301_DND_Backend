@@ -3,7 +3,7 @@ test:
 	cd ./test; echo "===Runing python tests!==="; sh -c 'python ./main.py'; echo "===Runing dart tests!==="; dart test.dart;
 
 run:
-	export ENV=dev; sh -c 'python ./server/main.py'
+	rm dnd_backend.db; export ENV=dev; sh -c 'python ./server/main.py'
 
 prod:
 	export ENV=prod; sh -c 'python ./server/main.py'

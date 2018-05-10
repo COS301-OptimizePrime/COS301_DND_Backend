@@ -17,7 +17,7 @@ Base = declarative_base()
 def connect():
     if os.environ['ENV'] == 'prod':
         logger = logging.getLogger('cos301-DND')
-        logger.info('Using PostgreSQL!')
+        logger.debug('Using PostgreSQL!')
         engine = create_engine('postgresql://dnd_backend:dnd_backend@localhost:5432/dnd_backend')
     else:
         engine = create_engine('sqlite:///./dnd_backend.db', echo=False, connect_args={'check_same_thread':False})

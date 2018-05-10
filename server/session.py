@@ -136,6 +136,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             conn.add(user)
             conn.commit()
         
+        if user in session.users_in_session:
+            conn.remove()
+            logger.error("Failed to join session, you are already in this session! Returning normal sessison!")
+            return self._convertToGrpcSession(session, "SUCCESS")
+
         session.users_in_session.append(user)
         if session.max_players <= len(session.users_in_session):
             session.full = True
