@@ -80,6 +80,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             conn.remove()
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[Create] User has too many sessions already!')
 
+        if _max_players == 0:
+            _max_players = 7
+
         session = db.Session(session_id=_session_id, name=_name, dungeon_master_id=user.id, max_players=_max_players, private=_private)
         if session.max_players <= len(session.users_in_session):
             session.full = True

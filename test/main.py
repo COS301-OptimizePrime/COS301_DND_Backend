@@ -15,6 +15,9 @@ import subprocess
 cred = credentials.Certificate("dnd-game-manager-firebase-adminsdk-34ek4-cccabd3dd6.json")
 firebase = firebase_admin.initialize_app(cred)
 
+server = 'localhost:50051'
+#server = 'develop.optimizeprime.co.za:50051'
+
 class TestSessionManager(unittest.TestCase):
     test_session_id = ''
 
@@ -26,7 +29,7 @@ class TestSessionManager(unittest.TestCase):
         
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         response = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=7))
 
@@ -39,7 +42,7 @@ class TestSessionManager(unittest.TestCase):
     def test_create_rpc_bad_login(self):
         auth.revoke_refresh_tokens(self.uid)
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         response = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token='invalidtoken'))
         self.assertEqual(response.name, 'NULL')
@@ -51,7 +54,7 @@ class TestSessionManager(unittest.TestCase):
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         response = stub.List(server_pb2.ListRequest(auth_id_token=token, limit=3))
 
@@ -61,7 +64,7 @@ class TestSessionManager(unittest.TestCase):
     def test_rpc_good_login_leave_if_not_in_session(self):
         auth.revoke_refresh_tokens(self.uid)
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
 
         # Create session
@@ -79,7 +82,7 @@ class TestSessionManager(unittest.TestCase):
         
         token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id=self.__class__.test_session_id))
 
@@ -92,7 +95,7 @@ class TestSessionManager(unittest.TestCase):
         
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
 
         # Add new session in case none exist.
@@ -133,7 +136,7 @@ class TestSessionManager(unittest.TestCase):
         
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id='invalid_id'))
 
@@ -147,7 +150,7 @@ class TestSessionManager(unittest.TestCase):
         
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
 
          # Create session
@@ -166,7 +169,7 @@ class TestSessionManager(unittest.TestCase):
     def test_join_rpc_good_login_full_session(self):
         auth.revoke_refresh_tokens(self.uid)
         
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
 
         token = str(subprocess.check_output('node ./login.mjs mockuser@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
@@ -185,7 +188,7 @@ class TestSessionManager(unittest.TestCase):
         
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
 
         response = stub.GetSessionById(server_pb2.GetSessionRequest(auth_id_token=token, session_id=self.__class__.test_session_id))
@@ -199,7 +202,7 @@ class TestSessionManager(unittest.TestCase):
         
         token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
 
         response = stub.SetMax(server_pb2.SetMaxPlayersRequest(auth_id_token=token, session_id=self.__class__.test_session_id, number=0))
@@ -213,10 +216,11 @@ class TestSessionManager(unittest.TestCase):
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         # Add new session in case none exist.
-        stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=0))
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=0))
+        stub.SetMax(server_pb2.SetMaxPlayersRequest(session_id=session.session_id, auth_id_token=token, number=0))
         response = stub.List(server_pb2.ListRequest(auth_id_token=token, limit=3, full=True))
 
         self.assertEqual(response.status, 'SUCCESS')
@@ -228,7 +232,7 @@ class TestSessionManager(unittest.TestCase):
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         # Add new session in case none exist.
         session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2))
@@ -267,7 +271,7 @@ class TestSessionManager(unittest.TestCase):
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         # Add new session in case none exist.
         session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2))
@@ -305,7 +309,7 @@ class TestSessionManager(unittest.TestCase):
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         # Add new session in case none exist.
         session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=True))
@@ -319,7 +323,7 @@ class TestSessionManager(unittest.TestCase):
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         # Add new session in case none exist.
         session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
@@ -333,7 +337,7 @@ class TestSessionManager(unittest.TestCase):
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         # Add new session in case none exist.
         session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
@@ -347,7 +351,7 @@ class TestSessionManager(unittest.TestCase):
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         # Add new session in case none exist.
         session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
@@ -362,7 +366,7 @@ class TestSessionManager(unittest.TestCase):
     def test_leaving_a_session_as_dungeon_master_should_assign_new_DM(self):
         auth.revoke_refresh_tokens(self.uid)
 
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
         # Add new session in case none exist.
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
@@ -391,7 +395,7 @@ class TestSessionManager(unittest.TestCase):
     def test_setname_rpc(self):
         auth.revoke_refresh_tokens(self.uid)
         
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
@@ -407,7 +411,7 @@ class TestSessionManager(unittest.TestCase):
     def test_setname_rpc_unauthorised_user(self):
         auth.revoke_refresh_tokens(self.uid)
         
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
@@ -424,7 +428,7 @@ class TestSessionManager(unittest.TestCase):
     def test_setprivate_rpc(self):
         auth.revoke_refresh_tokens(self.uid)
         
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
@@ -440,7 +444,7 @@ class TestSessionManager(unittest.TestCase):
     def test_setprivate_rpc_unauthorised_user(self):
         auth.revoke_refresh_tokens(self.uid)
         
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel(server)
         stub = server_pb2_grpc.SessionsManagerStub(channel)
 
         token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
@@ -457,7 +461,7 @@ class TestSessionManager(unittest.TestCase):
     #def test_max_sessions_for_user(self):
     #    auth.revoke_refresh_tokens(self.uid)
         
-    #    channel = grpc.insecure_channel('localhost:50051')
+    #    channel = grpc.insecure_channel(server)
     #    stub = server_pb2_grpc.SessionsManagerStub(channel)
 
     #    token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
