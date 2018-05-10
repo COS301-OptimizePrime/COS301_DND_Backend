@@ -1,0 +1,13 @@
+[Unit]
+Description=DND Backend Service
+After=network.target
+
+[Service]
+Type=simple
+User=development
+WorkingDirectory=/home/development/COS301_DND_Backend
+ExecStart=home/development/COS301_DND_Backend/runProduction.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
