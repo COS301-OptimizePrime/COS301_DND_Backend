@@ -20,6 +20,9 @@ def serve():
 
     logger.info('Starting...')
 
+    if os.environ['ENV'] == 'prod':
+        logger.info('In production enviroment!')
+
     #logger.info("Connecting to sqlite databse...")
     #db.connect()
 
