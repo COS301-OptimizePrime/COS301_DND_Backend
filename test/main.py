@@ -458,6 +458,34 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(response.status, 'FAILED')
         self.assertEqual(response.status_message, '[SetPrivate] You must be the dungeon master to use this command!')
     
+    def test_joining_session_you_are_already_in_should_return_normal_session(self):
+        auth.revoke_refresh_tokens(self.uid)
+        
+        channel = grpc.insecure_channel(server)
+        stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+        token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
+
+        self.assertEqual(session.status, 'SUCCESS')
+
+        token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.Join(server_pb2.JoinRequest(session_id=session.session_id, auth_id_token=token))
+
+        self.assertEqual(response.status, 'SUCCESS')
+        self.assertEqual(len(response.users), 1)
+        self.assertEqual(response.full, False)
+        self.assertEqual(response.users[0].name, 'mockuser2@test.co.za')
+
+        token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
+        response = stub.Join(server_pb2.JoinRequest(session_id=session.session_id, auth_id_token=token))
+        
+        self.assertEqual(response.status, 'SUCCESS')
+        # This is what we are really testing. This should not increase.
+        self.assertEqual(len(response.users), 1)
+        self.assertEqual(response.full, False)
+        self.assertEqual(response.users[0].name, 'mockuser2@test.co.za')
+
     #def test_max_sessions_for_user(self):
     #    auth.revoke_refresh_tokens(self.uid)
         
