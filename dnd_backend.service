@@ -6,7 +6,8 @@ After=network.target
 Type=simple
 User=development
 WorkingDirectory=/home/development/COS301_DND_Backend
-ExecStart=home/development/COS301_DND_Backend/runProduction.sh
+Environment=ENV=prod
+ExecStart=/usr/bin/python /home/development/COS301_DND_Backend/server/main.py
 Restart=on-failure
 
 [Install]
