@@ -496,13 +496,12 @@ def test_joining_session_you_are_already_in_should_return_normal_session():
 def test_list_user_sessions_rpc_good_login():
     auth.revoke_refresh_tokens(uid)
 
-    token = str(subprocess.check_output('node ./login.mjs mockuser2@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
-
     channel = grpc.insecure_channel(server)
     stub = server_pb2_grpc.SessionsManagerStub(channel)
 
     session = _create_rpc_good_login()
 
+    token = str(subprocess.check_output('node ./login.mjs mockuser4@test.co.za', shell=True, universal_newlines=False).decode("utf-8")).strip()
     response = stub.Join(server_pb2.JoinRequest(auth_id_token=token, session_id=session.session_id))
 
     assert(response.status == 'SUCCESS')
@@ -510,11 +509,11 @@ def test_list_user_sessions_rpc_good_login():
     response = stub.GetSessionsOfUser(server_pb2.GetSessionsOfUserRequest(auth_id_token=token, limit=3))
 
     assert(response.status == 'SUCCESS')
-    assert(len(response.sessions) <= 3)
-    assert(len(response.sessions) > 0)
+    assert(len(response.sessions) == 1)
 
     # Should not list a session where another user is not in.
-    assert(response.sessions[0].users[0].name == 'mockuser2@test.co.za')
+    assert(response.sessions[0].dungeon_master.name == 'mockuser@test.co.za')
+    assert(response.sessions[0].users[0].name == 'mockuser4@test.co.za')
     assert(len(response.sessions[0].users) == 1)
 
 
