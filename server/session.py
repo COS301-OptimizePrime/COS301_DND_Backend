@@ -415,6 +415,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             sessionObj.session_id = _session.session_id
             sessionObj.name = _session.name
             sessionObj.dungeon_master.uid = _session.dungeon_master.uid
+            sessionObj.dungeon_master.name = _session.dungeon_master.name
             sessionObj.date_created = str(_session.date_created)
             sessionObj.max_players = _session.max_players
             sessionObj.full = _session.full
@@ -453,7 +454,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error("[GetSessionById] Failed to get session, that ID does not exist!")
-            
             return server_pb2.Session(session_id = 'NULL', name = 'NULL', status='FAILED', status_message='[GetSessionById] No session with that ID exists!')
 
         grpcSession = self._convertToGrpcSession(session, "SUCCESS")    
@@ -480,17 +480,22 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         # this will exclude DM sessions
         # TODO
-        _sessions_query = self.conn.query(db.Session).filter(db.User.uid == uid).order_by(desc(db.Session.date_created)).limit(_limit)
+        _sessions_query = self.conn.query(db.User).filter(db.User.uid == uid).first()
 
         _sessions = []
 
-        for _session in _sessions_query:
-            logger.debug(_session.session_id)
+        limit = 0
+
+        for _session in _sessions_query.joined_sessions:
+            limit = limit + 1
+
+            #logger.debug(_session.session_id)
 
             sessionObj = server_pb2.Session()
             sessionObj.session_id = _session.session_id
             sessionObj.name = _session.name
             sessionObj.dungeon_master.uid = _session.dungeon_master.uid
+            sessionObj.dungeon_master.name = _session.dungeon_master.name
             sessionObj.date_created = str(_session.date_created)
             sessionObj.max_players = _session.max_players
             sessionObj.full = _session.full
@@ -505,5 +510,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             _sessions.append(sessionObj)
 
-        
+            if limit >= _limit:
+                break
+
         return server_pb2.ListReply(status='SUCCESS', sessions=_sessions)
