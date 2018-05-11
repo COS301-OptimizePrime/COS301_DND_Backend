@@ -22,6 +22,13 @@ service SessionsManager {
   rpc List (ListRequest) returns (ListReply) {}
   // Get session by ID
   rpc GetSessionById (GetSessionRequest) returns (Session) {}
+  // Get all sessions of user
+  rpc GetSessionsOfUser(GetSessionsOfUserRequest) returns (ListReply) {}
+}
+
+message GetSessionsOfUserRequest {
+  string auth_id_token = 1;
+  uint32 limit = 2;
 }
 
 message GetSessionRequest {
