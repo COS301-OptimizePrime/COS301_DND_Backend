@@ -59,6 +59,11 @@ class SessionsManagerStub(object):
         request_serializer=server__pb2.GetSessionRequest.SerializeToString,
         response_deserializer=server__pb2.Session.FromString,
         )
+    self.GetSessionsOfUser = channel.unary_unary(
+        '/session.SessionsManager/GetSessionsOfUser',
+        request_serializer=server__pb2.GetSessionsOfUserRequest.SerializeToString,
+        response_deserializer=server__pb2.ListReply.FromString,
+        )
 
 
 class SessionsManagerServicer(object):
@@ -128,6 +133,13 @@ class SessionsManagerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def GetSessionsOfUser(self, request, context):
+    """Get all sessions of user
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_SessionsManagerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -175,6 +187,11 @@ def add_SessionsManagerServicer_to_server(servicer, server):
           servicer.GetSessionById,
           request_deserializer=server__pb2.GetSessionRequest.FromString,
           response_serializer=server__pb2.Session.SerializeToString,
+      ),
+      'GetSessionsOfUser': grpc.unary_unary_rpc_method_handler(
+          servicer.GetSessionsOfUser,
+          request_deserializer=server__pb2.GetSessionsOfUserRequest.FromString,
+          response_serializer=server__pb2.ListReply.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
