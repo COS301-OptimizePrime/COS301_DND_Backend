@@ -1,29 +1,26 @@
-from concurrent import futures
+import os
+import signal
 import time
+from concurrent import futures
 
 import grpc
 
+import log
 import server_pb2
 import server_pb2_grpc
-
 from session import Session
 
-import signal
-import log
-import os
-
-#import database.db as db
-
-_ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 class GracefulKiller:
-  kill_now = False
-  def __init__(self):
-    signal.signal(signal.SIGINT, self.exit_gracefully)
-    signal.signal(signal.SIGTERM, self.exit_gracefully)
+    kill_now = False
 
-  def exit_gracefully(self,signum, frame):
-    self.kill_now = True
+    def __init__(self):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+    def exit_gracefully(self, signum, frame):
+        self.kill_now = True
+
 
 def serve():
     killer = GracefulKiller()
@@ -58,5 +55,6 @@ def serve():
         server.stop(0)
         logger.info('Stopped!')
 
-if __name__ == '__main__':      
+
+if __name__ == '__main__':
     serve()
