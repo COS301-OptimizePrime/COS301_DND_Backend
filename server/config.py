@@ -38,9 +38,7 @@ def getConfigDict(configPath):
     except BaseException:
         print(
             "ERROR: Invalid config file. Please make sure it is"
-            " UTF-8 encoded and complies TOML specification."
-        print(
-            "Please review TOML specification at: https://github.com/toml-lang/toml")
+            " UTF-8 encoded and complies TOML specification.")
         sys.exit(1)
     return configDict
 
