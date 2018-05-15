@@ -116,3 +116,5 @@ node_modules
 dnd-game-manager-firebase-adminsdk*.json
 
 dnd_backend.db
+
+config.toml
