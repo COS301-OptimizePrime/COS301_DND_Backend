@@ -351,7 +351,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error(
-                "[SetMax] Failed to update max players of session, that ID does not exist!")
+                "[SetMax] Failed to update max players of session,"
+                " that ID does not exist!")
 
             return server_pb2.Session(
                 session_id="NULL",
@@ -361,13 +362,15 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if session.dungeon_master.uid != uid:
             logger.error(
-                "[SetMax] Unauthorised user tried to modify (Not the dungeon master")
+                "[SetMax] Unauthorised user tried to modify"
+                " (Not the dungeon master)")
 
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
-                status_message="[SetMax] You must be the dungeon master to use this command!")
+                status_message="[SetMax] You must be the dungeon"
+                               " master to use this command!")
 
         session.max_players = request.number
         if session.max_players <= len(session.users_in_session):
@@ -399,7 +402,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error(
-                "[SetName] Failed to update name of session, that ID does not exist!")
+                "[SetName] Failed to update name of session,"
+                " that ID does not exist!")
 
             return server_pb2.Session(
                 session_id="NULL",
@@ -409,13 +413,15 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if session.dungeon_master.uid != uid:
             logger.error(
-                "[SetName] Unauthorised user tried to modify (Not the dungeon master")
+                "[SetName] Unauthorised user tried to"
+                " modify (Not the dungeon master)")
 
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
-                status_message="[SetName] You must be the dungeon master to use this command!")
+                status_message="[SetName] You must be the dungeon"
+                               " master to use this command!")
 
         session.name = request.name
 
@@ -446,7 +452,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error(
-                "[SetPrivate] Failed to update privacy state of session, that ID does not exist!")
+                "[SetPrivate] Failed to update privacy state of session,"
+                " that ID does not exist!")
 
             return server_pb2.Session(
                 session_id="NULL",
@@ -456,13 +463,15 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if session.dungeon_master.uid != uid:
             logger.error(
-                "[SetPrivate] Unauthorised user tried to modify (Not the dungeon master")
+                "[SetPrivate] Unauthorised user tried to modify"
+                " (Not the dungeon master")
 
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
-                status_message="[SetPrivate] You must be the dungeon master to use this command!")
+                status_message="[SetPrivate] You must be the dungeon"
+                               " master to use this command!")
 
         session.private = request.private
 
@@ -558,12 +567,14 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         if not session:
             logger.error(
-                "[GetSessionById] Failed to get session, that ID does not exist!")
+                "[GetSessionById] Failed to get session,"
+                " that ID does not exist!")
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
-                status_message="[GetSessionById] No session with that ID exists!")
+                status_message="[GetSessionById] No session"
+                               " with that ID exists!")
 
         grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 

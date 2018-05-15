@@ -8,6 +8,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 
+import config
 import log
 
 Base = declarative_base()
@@ -17,8 +18,15 @@ def connect():
     if os.environ['ENV'] == 'prod':
         # logger = logging.getLogger('cos301-DND')
         # logger.debug('Using PostgreSQL!')
-        engine = create_engine(
-            'postgresql://dnd_backend:dnd_backend@localhost:5432/dnd_backend')
+        engine = create_engine('postgresql://' +
+                               str(config.val['database']['username']) +
+                               ':' +
+                               str(config.val['database']['password']) +
+                               '@' +
+                               str(config.val['database']['address']) +
+                               ':' +
+                               str(config.val['database']['port']) +
+                               '/dnd_backend')
     else:
         engine = create_engine(
             'sqlite:///./dnd_backend.db',
