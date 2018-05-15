@@ -29,11 +29,11 @@ def getConfigDict(configPath):
         configDict = toml.loads(configRaw)
     except toml.TomlDecodeError as tomlExp:
         for string in tomlExp.args:
-            print("ERROR: Invalid TOML syntax. " + string, file=sys.stderr)
+            print("ERROR: Invalid TOML syntax. " + string)
         sys.exit(1)
     except TypeError as typeExp:
         for string in typeExp.args:
-            print("ERROR: Invalid config file. " + string, file=sys.stderr)
+            print("ERROR: Invalid config file. " + string)
         sys.exit(1)
     except BaseException:
         print(
