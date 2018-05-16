@@ -5,25 +5,30 @@ package session;
 // The sessions manager service definition.
 service SessionsManager {
   // Creates a new session.
-  rpc Create (NewSessionRequest) returns (Session) {}
+  rpc Create(NewSessionRequest) returns (Session) {}
   // Join a session.
-  rpc Join (JoinRequest) returns (Session) {}
+  rpc Join(JoinRequest) returns (Session) {}
   // Leave a session.
-  rpc Leave (LeaveRequest) returns (LeaveReply) {}
+  rpc Leave(LeaveRequest) returns (LeaveReply) {}
   // Set the max amount of players that can be in the session.
-  rpc SetMax (SetMaxPlayersRequest) returns (Session) {}
+  rpc SetMax(SetMaxPlayersRequest) returns (Session) {}
   // Kick player.
-  rpc Kick (KickPlayerRequest) returns (Session) {}
+  rpc Kick(KickPlayerRequest) returns (Session) {}
   // Set the name of the session.
-  rpc SetName (SetNameRequest) returns (Session) {}
+  rpc SetName(SetNameRequest) returns (Session) {}
   // Set the privacy status of the session.
-  rpc SetPrivate (SetPrivateRequest) returns (Session) {}
+  rpc SetPrivate(SetPrivateRequest) returns (Session) {}
   // List available sessions.
-  rpc List (ListRequest) returns (ListReply) {}
+  rpc List(ListRequest) returns (ListReply) {}
   // Get session by ID
-  rpc GetSessionById (GetSessionRequest) returns (Session) {}
+  rpc GetSessionById(GetSessionRequest) returns (Session) {}
   // Get all sessions of user
   rpc GetSessionsOfUser(GetSessionsOfUserRequest) returns (ListReply) {}
+}
+
+service CharactersManager {
+  rpc CreateCharacter(NewCharacterRequest) returns (Character) {}
+  rpc DeleteCharacter(Character) returns (DeleteCharacterReply) {}
 }
 
 message GetSessionsOfUserRequest {
@@ -136,8 +141,18 @@ message User {
   string name = 2;
 }
 
-message Chracter {
-  string uid = 1;
+message NewCharacterRequest {
+  string auth_id_token = 1;
+  Character character = 2;
+}
+
+message DeleteCharacterReply {
+  string status = 1;
+  string status_message = 2;
+}
+
+message Character {
+  string character_id = 1;
   User creator = 2;
   string name = 3;
   // Base stats
@@ -145,8 +160,8 @@ message Chracter {
   sint32 strength_subscript = 5;
   sint32 dexterity = 6;
   sint32 dexterity_subscript = 7;
-  sint32 consitution = 8;
-  sint32 consitution_suscript = 9;
+  sint32 constitution = 8;
+  sint32 constitution_subscript = 9;
   sint32 intelligence = 10;
   sint32 intelligence_subscript = 11;
   sint32 wisdom = 12;
@@ -154,7 +169,7 @@ message Chracter {
   sint32 charisma = 14;
   sint32 charisma_subscript = 15;
   // Traits
-  string class = 16;
+  string character_class = 16;
   string race = 17;
   sint32 xp = 18;
   string alignment = 19;
@@ -172,6 +187,18 @@ message Chracter {
   // ATTACKS & SPELLCASTING
   Attacks_Spellcasting attacks_spellcasting = 26;
 
+  // hitpoints and armor
+  Hitpoints hitpoints = 27;
+
+  // Personality
+  string personality_traits = 28;
+  string ideals = 29;
+  string bonds = 30;
+  string flaws = 31;
+
+  string date_created = 32;
+  string status = 33;
+  string status_message = 34;
 }
 
 message SavingThrows {
@@ -179,10 +206,10 @@ message SavingThrows {
   bool strength_proficient = 2;
   sint32 dexterity = 3;
   bool dexterity_proficient = 4;
-  sint32 consitution = 5;
-  bool consitution_proficient = 6;
+  sint32 constitution = 5;
+  bool constitution_proficient = 6;
   sint32 intelligence = 7;
-  bool intelligence_proficient= 8;
+  bool intelligence_proficient = 8;
   sint32 wisdom = 9;
   bool wisdom_proficient = 10;
   sint32 charisma = 11;
@@ -225,7 +252,7 @@ message Skills {
   sint32 stealth = 33;
   bool stealth_proficient = 34;
   sint32 survival = 35;
-  bool survival_proficient= 36;
+  bool survival_proficient = 36;
 }
 
 message Attacks_Spellcasting {
@@ -238,4 +265,20 @@ message Attacks_Spellcasting {
   string damage_type_1 = 7;
   string damage_type_2 = 8;
   string damage_type_3 = 9;
+}
+
+message Hitpoints {
+  sint32 armor_class = 1;
+  sint32 initiative = 2;
+  sint32 speed = 3;
+  sint32 current_hitpoints = 4;
+  sint32 max_hitpoints = 5;
+  sint32 temporary_hitpoints = 6;
+  string hitdice = 7;
+  DeathSaves death_saves = 8;
+}
+
+message DeathSaves {
+  repeated bool success = 1;
+  repeated bool failuers = 2;
 }

@@ -3,18 +3,13 @@ import datetime
 import logging
 import uuid
 
-import firebase_admin
-from firebase_admin import auth, credentials, firestore
 from sqlalchemy import and_, desc
 
 import database.db as db
+import firebase
 import log
 import server_pb2
 import server_pb2_grpc
-
-cred = credentials.Certificate(
-    "dnd-game-manager-firebase-adminsdk-34ek4-cccabd3dd6.json")
-firebase = firebase_admin.initialize_app(cred)
 
 
 class Session(server_pb2_grpc.SessionsManagerServicer):
@@ -62,7 +57,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _date_created = datetime.datetime.utcnow()
 
         try:
-            decoded_token = auth.verify_id_token(_auth_id_token)
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
             self.logger.error("Failed to verify login!")
@@ -75,7 +70,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         self._connectDatabase()
         user = self.conn.query(db.User).filter(db.User.uid == uid).first()
         if not user:
-            user = db.User(uid=uid, name=auth.get_user(uid).email)
+            user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
             self.conn.add(user)
             self.conn.commit()
 
@@ -114,7 +109,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _auth_id_token = request.auth_id_token
 
         try:
-            decoded_token = auth.verify_id_token(_auth_id_token)
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
@@ -155,7 +150,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         user = self.conn.query(db.User).filter(db.User.uid == uid).first()
         if not user:
-            user = db.User(uid=uid, name=auth.get_user(uid).email)
+            user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
             self.conn.add(user)
             self.conn.commit()
 
@@ -180,7 +175,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _auth_id_token = request.auth_id_token
 
         try:
-            decoded_token = auth.verify_id_token(_auth_id_token)
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
@@ -261,7 +256,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _auth_id_token = request.auth_id_token
 
         try:
-            decoded_token = auth.verify_id_token(_auth_id_token)
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
@@ -338,7 +333,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _auth_id_token = request.auth_id_token
 
         try:
-            decoded_token = auth.verify_id_token(_auth_id_token)
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
@@ -389,7 +384,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _auth_id_token = request.auth_id_token
 
         try:
-            decoded_token = auth.verify_id_token(_auth_id_token)
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
@@ -439,7 +434,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _auth_id_token = request.auth_id_token
 
         try:
-            decoded_token = auth.verify_id_token(_auth_id_token)
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
@@ -490,7 +485,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _auth_id_token = request.auth_id_token
 
         try:
-            decoded_token = auth.verify_id_token(_auth_id_token)
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
@@ -549,7 +544,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _auth_id_token = request.auth_id_token
 
         try:
-            decoded_token = auth.verify_id_token(_auth_id_token)
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
@@ -588,7 +583,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _auth_id_token = request.auth_id_token
 
         try:
-            decoded_token = auth.verify_id_token(_auth_id_token)
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")

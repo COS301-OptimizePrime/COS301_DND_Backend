@@ -197,3 +197,62 @@ def add_SessionsManagerServicer_to_server(servicer, server):
   generic_handler = grpc.method_handlers_generic_handler(
       'session.SessionsManager', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))
+
+
+class CharactersManagerStub(object):
+  # missing associated documentation comment in .proto file
+  pass
+
+  def __init__(self, channel):
+    """Constructor.
+
+    Args:
+      channel: A grpc.Channel.
+    """
+    self.CreateCharacter = channel.unary_unary(
+        '/session.CharactersManager/CreateCharacter',
+        request_serializer=server__pb2.NewCharacterRequest.SerializeToString,
+        response_deserializer=server__pb2.Character.FromString,
+        )
+    self.DeleteCharacter = channel.unary_unary(
+        '/session.CharactersManager/DeleteCharacter',
+        request_serializer=server__pb2.Character.SerializeToString,
+        response_deserializer=server__pb2.DeleteCharacterReply.FromString,
+        )
+
+
+class CharactersManagerServicer(object):
+  # missing associated documentation comment in .proto file
+  pass
+
+  def CreateCharacter(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def DeleteCharacter(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+
+def add_CharactersManagerServicer_to_server(servicer, server):
+  rpc_method_handlers = {
+      'CreateCharacter': grpc.unary_unary_rpc_method_handler(
+          servicer.CreateCharacter,
+          request_deserializer=server__pb2.NewCharacterRequest.FromString,
+          response_serializer=server__pb2.Character.SerializeToString,
+      ),
+      'DeleteCharacter': grpc.unary_unary_rpc_method_handler(
+          servicer.DeleteCharacter,
+          request_deserializer=server__pb2.Character.FromString,
+          response_serializer=server__pb2.DeleteCharacterReply.SerializeToString,
+      ),
+  }
+  generic_handler = grpc.method_handlers_generic_handler(
+      'session.CharactersManager', rpc_method_handlers)
+  server.add_generic_rpc_handlers((generic_handler,))
