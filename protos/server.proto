@@ -135,3 +135,107 @@ message User {
   string uid = 1;
   string name = 2;
 }
+
+message Chracter {
+  string uid = 1;
+  User creator = 2;
+  string name = 3;
+  // Base stats
+  sint32 strength = 4;
+  sint32 strength_subscript = 5;
+  sint32 dexterity = 6;
+  sint32 dexterity_subscript = 7;
+  sint32 consitution = 8;
+  sint32 consitution_suscript = 9;
+  sint32 intelligence = 10;
+  sint32 intelligence_subscript = 11;
+  sint32 wisdom = 12;
+  sint32 wisdom_subscript = 13;
+  sint32 charisma = 14;
+  sint32 charisma_subscript = 15;
+  // Traits
+  string class = 16;
+  string race = 17;
+  sint32 xp = 18;
+  string alignment = 19;
+  string background = 20;
+
+  sint32 inspiration = 21;
+  sint32 proficiency_bonus = 22;
+
+  // Saving throws
+  SavingThrows saving_throws = 23;
+  // Skills
+  Skills skills = 24;
+  // PASSIVE WISDOM (PERCEPTION)
+  sint32 passive_wisdom = 25;
+  // ATTACKS & SPELLCASTING
+  Attacks_Spellcasting attacks_spellcasting = 26;
+
+}
+
+message SavingThrows {
+  sint32 strength = 1;
+  bool strength_proficient = 2;
+  sint32 dexterity = 3;
+  bool dexterity_proficient = 4;
+  sint32 consitution = 5;
+  bool consitution_proficient = 6;
+  sint32 intelligence = 7;
+  bool intelligence_proficient= 8;
+  sint32 wisdom = 9;
+  bool wisdom_proficient = 10;
+  sint32 charisma = 11;
+  bool charisma_subscript = 12;
+}
+
+message Skills {
+  sint32 acrobatics = 1;
+  bool acrobatics_proficient = 2;
+  sint32 animal_handling = 3;
+  bool animal_handling_proficient = 4;
+  sint32 arcana = 5;
+  bool arcana_proficient = 6;
+  sint32 athletics = 7;
+  bool athletics_proficient = 8;
+  sint32 deception = 9;
+  bool deception_proficient = 10;
+  sint32 history = 11;
+  bool history_proficient = 12;
+  sint32 insight = 13;
+  bool insight_proficient = 14;
+  sint32 intimidation = 15;
+  bool intimidation_proficient = 16;
+  sint32 investigation = 17;
+  bool investigation_proficient = 18;
+  sint32 medicine = 19;
+  bool medicine_proficient = 20;
+  sint32 nature = 21;
+  bool nature_proficient = 22;
+  sint32 perception = 23;
+  bool perception_proficient = 24;
+  sint32 performance = 25;
+  bool performance_proficient = 26;
+  sint32 persuasion = 27;
+  bool persuasion_proficient = 28;
+  sint32 religion = 29;
+  bool religion_proficient = 30;
+  sint32 sleight_of_hand = 31;
+  bool sleight_of_hand_proficient = 32;
+  sint32 stealth = 33;
+  bool stealth_proficient = 34;
+  sint32 survival = 35;
+  bool survival_proficient= 36;
+}
+
+message Attacks_Spellcasting {
+  string name_1 = 1;
+  string name_2 = 2;
+  string name_3 = 3;
+  sint32 atk_bonus_1 = 4;
+  sint32 atk_bonus_2 = 5;
+  sint32 atk_bonus_3 = 6;
+  string damage_type_1 = 7;
+  string damage_type_2 = 8;
+  string damage_type_3 = 9;
+}
