@@ -10,7 +10,9 @@ prod:
 
 install:
 	cd ./test; pub get
+	sudo npm i npm@latest -g
 	npm install
+	sudo pip install --upgrade pip
 	pip install --user -r requirements.txt
 
 generate:
