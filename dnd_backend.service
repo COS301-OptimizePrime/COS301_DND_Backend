@@ -4,10 +4,10 @@ After=network.target
 
 [Service]
 Type=simple
-User=development
-WorkingDirectory=/home/development/COS301_DND_Backend
+User=develop
+WorkingDirectory=/home/develop/COS301_DND_Backend
 Environment=ENV=prod
-ExecStart=/usr/bin/python /home/development/COS301_DND_Backend/server/main.py
+ExecStart=/usr/bin/python /home/develop/COS301_DND_Backend/server/main.py
 Restart=on-failure
 
 [Install]

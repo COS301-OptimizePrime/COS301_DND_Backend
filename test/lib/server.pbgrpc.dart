@@ -257,3 +257,71 @@ abstract class SessionsManagerServiceBase extends Service {
   Future<ListReply> getSessionsOfUser(
       ServiceCall call, GetSessionsOfUserRequest request);
 }
+
+class CharactersManagerClient extends Client {
+  static final _$createCharacter =
+      new ClientMethod<NewCharacterRequest, Character>(
+          '/session.CharactersManager/CreateCharacter',
+          (NewCharacterRequest value) => value.writeToBuffer(),
+          (List<int> value) => new Character.fromBuffer(value));
+  static final _$deleteCharacter =
+      new ClientMethod<Character, DeleteCharacterReply>(
+          '/session.CharactersManager/DeleteCharacter',
+          (Character value) => value.writeToBuffer(),
+          (List<int> value) => new DeleteCharacterReply.fromBuffer(value));
+
+  CharactersManagerClient(ClientChannel channel, {CallOptions options})
+      : super(channel, options: options);
+
+  ResponseFuture<Character> createCharacter(NewCharacterRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$createCharacter, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<DeleteCharacterReply> deleteCharacter(Character request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$deleteCharacter, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+}
+
+abstract class CharactersManagerServiceBase extends Service {
+  String get $name => 'session.CharactersManager';
+
+  CharactersManagerServiceBase() {
+    $addMethod(new ServiceMethod<NewCharacterRequest, Character>(
+        'CreateCharacter',
+        createCharacter_Pre,
+        false,
+        false,
+        (List<int> value) => new NewCharacterRequest.fromBuffer(value),
+        (Character value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<Character, DeleteCharacterReply>(
+        'DeleteCharacter',
+        deleteCharacter_Pre,
+        false,
+        false,
+        (List<int> value) => new Character.fromBuffer(value),
+        (DeleteCharacterReply value) => value.writeToBuffer()));
+  }
+
+  Future<Character> createCharacter_Pre(
+      ServiceCall call, Future request) async {
+    return createCharacter(call, await request);
+  }
+
+  Future<DeleteCharacterReply> deleteCharacter_Pre(
+      ServiceCall call, Future request) async {
+    return deleteCharacter(call, await request);
+  }
+
+  Future<Character> createCharacter(
+      ServiceCall call, NewCharacterRequest request);
+  Future<DeleteCharacterReply> deleteCharacter(
+      ServiceCall call, Character request);
+}
