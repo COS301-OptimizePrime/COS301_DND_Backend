@@ -25,16 +25,20 @@ def _create_rpc_good_login(token=str(
     subprocess.check_output(
         'node ./login.mjs',
         shell=True,
-        universal_newlines=False).decode("utf-8")).strip()):
+        universal_newlines=False).decode("utf-8")).strip(), session_name=None):
+    
+    if session_name is None:
+        session_name = 'mysession'
+
     channel = grpc.insecure_channel(server)
     stub = server_pb2_grpc.SessionsManagerStub(channel)
     response = stub.Create(
         server_pb2.NewSessionRequest(
-            name='mysession',
+            name=session_name,
             auth_id_token=token,
             max_players=7))
 
-    assert response.name == 'mysession'
+    assert response.name == session_name
     assert len(response.session_id) == 36
     assert response.status == 'SUCCESS'
 

@@ -3,7 +3,7 @@ import datetime
 import logging
 import uuid
 
-from sqlalchemy import and_, desc
+from sqlalchemy import and_, desc, exc
 
 import database.db as db
 import firebase
@@ -67,41 +67,46 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 status="FAILED",
                 status_message="[Create] Failed to verify user token!")
 
-        self._connectDatabase()
-        user = self.conn.query(db.User).filter(db.User.uid == uid).first()
-        if not user:
-            user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
-            self.conn.add(user)
+        try:
+            self._connectDatabase()
+            user = self.conn.query(db.User).filter(db.User.uid == uid).first()
+            if not user:
+                user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
+                self.conn.add(user)
+                self.conn.commit()
+
+            # Check how many sessions the user has.
+            if len(user.session_dungeon_masters) >= 100:
+                self.logger.error(
+                    "Failed to create new session, user has reached max sessions")
+
+                return server_pb2.Session(
+                    session_id="NULL",
+                    name="NULL",
+                    status="FAILED",
+                    status_message="[Create] User has too many sessions already!")
+
+            if _max_players == 0:
+                _max_players = 7
+
+            session = db.Session(
+                session_id=_session_id,
+                name=_name,
+                dungeon_master_id=user.id,
+                max_players=_max_players,
+                private=_private)
+            if session.max_players <= len(session.users_in_session):
+                session.full = True
+            self.conn.add(session)
             self.conn.commit()
 
-        # Check how many sessions the user has.
-        if len(user.session_dungeon_masters) >= 100:
-            self.logger.error(
-                "Failed to create new session, user has reached max sessions")
+            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
+            return grpcSession
+        except exc.SQLAlchemyError:
+            self.logger.error("SQLAlchemyError!")
             return server_pb2.Session(
-                session_id="NULL",
-                name="NULL",
-                status="FAILED",
-                status_message="[Create] User has too many sessions already!")
-
-        if _max_players == 0:
-            _max_players = 7
-
-        session = db.Session(
-            session_id=_session_id,
-            name=_name,
-            dungeon_master_id=user.id,
-            max_players=_max_players,
-            private=_private)
-        if session.max_players <= len(session.users_in_session):
-            session.full = True
-        self.conn.add(session)
-        self.conn.commit()
-
-        grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-        return grpcSession
+                session_id="NULL", name="NULL", status="FAILED")
 
     def Join(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -459,7 +464,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         if session.dungeon_master.uid != uid:
             logger.error(
                 "[SetPrivate] Unauthorised user tried to modify"
-                " (Not the dungeon master")
+                " (Not the dungeon master)")
 
             return server_pb2.Session(
                 session_id="NULL",
@@ -593,8 +598,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         self._connectDatabase()
 
-        # this will exclude DM sessions
-        # TODO
         _sessions_query = self.conn.query(
             db.User).filter(
             db.User.uid == uid).first()
@@ -603,9 +606,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         limit = 0
 
-        # _sessions_query.session_dungeon_masters
+        user_sessions = _sessions_query.session_dungeon_masters + _sessions_query.joined_sessions
 
-        for _session in _sessions_query.joined_sessions:
+        for _session in user_sessions:
             limit = limit + 1
 
             # logger.debug(_session.session_id)

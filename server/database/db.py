@@ -66,10 +66,10 @@ class User(Base):
 
     # User can have many sessions where the user is a dungeon master
     session_dungeon_masters = relationship(
-        "Session", back_populates="dungeon_master")
+        "Session", back_populates="dungeon_master", order_by="Session.date_created")
 
     # User has many sessions
-    joined_sessions = relationship("Session", secondary=user_sessions)
+    joined_sessions = relationship("Session", secondary=user_sessions, order_by="Session.date_created")
 
     # User has many characters
     characters = relationship(
