@@ -3,7 +3,7 @@ import datetime
 import logging
 import uuid
 
-from sqlalchemy import and_, desc, Enum
+from sqlalchemy import and_, desc, Enum, exc
 
 import database.db as db
 import firebase
@@ -98,6 +98,145 @@ class Character(server_pb2_grpc.CharactersManagerServicer):
 
         return charObj
 
+    def GetCharacters(self, request, context):
+        self.logger.debug(context.peer())
+        self.logger.info("Get characters called!")
+
+        _auth_id_token = request.auth_id_token
+        _limit = request.limit
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.error("Failed to verify login!")
+            return server_pb2.GetCharactersReply(
+                status="FAILED",
+                status_message="[GetCharacters] Failed to verify user token!")
+
+        self._connectDatabase()
+        user = self.conn.query(db.User).filter(db.User.uid == uid).first()
+        if not user:
+            user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
+            self.conn.add(user)
+            self.conn.commit()
+
+        self.logger.debug("Successfully verified token! UID=" + uid)
+
+        # TODO: Implement limiting
+        try:
+            self._connectDatabase()
+
+            _characters_query = user.characters
+            _characters = []
+
+            for _character in _characters_query:
+                charObj = self._convertToGrpcCharacter(_character, status="SUCCESS")
+                _characters.append(charObj)
+
+            return server_pb2.GetCharactersReply(status="SUCCESS", characters=_characters)
+        except exc.SQLAlchemyError:
+            self.logger.error("[GetCharacters] SQLAlchemyError!")
+            return server_pb2.GetCharactersReply(
+                status="FAILED",
+                status_message="Database error!")
+        finally:
+            self.conn.close()
+
+    def DeleteCharacter(self, request, context):
+        self.logger.debug(context.peer())
+        self.logger.info("Delete character called!")
+
+        _auth_id_token = request.auth_id_token
+        _character_id = request.character_id
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.error("Failed to verify login!")
+            return server_pb2.DeleteCharacterReply(
+                status="FAILED",
+                status_message="[Delete Character] Failed to verify login!")
+
+        self._connectDatabase()
+        user = self.conn.query(db.User).filter(db.User.uid == uid).first()
+        if not user:
+            user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
+            self.conn.add(user)
+            self.conn.commit()
+
+        self.logger.debug("Successfully verified token! UID=" + uid)
+
+        # Check if the character is owned by the user.
+        character = self.conn.query(db.Character).filter(db.Character.character_id == _character_id).first()
+        if not character:
+            self.logger.error("Character doesn't exist!")
+            return server_pb2.DeleteCharacterReply(
+                status="FAILED",
+                status_message="[Delete Character] Character doesn't exist!")
+
+        if character.creator.uid != uid:
+            # Not the creator.
+            self.logger.error("Character is not yours!")
+            return server_pb2.DeleteCharacterReply(
+                status="FAILED",
+                status_message="[Delete Character] Character is not yours!")
+
+        # Else continue deleting
+
+        self.conn.delete(character)
+        self.conn.commit()
+
+        self.logger.debug("Successfully deleted character!")
+
+        return server_pb2.DeleteCharacterReply(
+                status="SUCCESS",
+                status_message="[Delete Character] Successfully deleted character!")
+
+    def GetCharacterById(self, request, context):
+        self.logger.debug(context.peer())
+        self.logger.info("GetCharacterById called!")
+        _auth_id_token = request.auth_id_token
+
+        _character_id = request.character_id
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.error("Failed to verify login!")
+            return server_pb2.Character(
+                status="FAILED",
+                status_message="[Delete Character] Failed to verify login!")
+
+        self._connectDatabase()
+        user = self.conn.query(db.User).filter(db.User.uid == uid).first()
+        if not user:
+            user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
+            self.conn.add(user)
+            self.conn.commit()
+
+        self.logger.debug("Successfully verified token! UID=" + uid)
+
+        # Check if the user owns the character
+        character = self.conn.query(db.Character).filter(db.Character.character_id == _character_id).first()
+        if not character:
+            self.logger.error("Character doesn't exist!")
+            return server_pb2.Character(
+                status="FAILED",
+                status_message="[GetCharacterById] Character doesn't exist!")
+
+        if character.creator.uid != uid:
+            # Not the creator.
+            self.logger.error("Character is not yours!")
+            return server_pb2.Character(
+                status="FAILED",
+                status_message="[GetCharacterById] Character doesn't exist!")
+
+        # Else return the character
+        return self._convertToGrpcCharacter(character=character, status="SUCCESS")
+
     def CreateCharacter(self, request, context):
         self.logger.debug(context.peer())
         self.logger.info("Create new character called!")
@@ -112,8 +251,7 @@ class Character(server_pb2_grpc.CharactersManagerServicer):
             uid = decoded_token["uid"]
         except ValueError:
             self.logger.error("Failed to verify login!")
-            return server_pb2.Session(
-                session_id="NULL",
+            return server_pb2.Character(
                 name="NULL",
                 status="FAILED",
                 status_message="[Create] Failed to verify user token!")
@@ -130,9 +268,7 @@ class Character(server_pb2_grpc.CharactersManagerServicer):
             self.logger.error(
                 "Failed to create new character, user has reached max characters")
 
-            return server_pb2.Session(
-                session_id="NULL",
-                name="NULL",
+            return server_pb2.Character(
                 status="FAILED",
                 status_message="[CreateChar] User has too many characters already!")
 

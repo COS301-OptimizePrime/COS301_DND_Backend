@@ -28,7 +28,35 @@ service SessionsManager {
 
 service CharactersManager {
   rpc CreateCharacter(NewCharacterRequest) returns (Character) {}
-  rpc DeleteCharacter(Character) returns (DeleteCharacterReply) {}
+  rpc DeleteCharacter(DeleteCharacterRequest) returns (DeleteCharacterReply) {}
+  rpc GetCharacters(GetCharactersRequest) returns (GetCharactersReply) {}
+  rpc UpdateCharacter(UpdateCharacterRequest) returns (Character) {}
+  rpc GetCharacterById(GetCharacterByIdRequest) returns (Character) {}
+}
+
+message GetCharacterByIdRequest {
+  string auth_id_token = 1;
+  string character_id = 2;
+}
+
+message DeleteCharacterRequest {
+  string auth_id_token = 1;
+  string character_id = 2;
+}
+
+message UpdateCharacterRequest {
+  string auth_id_token = 1;
+  Character character = 2;
+}
+
+message GetCharactersRequest {
+  string auth_id_token = 1;
+  uint32 limit = 2;
+}
+
+message GetCharactersReply{
+  string status = 1;
+  repeated Character characters = 2;
 }
 
 message GetSessionsOfUserRequest {

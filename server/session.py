@@ -49,7 +49,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
     def Create(self, request, context):
         if not context.is_active():
             self.__del__()
-        
+
         self.logger.debug(context.peer())
         self.logger.info("Create new session called! Name:" + request.name)
 
@@ -115,11 +115,14 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.logger.debug("Closed DB connection...")
+            self.conn.close()
 
     def Join(self, request, context):
         if not context.is_active():
             self.__del__()
-        
+
         logger = logging.getLogger("cos301-DND")
         logger.info("Join requested!")
         _auth_id_token = request.auth_id_token
@@ -192,11 +195,13 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def Leave(self, request, context):
         if not context.is_active():
             self.__del__()
-        
+
         logger = logging.getLogger("cos301-DND")
         logger.info("Leave request called!")
         _auth_id_token = request.auth_id_token
@@ -286,11 +291,13 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def Kick(self, request, context):
         if not context.is_active():
             self.__del__()
-        
+
         logger = logging.getLogger("cos301-DND")
         logger.info("Kick player request called!")
         _auth_id_token = request.auth_id_token
@@ -373,12 +380,14 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     # This is a Dungeon Master only command.
     def SetMax(self, request, context):
         if not context.is_active():
             self.__del__()
-        
+
         logger = logging.getLogger("cos301-DND")
         logger.info("SetMax called!")
 
@@ -435,12 +444,14 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     # This is a Dungeon Master only command.
     def SetName(self, request, context):
         if not context.is_active():
             self.__del__()
-        
+
         logger = logging.getLogger("cos301-DND")
         logger.info("SetName called!")
 
@@ -496,12 +507,14 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     # This is a Dungeon Master only command.
     def SetPrivate(self, request, context):
         if not context.is_active():
             self.__del__()
-        
+
         logger = logging.getLogger("cos301-DND")
         logger.info("SetPrivate called!")
 
@@ -557,6 +570,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def List(self, request, context):
         if not context.is_active():
@@ -578,53 +593,63 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         logger.debug("Successfully verified token! UID=" + uid)
 
-        self._connectDatabase()
+        try:
+            self._connectDatabase()
 
-        if _full:
-            _sessions_query = self.conn.query(
-                db.Session).filter(
-                db.Session.private == False).order_by(
-                desc(
-                    db.Session.date_created)).limit(_limit)
-        else:
-            _sessions_query = self.conn.query(
-                db.Session).filter(
-                and_(
-                    db.Session.private == False,
-                    db.Session.full != True)).order_by(
-                desc(
-                    db.Session.date_created)).limit(_limit)
+            if _full:
+                _sessions_query = self.conn.query(
+                    db.Session).filter(
+                    db.Session.private == False).order_by(
+                    desc(
+                        db.Session.date_created)).limit(_limit)
+            else:
+                _sessions_query = self.conn.query(
+                    db.Session).filter(
+                    and_(
+                        db.Session.private == False,
+                        db.Session.full != True)).order_by(
+                    desc(
+                        db.Session.date_created)).limit(_limit)
 
-        _sessions = []
+            _sessions = []
 
-        for _session in _sessions_query:
-            # logger.debug(_session.session_id)
+            for _session in _sessions_query:
+                # logger.debug(_session.session_id)
 
-            sessionObj = server_pb2.Session()
-            sessionObj.session_id = _session.session_id
-            sessionObj.name = _session.name
-            sessionObj.dungeon_master.uid = _session.dungeon_master.uid
-            sessionObj.dungeon_master.name = _session.dungeon_master.name
-            sessionObj.date_created = str(_session.date_created)
-            sessionObj.max_players = _session.max_players
-            sessionObj.full = _session.full
-            sessionObj.private = _session.private
-            sessionObj.users.extend([])
+                sessionObj = server_pb2.Session()
+                sessionObj.session_id = _session.session_id
+                sessionObj.name = _session.name
+                sessionObj.dungeon_master.uid = _session.dungeon_master.uid
+                sessionObj.dungeon_master.name = _session.dungeon_master.name
+                sessionObj.date_created = str(_session.date_created)
+                sessionObj.max_players = _session.max_players
+                sessionObj.full = _session.full
+                sessionObj.private = _session.private
+                sessionObj.users.extend([])
 
-            for _user in _session.users_in_session:
-                userInSession = server_pb2.User()
-                userInSession.uid = _user.uid
-                userInSession.name = _user.name
-                sessionObj.users.extend([userInSession])
+                for _user in _session.users_in_session:
+                    userInSession = server_pb2.User()
+                    userInSession.uid = _user.uid
+                    userInSession.name = _user.name
+                    sessionObj.users.extend([userInSession])
 
-            _sessions.append(sessionObj)
+                _sessions.append(sessionObj)
 
-        return server_pb2.ListReply(status="SUCCESS", sessions=_sessions)
+            return server_pb2.ListReply(status="SUCCESS", sessions=_sessions)
+        except exc.SQLAlchemyError:
+            self.logger.error("[SETPRIVATE] SQLAlchemyError!")
+            return server_pb2.Session(
+                session_id="NULL",
+                name="NULL",
+                status="FAILED",
+                status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def GetSessionById(self, request, context):
         if not context.is_active():
             self.__del__()
-        
+
         logger = logging.getLogger("cos301-DND")
         logger.info("GetSessionById called!")
 
@@ -644,24 +669,34 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         logger.debug("Successfully verified token! UID=" + uid)
 
-        self._connectDatabase()
-        session = self.conn.query(db.Session).filter(
-            db.Session.session_id == _session_id).first()
+        try:
+            self._connectDatabase()
+            session = self.conn.query(db.Session).filter(
+                db.Session.session_id == _session_id).first()
 
-        if not session:
-            logger.error(
-                "[GetSessionById] Failed to get session,"
-                " that ID does not exist!")
+            if not session:
+                logger.error(
+                    "[GetSessionById] Failed to get session,"
+                    " that ID does not exist!")
+                return server_pb2.Session(
+                    session_id="NULL",
+                    name="NULL",
+                    status="FAILED",
+                    status_message="[GetSessionById] No session"
+                                   " with that ID exists!")
+
+            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
+
+            return grpcSession
+        except exc.SQLAlchemyError:
+            self.logger.error("[SETPRIVATE] SQLAlchemyError!")
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
-                status_message="[GetSessionById] No session"
-                               " with that ID exists!")
-
-        grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-        return grpcSession
+                status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def GetSessionsOfUser(self, request, context):
         if not context.is_active():
@@ -731,7 +766,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def __del__(self):
-        self.logger.info("Closed connection...")
+        self.logger.info("Closed DB connection...")
         self.conn.close()
