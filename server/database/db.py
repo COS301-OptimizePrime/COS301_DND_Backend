@@ -152,22 +152,22 @@ class Character(Base):
         back_populates="character")
 
     strength = Column(Integer, nullable=False)
-    strength_subscript = Column(Boolean, nullable=False, default=False)
+    strength_subscript = Column(Integer, nullable=False, default=False)
 
     dexterity = Column(Integer, nullable=False)
-    dexterity_subscript = Column(Boolean, nullable=False, default=False)
+    dexterity_subscript = Column(Integer, nullable=False, default=False)
 
     constitution = Column(Integer, nullable=False)
-    constitution_subscript = Column(Boolean, nullable=False, default=False)
+    constitution_subscript = Column(Integer, nullable=False, default=False)
 
     intelligence = Column(Integer, nullable=False)
-    intelligence_subscript = Column(Boolean, nullable=False, default=False)
+    intelligence_subscript = Column(Integer, nullable=False, default=False)
 
     wisdom = Column(Integer, nullable=False)
-    wisdom_subscript = Column(Boolean, nullable=False, default=False)
+    wisdom_subscript = Column(Integer, nullable=False, default=False)
 
     charisma = Column(Integer, nullable=False)
-    charisma_subscript = Column(Boolean, nullable=False, default=False)
+    charisma_subscript = Column(Integer, nullable=False, default=False)
 
     character_class = Column(String(100), nullable=False)
     race = Column(String(100), nullable=False)

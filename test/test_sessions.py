@@ -936,21 +936,7 @@ def test_list_user_sessions_rpc_good_login():
     assert response.sessions[0].dungeon_master.name == 'mockuser@test.co.za'
     assert response.sessions[0].users[0].name == 'mockuser4@test.co.za'
     assert len(response.sessions[0].users) == 1
-
-
-def test_create_character():
-    token = str(
-        subprocess.check_output(
-            'node ./login.mjs',
-            shell=True,
-            universal_newlines=False).decode("utf-8")).strip()
-
-    channel = grpc.insecure_channel(server)
-    stub = server_pb2_grpc.CharactersManagerStub(channel)
-
-    response = stub.CreateCharacter(server_pb2.NewCharacterRequest(auth_id_token=token))
-    assert response.status == 'SUCCESS'
-
+  
 
 # def test_max_sessions_for_user():
 #    auth.revoke_refresh_tokens(uid)

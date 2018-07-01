@@ -216,8 +216,23 @@ class CharactersManagerStub(object):
         )
     self.DeleteCharacter = channel.unary_unary(
         '/session.CharactersManager/DeleteCharacter',
-        request_serializer=server__pb2.Character.SerializeToString,
+        request_serializer=server__pb2.DeleteCharacterRequest.SerializeToString,
         response_deserializer=server__pb2.DeleteCharacterReply.FromString,
+        )
+    self.GetCharacters = channel.unary_unary(
+        '/session.CharactersManager/GetCharacters',
+        request_serializer=server__pb2.GetCharactersRequest.SerializeToString,
+        response_deserializer=server__pb2.GetCharactersReply.FromString,
+        )
+    self.UpdateCharacter = channel.unary_unary(
+        '/session.CharactersManager/UpdateCharacter',
+        request_serializer=server__pb2.UpdateCharacterRequest.SerializeToString,
+        response_deserializer=server__pb2.Character.FromString,
+        )
+    self.GetCharacterById = channel.unary_unary(
+        '/session.CharactersManager/GetCharacterById',
+        request_serializer=server__pb2.GetCharacterByIdRequest.SerializeToString,
+        response_deserializer=server__pb2.Character.FromString,
         )
 
 
@@ -239,6 +254,27 @@ class CharactersManagerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def GetCharacters(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def UpdateCharacter(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def GetCharacterById(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_CharactersManagerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -249,8 +285,23 @@ def add_CharactersManagerServicer_to_server(servicer, server):
       ),
       'DeleteCharacter': grpc.unary_unary_rpc_method_handler(
           servicer.DeleteCharacter,
-          request_deserializer=server__pb2.Character.FromString,
+          request_deserializer=server__pb2.DeleteCharacterRequest.FromString,
           response_serializer=server__pb2.DeleteCharacterReply.SerializeToString,
+      ),
+      'GetCharacters': grpc.unary_unary_rpc_method_handler(
+          servicer.GetCharacters,
+          request_deserializer=server__pb2.GetCharactersRequest.FromString,
+          response_serializer=server__pb2.GetCharactersReply.SerializeToString,
+      ),
+      'UpdateCharacter': grpc.unary_unary_rpc_method_handler(
+          servicer.UpdateCharacter,
+          request_deserializer=server__pb2.UpdateCharacterRequest.FromString,
+          response_serializer=server__pb2.Character.SerializeToString,
+      ),
+      'GetCharacterById': grpc.unary_unary_rpc_method_handler(
+          servicer.GetCharacterById,
+          request_deserializer=server__pb2.GetCharacterByIdRequest.FromString,
+          response_serializer=server__pb2.Character.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
