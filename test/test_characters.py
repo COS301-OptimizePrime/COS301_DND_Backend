@@ -24,6 +24,7 @@ _character = server_pb2.Character()
 _character.name = "MyTestCharacter"
 _character.strength = 6
 _character.strength_subscript = 3
+_character.skills.acrobatics = 5
 
 global_token = str(
         subprocess.check_output(
@@ -46,6 +47,7 @@ def test_create_character():
 
     assert response.creator.name == 'mockuser@test.co.za'
     assert response.name == 'MyTestCharacter'
+    assert response.skills.acrobatics == 5
 
 
 def test_get_characters():
@@ -124,3 +126,20 @@ def test_get_character_by_id():
     assert response.character_id == _char_id
     assert response.creator.name == 'mockuser@test.co.za'
     assert response.name == 'MyTestCharacter'
+
+def test_update_character():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+    response = stub.CreateCharacter(server_pb2.NewCharacterRequest(auth_id_token=global_token, character=_character))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser@test.co.za'
+    assert response.name == 'MyTestCharacter'
+
+    _char = response
+    _char.name = 'Modified name!'
+    
+    response = stub.UpdateCharacter(server_pb2.UpdateCharacterRequest(auth_id_token=global_token, character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser@test.co.za'
+    assert response.name == 'Modified name!'

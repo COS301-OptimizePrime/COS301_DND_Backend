@@ -11,8 +11,7 @@ import log
 import server_pb2
 import server_pb2_grpc
 
-
-class Character(server_pb2_grpc.CharactersManagerServicer):
+class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
     conn = None
     logger = logging.getLogger("cos301-DND")
 
@@ -20,6 +19,71 @@ class Character(server_pb2_grpc.CharactersManagerServicer):
         if not self.conn:
             self.conn = db.connect()
         return self.conn
+
+    def _conecterToORMCharacter(self, character, request):
+        # TODO: Double check all values
+        # TODO: Complete all converstions
+        # TODO: Maybe move into a different class
+        # TODO: Write a full test for each value (Random values?)
+
+        character.character_id=request.character_id
+        character.name=request.name
+        character.strength=request.strength
+        character.strength_subscript=request.strength_subscript
+        character.dexterity=request.dexterity
+        character.dexterity_subscript=request.dexterity_subscript
+        character.constitution=request.constitution
+        character.constitution_subscript=request.constitution_subscript
+        character.intelligence=request.intelligence
+        character.intelligence_subscript=request.intelligence_subscript
+        character.wisdom=request.wisdom
+        character.wisdom_subscript=request.wisdom_subscript
+        character.charisma=request.charisma
+        character.charisma_subscript=request.charisma_subscript
+        character.character_class=request.character_class
+        character.race=request.race
+        character.xp=request.xp
+        character.alignment=request.alignment
+        character.background=request.background
+        character.inspiration=request.inspiration
+        character.proficiency_bonus=request.proficiency_bonus
+
+        character.skills.acrobatics = request.skills.acrobatics
+        character.skills.acrobatics_proficient = request.skills.acrobatics_proficient
+        character.skills.animal_handling = request.skills.animal_handling
+        character.skills.animal_handling_proficient = request.skills.animal_handling_proficient
+        character.skills.arcana = request.skills.arcana
+        character.skills.arcana_proficient = request.skills.arcana_proficient
+        character.skills.athletics = request.skills.athletics
+        character.skills.athletics_proficient = request.skills.athletics_proficient
+        character.skills.deception = request.skills.deception
+        character.skills.deception_proficient = request.skills.deception_proficient
+        character.skills.history = request.skills.history
+        character.skills.history_proficient = request.skills.history_proficient
+        character.skills.insight = request.skills.insight
+        character.skills.insight_proficient = request.skills.insight_proficient
+        character.skills.intimidation = request.skills.intimidation
+        character.skills.intimidation_proficient = request.skills.intimidation_proficient
+        character.skills.investigation = request.skills.investigation
+        character.skills.investigation_proficient = request.skills.investigation_proficient
+        character.skills.medicine = request.skills.medicine
+        character.skills.medicine_proficient = request.skills.medicine_proficient
+        character.skills.nature = request.skills.nature
+        character.skills.nature_proficient = request.skills.nature_proficient
+        character.skills.perception = request.skills.perception
+        character.skills.perception_proficient = request.skills.perception_proficient
+        character.skills.performance = request.skills.performance
+        character.skills.performance_proficient = request.skills.performance_proficient
+        character.skills.persuasion = request.skills.persuasion
+        character.skills.persuasion_proficient = request.skills.persuasion_proficient
+        character.skills.religion = request.skills.religion
+        character.skills.religion_proficient = request.skills.religion_proficient
+        character.skills.sleight_of_hand = request.skills.sleight_of_hand
+        character.skills.sleight_of_hand_proficient = request.skills.sleight_of_hand_proficient
+        character.skills.stealth = request.skills.stealth
+        character.skills.stealth_proficient = request.skills.stealth_proficient
+        character.skills.survival = request.skills.survival
+        character.skills.survival_proficient = request.skills.survival_proficient
 
     # Converts a Database Character object to a grpc Character object
     def _convertToGrpcCharacter(self, character, status):
@@ -97,6 +161,62 @@ class Character(server_pb2_grpc.CharactersManagerServicer):
         charObj.status = status
 
         return charObj
+
+    def UpdateCharacter(self, request, context):
+        self.logger.debug(context.peer())
+        self.logger.info("UpdateCharacter called!")
+
+        _auth_id_token = request.auth_id_token   
+        _character = request.character
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.error("Failed to verify login!")
+            return server_pb2.Character(
+                status="FAILED",
+                status_message="[UpdateCharacter] Failed to verify user token!")
+
+        self._connectDatabase()
+        user = self.conn.query(db.User).filter(db.User.uid == uid).first()
+        if not user:
+            user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
+            self.conn.add(user)
+            self.conn.commit()
+
+        self.logger.debug("Successfully verified token! UID=" + uid)
+        try:
+            self._connectDatabase()
+
+            # Check if the user owns the character
+            character = self.conn.query(db.Character).filter(db.Character.character_id == _character.character_id).first()
+            if not character:
+                self.logger.error("Character doesn't exist!")
+                return server_pb2.Character(
+                    status="FAILED",
+                    status_message="[UpdateCharacter] Character doesn't exist!")
+
+            if character.creator.uid != uid:
+                # Not the creator.
+                self.logger.error("Character is not yours!")
+                return server_pb2.Character(
+                    status="FAILED",
+                    status_message="[UpdateCharacter] Character doesn't exist!")
+
+            self._conecterToORMCharacter(character, _character)
+            self.conn.commit()
+
+            self.logger.info("Updated character!")
+
+            return self._convertToGrpcCharacter(character=character,status="SUCCESS")
+        except exc.SQLAlchemyError as e:
+            self.logger.error(e)
+            self.logger.error("[UpdateCharacter] SQLAlchemyError!")
+            return server_pb2.Character(
+                status="FAILED",
+                status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def GetCharacters(self, request, context):
         self.logger.debug(context.peer())
