@@ -46,6 +46,19 @@ def getRandomCharacter():
     _character.inspiration = random.randint(1,50)
     _character.proficiency_bonus = random.randint(1,50)
     
+    _character.saving_throws.strength = random.randint(1,50)
+    _character.saving_throws.strength_proficient = random.choice([True, False])
+    _character.saving_throws.dexterity = random.randint(1,50)
+    _character.saving_throws.dexterity_proficient = random.choice([True, False])
+    _character.saving_throws.constitution = random.randint(1,50)
+    _character.saving_throws.constitution_proficient = random.choice([True, False])
+    _character.saving_throws.intelligence = random.randint(1,50)
+    _character.saving_throws.intelligence_proficient = random.choice([True, False])
+    _character.saving_throws.wisdom = random.randint(1,50)
+    _character.saving_throws.wisdom_proficient = random.choice([True, False])
+    _character.saving_throws.charisma = random.randint(1,50)
+    _character.saving_throws.charisma_subscript = random.randint(1,50)
+
     _character.skills.acrobatics = random.randint(1,50)
     _character.skills.acrobatics_proficient = random.choice([True, False])
     _character.skills.animal_handling = random.randint(1,50)
@@ -83,6 +96,22 @@ def getRandomCharacter():
     _character.skills.survival = random.randint(1,50)
     _character.skills.survival_proficient = random.choice([True, False])
 
+    _character.hitpoints.armor_class = random.randint(1,50)
+    _character.hitpoints.initiative = random.randint(1,50)
+    _character.hitpoints.speed = random.randint(1,50)
+    _character.hitpoints.current_hitpoints = random.randint(1,50)
+    _character.hitpoints.max_hitpoints = random.randint(1,50)
+    _character.hitpoints.temporary_hitpoints = random.randint(1,50)
+    _character.hitpoints.hitdice = "HIT DICE"
+
+    _character.hitpoints.deathsaves_success1 = random.choice([True, False])
+    _character.hitpoints.deathsaves_success2 = random.choice([True, False])
+    _character.hitpoints.deathsaves_success3 = random.choice([True, False])
+
+    _character.hitpoints.deathsaves_failures1 = random.choice([True, False])
+    _character.hitpoints.deathsaves_failures2 = random.choice([True, False])
+    _character.hitpoints.deathsaves_failures3 = random.choice([True, False])
+
     return _character
 
 def compareCharacters(character1,character2):
@@ -107,6 +136,35 @@ def compareCharacters(character1,character2):
     assert character1.background == character2.background
     assert character1.inspiration == character2.inspiration
     assert character1.proficiency_bonus == character2.proficiency_bonus
+
+    assert character1.hitpoints.armor_class == character2.hitpoints.armor_class
+    assert character1.hitpoints.initiative == character2.hitpoints.initiative
+    assert character1.hitpoints.speed == character2.hitpoints.speed
+    assert character1.hitpoints.current_hitpoints == character2.hitpoints.current_hitpoints
+    assert character1.hitpoints.max_hitpoints == character2.hitpoints.max_hitpoints
+    assert character1.hitpoints.temporary_hitpoints == character2.hitpoints.temporary_hitpoints
+    assert character1.hitpoints.hitdice == character2.hitpoints.hitdice
+
+    assert character1.hitpoints.deathsaves_success1 == character2.hitpoints.deathsaves_success1
+    assert character1.hitpoints.deathsaves_success2 == character2.hitpoints.deathsaves_success2
+    assert character1.hitpoints.deathsaves_success3 == character2.hitpoints.deathsaves_success3
+
+    assert character1.hitpoints.deathsaves_failures1 == character2.hitpoints.deathsaves_failures1
+    assert character1.hitpoints.deathsaves_failures2 == character2.hitpoints.deathsaves_failures2
+    assert character1.hitpoints.deathsaves_failures3 == character2.hitpoints.deathsaves_failures3
+
+    assert character1.saving_throws.strength == character2.saving_throws.strength
+    assert character1.saving_throws.strength_proficient == character2.saving_throws.strength_proficient
+    assert character1.saving_throws.dexterity == character2.saving_throws.dexterity
+    assert character1.saving_throws.dexterity_proficient == character2.saving_throws.dexterity_proficient
+    assert character1.saving_throws.constitution == character2.saving_throws.constitution
+    assert character1.saving_throws.constitution_proficient == character2.saving_throws.constitution_proficient
+    assert character1.saving_throws.intelligence == character2.saving_throws.intelligence
+    assert character1.saving_throws.intelligence_proficient == character2.saving_throws.intelligence_proficient
+    assert character1.saving_throws.wisdom == character2.saving_throws.wisdom
+    assert character1.saving_throws.wisdom_proficient == character2.saving_throws.wisdom_proficient
+    assert character1.saving_throws.charisma == character2.saving_throws.charisma
+    assert character1.saving_throws.charisma_subscript == character2.saving_throws.charisma_subscript
 
     assert character1.skills.acrobatics == character2.skills.acrobatics
     assert character1.skills.acrobatics_proficient == character2.skills.acrobatics_proficient

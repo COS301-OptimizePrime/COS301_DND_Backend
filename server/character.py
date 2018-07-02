@@ -147,7 +147,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         charObj.saving_throws.dexterity = character.saving_throws.dexterity
         charObj.saving_throws.dexterity_proficient = character.saving_throws.dexterity_proficient
         charObj.saving_throws.constitution = character.saving_throws.constitution
-        charObj.saving_throws.constitution = character.saving_throws.constitution_proficient
+        charObj.saving_throws.constitution_proficient = character.saving_throws.constitution_proficient
         charObj.saving_throws.intelligence = character.saving_throws.intelligence
         charObj.saving_throws.intelligence_proficient = character.saving_throws.intelligence_proficient
         charObj.saving_throws.wisdom = character.saving_throws.wisdom
