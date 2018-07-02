@@ -11,7 +11,7 @@ prod:
 install:
 	cd ./test; pub get
 	npm install
-	pip install --user -r requirements.txt
+	pip install --upgrade --user -r requirements.txt
 
 generate:
 	python -m grpc.tools.protoc -I./protos --python_out=./server --grpc_python_out=./server ./protos/server.proto
