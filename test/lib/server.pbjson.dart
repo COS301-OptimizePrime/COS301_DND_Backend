@@ -4,6 +4,46 @@
 // ignore_for_file: non_constant_identifier_names,library_prefixes
 library session_server_pbjson;
 
+const GetCharacterByIdRequest$json = const {
+  '1': 'GetCharacterByIdRequest',
+  '2': const [
+    const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
+    const {'1': 'character_id', '3': 2, '4': 1, '5': 9, '10': 'characterId'},
+  ],
+};
+
+const DeleteCharacterRequest$json = const {
+  '1': 'DeleteCharacterRequest',
+  '2': const [
+    const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
+    const {'1': 'character_id', '3': 2, '4': 1, '5': 9, '10': 'characterId'},
+  ],
+};
+
+const UpdateCharacterRequest$json = const {
+  '1': 'UpdateCharacterRequest',
+  '2': const [
+    const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
+    const {'1': 'character', '3': 2, '4': 1, '5': 11, '6': '.session.Character', '10': 'character'},
+  ],
+};
+
+const GetCharactersRequest$json = const {
+  '1': 'GetCharactersRequest',
+  '2': const [
+    const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
+    const {'1': 'limit', '3': 2, '4': 1, '5': 13, '10': 'limit'},
+  ],
+};
+
+const GetCharactersReply$json = const {
+  '1': 'GetCharactersReply',
+  '2': const [
+    const {'1': 'status', '3': 1, '4': 1, '5': 9, '10': 'status'},
+    const {'1': 'characters', '3': 2, '4': 3, '5': 11, '6': '.session.Character', '10': 'characters'},
+  ],
+};
+
 const GetSessionsOfUserRequest$json = const {
   '1': 'GetSessionsOfUserRequest',
   '2': const [
@@ -272,15 +312,12 @@ const Hitpoints$json = const {
     const {'1': 'max_hitpoints', '3': 5, '4': 1, '5': 17, '10': 'maxHitpoints'},
     const {'1': 'temporary_hitpoints', '3': 6, '4': 1, '5': 17, '10': 'temporaryHitpoints'},
     const {'1': 'hitdice', '3': 7, '4': 1, '5': 9, '10': 'hitdice'},
-    const {'1': 'death_saves', '3': 8, '4': 1, '5': 11, '6': '.session.DeathSaves', '10': 'deathSaves'},
-  ],
-};
-
-const DeathSaves$json = const {
-  '1': 'DeathSaves',
-  '2': const [
-    const {'1': 'success', '3': 1, '4': 3, '5': 8, '10': 'success'},
-    const {'1': 'failuers', '3': 2, '4': 3, '5': 8, '10': 'failuers'},
+    const {'1': 'deathsaves_success1', '3': 8, '4': 1, '5': 8, '10': 'deathsavesSuccess1'},
+    const {'1': 'deathsaves_success2', '3': 9, '4': 1, '5': 8, '10': 'deathsavesSuccess2'},
+    const {'1': 'deathsaves_success3', '3': 10, '4': 1, '5': 8, '10': 'deathsavesSuccess3'},
+    const {'1': 'deathsaves_failures1', '3': 11, '4': 1, '5': 8, '10': 'deathsavesFailures1'},
+    const {'1': 'deathsaves_failures2', '3': 12, '4': 1, '5': 8, '10': 'deathsavesFailures2'},
+    const {'1': 'deathsaves_failures3', '3': 13, '4': 1, '5': 8, '10': 'deathsavesFailures3'},
   ],
 };
 

@@ -9,6 +9,183 @@ import 'dart:core' show int, bool, double, String, List, override;
 
 import 'package:protobuf/protobuf.dart';
 
+class GetCharacterByIdRequest extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('GetCharacterByIdRequest')
+    ..aOS(1, 'authIdToken')
+    ..aOS(2, 'characterId')
+    ..hasRequiredFields = false
+  ;
+
+  GetCharacterByIdRequest() : super();
+  GetCharacterByIdRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  GetCharacterByIdRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  GetCharacterByIdRequest clone() => new GetCharacterByIdRequest()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static GetCharacterByIdRequest create() => new GetCharacterByIdRequest();
+  static PbList<GetCharacterByIdRequest> createRepeated() => new PbList<GetCharacterByIdRequest>();
+  static GetCharacterByIdRequest getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlyGetCharacterByIdRequest();
+    return _defaultInstance;
+  }
+  static GetCharacterByIdRequest _defaultInstance;
+  static void $checkItem(GetCharacterByIdRequest v) {
+    if (v is! GetCharacterByIdRequest) checkItemFailed(v, 'GetCharacterByIdRequest');
+  }
+
+  String get authIdToken => $_getS(0, '');
+  set authIdToken(String v) { $_setString(0, v); }
+  bool hasAuthIdToken() => $_has(0);
+  void clearAuthIdToken() => clearField(1);
+
+  String get characterId => $_getS(1, '');
+  set characterId(String v) { $_setString(1, v); }
+  bool hasCharacterId() => $_has(1);
+  void clearCharacterId() => clearField(2);
+}
+
+class _ReadonlyGetCharacterByIdRequest extends GetCharacterByIdRequest with ReadonlyMessageMixin {}
+
+class DeleteCharacterRequest extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('DeleteCharacterRequest')
+    ..aOS(1, 'authIdToken')
+    ..aOS(2, 'characterId')
+    ..hasRequiredFields = false
+  ;
+
+  DeleteCharacterRequest() : super();
+  DeleteCharacterRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  DeleteCharacterRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  DeleteCharacterRequest clone() => new DeleteCharacterRequest()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static DeleteCharacterRequest create() => new DeleteCharacterRequest();
+  static PbList<DeleteCharacterRequest> createRepeated() => new PbList<DeleteCharacterRequest>();
+  static DeleteCharacterRequest getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlyDeleteCharacterRequest();
+    return _defaultInstance;
+  }
+  static DeleteCharacterRequest _defaultInstance;
+  static void $checkItem(DeleteCharacterRequest v) {
+    if (v is! DeleteCharacterRequest) checkItemFailed(v, 'DeleteCharacterRequest');
+  }
+
+  String get authIdToken => $_getS(0, '');
+  set authIdToken(String v) { $_setString(0, v); }
+  bool hasAuthIdToken() => $_has(0);
+  void clearAuthIdToken() => clearField(1);
+
+  String get characterId => $_getS(1, '');
+  set characterId(String v) { $_setString(1, v); }
+  bool hasCharacterId() => $_has(1);
+  void clearCharacterId() => clearField(2);
+}
+
+class _ReadonlyDeleteCharacterRequest extends DeleteCharacterRequest with ReadonlyMessageMixin {}
+
+class UpdateCharacterRequest extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('UpdateCharacterRequest')
+    ..aOS(1, 'authIdToken')
+    ..a<Character>(2, 'character', PbFieldType.OM, Character.getDefault, Character.create)
+    ..hasRequiredFields = false
+  ;
+
+  UpdateCharacterRequest() : super();
+  UpdateCharacterRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  UpdateCharacterRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  UpdateCharacterRequest clone() => new UpdateCharacterRequest()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static UpdateCharacterRequest create() => new UpdateCharacterRequest();
+  static PbList<UpdateCharacterRequest> createRepeated() => new PbList<UpdateCharacterRequest>();
+  static UpdateCharacterRequest getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlyUpdateCharacterRequest();
+    return _defaultInstance;
+  }
+  static UpdateCharacterRequest _defaultInstance;
+  static void $checkItem(UpdateCharacterRequest v) {
+    if (v is! UpdateCharacterRequest) checkItemFailed(v, 'UpdateCharacterRequest');
+  }
+
+  String get authIdToken => $_getS(0, '');
+  set authIdToken(String v) { $_setString(0, v); }
+  bool hasAuthIdToken() => $_has(0);
+  void clearAuthIdToken() => clearField(1);
+
+  Character get character => $_getN(1);
+  set character(Character v) { setField(2, v); }
+  bool hasCharacter() => $_has(1);
+  void clearCharacter() => clearField(2);
+}
+
+class _ReadonlyUpdateCharacterRequest extends UpdateCharacterRequest with ReadonlyMessageMixin {}
+
+class GetCharactersRequest extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('GetCharactersRequest')
+    ..aOS(1, 'authIdToken')
+    ..a<int>(2, 'limit', PbFieldType.OU3)
+    ..hasRequiredFields = false
+  ;
+
+  GetCharactersRequest() : super();
+  GetCharactersRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  GetCharactersRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  GetCharactersRequest clone() => new GetCharactersRequest()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static GetCharactersRequest create() => new GetCharactersRequest();
+  static PbList<GetCharactersRequest> createRepeated() => new PbList<GetCharactersRequest>();
+  static GetCharactersRequest getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlyGetCharactersRequest();
+    return _defaultInstance;
+  }
+  static GetCharactersRequest _defaultInstance;
+  static void $checkItem(GetCharactersRequest v) {
+    if (v is! GetCharactersRequest) checkItemFailed(v, 'GetCharactersRequest');
+  }
+
+  String get authIdToken => $_getS(0, '');
+  set authIdToken(String v) { $_setString(0, v); }
+  bool hasAuthIdToken() => $_has(0);
+  void clearAuthIdToken() => clearField(1);
+
+  int get limit => $_get(1, 0);
+  set limit(int v) { $_setUnsignedInt32(1, v); }
+  bool hasLimit() => $_has(1);
+  void clearLimit() => clearField(2);
+}
+
+class _ReadonlyGetCharactersRequest extends GetCharactersRequest with ReadonlyMessageMixin {}
+
+class GetCharactersReply extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('GetCharactersReply')
+    ..aOS(1, 'status')
+    ..pp<Character>(2, 'characters', PbFieldType.PM, Character.$checkItem, Character.create)
+    ..hasRequiredFields = false
+  ;
+
+  GetCharactersReply() : super();
+  GetCharactersReply.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  GetCharactersReply.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  GetCharactersReply clone() => new GetCharactersReply()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static GetCharactersReply create() => new GetCharactersReply();
+  static PbList<GetCharactersReply> createRepeated() => new PbList<GetCharactersReply>();
+  static GetCharactersReply getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlyGetCharactersReply();
+    return _defaultInstance;
+  }
+  static GetCharactersReply _defaultInstance;
+  static void $checkItem(GetCharactersReply v) {
+    if (v is! GetCharactersReply) checkItemFailed(v, 'GetCharactersReply');
+  }
+
+  String get status => $_getS(0, '');
+  set status(String v) { $_setString(0, v); }
+  bool hasStatus() => $_has(0);
+  void clearStatus() => clearField(1);
+
+  List<Character> get characters => $_getList(1);
+}
+
+class _ReadonlyGetCharactersReply extends GetCharactersReply with ReadonlyMessageMixin {}
+
 class GetSessionsOfUserRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('GetSessionsOfUserRequest')
     ..aOS(1, 'authIdToken')
@@ -1320,7 +1497,12 @@ class Hitpoints extends GeneratedMessage {
     ..a<int>(5, 'maxHitpoints', PbFieldType.OS3)
     ..a<int>(6, 'temporaryHitpoints', PbFieldType.OS3)
     ..aOS(7, 'hitdice')
-    ..a<DeathSaves>(8, 'deathSaves', PbFieldType.OM, DeathSaves.getDefault, DeathSaves.create)
+    ..aOB(8, 'deathsavesSuccess1')
+    ..aOB(9, 'deathsavesSuccess2')
+    ..aOB(10, 'deathsavesSuccess3')
+    ..aOB(11, 'deathsavesFailures1')
+    ..aOB(12, 'deathsavesFailures2')
+    ..aOB(13, 'deathsavesFailures3')
     ..hasRequiredFields = false
   ;
 
@@ -1375,41 +1557,36 @@ class Hitpoints extends GeneratedMessage {
   bool hasHitdice() => $_has(6);
   void clearHitdice() => clearField(7);
 
-  DeathSaves get deathSaves => $_getN(7);
-  set deathSaves(DeathSaves v) { setField(8, v); }
-  bool hasDeathSaves() => $_has(7);
-  void clearDeathSaves() => clearField(8);
+  bool get deathsavesSuccess1 => $_get(7, false);
+  set deathsavesSuccess1(bool v) { $_setBool(7, v); }
+  bool hasDeathsavesSuccess1() => $_has(7);
+  void clearDeathsavesSuccess1() => clearField(8);
+
+  bool get deathsavesSuccess2 => $_get(8, false);
+  set deathsavesSuccess2(bool v) { $_setBool(8, v); }
+  bool hasDeathsavesSuccess2() => $_has(8);
+  void clearDeathsavesSuccess2() => clearField(9);
+
+  bool get deathsavesSuccess3 => $_get(9, false);
+  set deathsavesSuccess3(bool v) { $_setBool(9, v); }
+  bool hasDeathsavesSuccess3() => $_has(9);
+  void clearDeathsavesSuccess3() => clearField(10);
+
+  bool get deathsavesFailures1 => $_get(10, false);
+  set deathsavesFailures1(bool v) { $_setBool(10, v); }
+  bool hasDeathsavesFailures1() => $_has(10);
+  void clearDeathsavesFailures1() => clearField(11);
+
+  bool get deathsavesFailures2 => $_get(11, false);
+  set deathsavesFailures2(bool v) { $_setBool(11, v); }
+  bool hasDeathsavesFailures2() => $_has(11);
+  void clearDeathsavesFailures2() => clearField(12);
+
+  bool get deathsavesFailures3 => $_get(12, false);
+  set deathsavesFailures3(bool v) { $_setBool(12, v); }
+  bool hasDeathsavesFailures3() => $_has(12);
+  void clearDeathsavesFailures3() => clearField(13);
 }
 
 class _ReadonlyHitpoints extends Hitpoints with ReadonlyMessageMixin {}
-
-class DeathSaves extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('DeathSaves')
-    ..p<bool>(1, 'success', PbFieldType.PB)
-    ..p<bool>(2, 'failuers', PbFieldType.PB)
-    ..hasRequiredFields = false
-  ;
-
-  DeathSaves() : super();
-  DeathSaves.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
-  DeathSaves.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
-  DeathSaves clone() => new DeathSaves()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static DeathSaves create() => new DeathSaves();
-  static PbList<DeathSaves> createRepeated() => new PbList<DeathSaves>();
-  static DeathSaves getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyDeathSaves();
-    return _defaultInstance;
-  }
-  static DeathSaves _defaultInstance;
-  static void $checkItem(DeathSaves v) {
-    if (v is! DeathSaves) checkItemFailed(v, 'DeathSaves');
-  }
-
-  List<bool> get success => $_getList(0);
-
-  List<bool> get failuers => $_getList(1);
-}
-
-class _ReadonlyDeathSaves extends DeathSaves with ReadonlyMessageMixin {}
 
