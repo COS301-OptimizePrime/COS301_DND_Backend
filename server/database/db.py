@@ -307,3 +307,11 @@ class Hitpoints(Base):
     max_hitpoints = Column(Integer, nullable=False)
     temporary_hitpoints = Column(Integer, nullable=False)
     hitdice = Column(String(100), nullable=False)
+
+    deathsaves_success1 = Column(Boolean, nullable=False)
+    deathsaves_success2 = Column(Boolean, nullable=False)
+    deathsaves_success3 = Column(Boolean, nullable=False)
+
+    deathsaves_failures1 = Column(Boolean, nullable=False)
+    deathsaves_failures2 = Column(Boolean, nullable=False)
+    deathsaves_failures3 = Column(Boolean, nullable=False)

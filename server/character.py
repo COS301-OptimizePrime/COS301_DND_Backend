@@ -85,6 +85,35 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         character.skills.survival = request.skills.survival
         character.skills.survival_proficient = request.skills.survival_proficient
 
+        character.saving_throws.strength = request.saving_throws.strength
+        character.saving_throws.strength_proficient = request.saving_throws.strength_proficient
+        character.saving_throws.dexterity = request.saving_throws.dexterity
+        character.saving_throws.dexterity_proficient = request.saving_throws.dexterity_proficient
+        character.saving_throws.constitution = request.saving_throws.constitution
+        character.saving_throws.constitution = request.saving_throws.constitution_proficient
+        character.saving_throws.intelligence = request.saving_throws.intelligence
+        character.saving_throws.intelligence_proficient = request.saving_throws.intelligence_proficient
+        character.saving_throws.wisdom = request.saving_throws.wisdom
+        character.saving_throws.wisdom_proficient = request.saving_throws.wisdom_proficient
+        character.saving_throws.charisma = request.saving_throws.charisma
+        character.saving_throws.charisma_subscript = request.saving_throws.charisma_subscript
+
+        character.hitpoints.armor_class = request.hitpoints.armor_class
+        character.hitpoints.initiative = request.hitpoints.initiative
+        character.hitpoints.speed = request.hitpoints.speed
+        character.hitpoints.current_hitpoints = request.hitpoints.current_hitpoints
+        character.hitpoints.max_hitpoints = request.hitpoints.max_hitpoints
+        character.hitpoints.temporary_hitpoints = request.hitpoints.temporary_hitpoints
+        character.hitpoints.hitdice = request.hitpoints.hitdice
+
+        character.hitpoints.deathsaves_success1 = request.hitpoints.deathsaves_success1
+        character.hitpoints.deathsaves_success2 = request.hitpoints.deathsaves_success2
+        character.hitpoints.deathsaves_success3 = request.hitpoints.deathsaves_success3
+
+        character.hitpoints.deathsaves_failures1 = request.hitpoints.deathsaves_failures1
+        character.hitpoints.deathsaves_failures2 = request.hitpoints.deathsaves_failures2
+        character.hitpoints.deathsaves_failures3 = request.hitpoints.deathsaves_failures3
+
     # Converts a Database Character object to a grpc Character object
     def _convertToGrpcCharacter(self, character, status):
         charObj = server_pb2.Character()
@@ -140,23 +169,44 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         charObj.skills.history_proficient = character.skills.history_proficient
         charObj.skills.insight = character.skills.insight
         charObj.skills.insight_proficient = character.skills.insight_proficient
+        charObj.skills.investigation = character.skills.investigation
+        charObj.skills.investigation_proficient = character.skills.investigation_proficient
         charObj.skills.intimidation = character.skills.intimidation
-        charObj.skills.intimidation_proficient = character.skills.investigation_proficient
+        charObj.skills.intimidation_proficient = character.skills.intimidation_proficient
         charObj.skills.medicine = character.skills.medicine
         charObj.skills.medicine_proficient = character.skills.medicine_proficient
         charObj.skills.nature = character.skills.nature
         charObj.skills.nature_proficient = character.skills.nature_proficient
+        charObj.skills.persuasion = character.skills.persuasion
+        charObj.skills.persuasion_proficient = character.skills.persuasion_proficient
         charObj.skills.perception = character.skills.perception
-        charObj.skills.perception_proficient = character.skills.persuasion_proficient
+        charObj.skills.perception_proficient = character.skills.perception_proficient
         charObj.skills.performance = character.skills.performance
         charObj.skills.performance_proficient = character.skills.performance_proficient
         charObj.skills.religion = character.skills.religion
+        charObj.skills.religion_proficient = character.skills.religion_proficient
         charObj.skills.sleight_of_hand = character.skills.sleight_of_hand
         charObj.skills.sleight_of_hand_proficient = character.skills.sleight_of_hand_proficient
         charObj.skills.stealth = character.skills.stealth
         charObj.skills.stealth_proficient = character.skills.stealth_proficient
         charObj.skills.survival = character.skills.survival
         charObj.skills.survival_proficient = character.skills.survival_proficient
+
+        charObj.hitpoints.armor_class = character.hitpoints.armor_class
+        charObj.hitpoints.initiative = character.hitpoints.initiative
+        charObj.hitpoints.speed = character.hitpoints.speed
+        charObj.hitpoints.current_hitpoints = character.hitpoints.current_hitpoints
+        charObj.hitpoints.max_hitpoints = character.hitpoints.max_hitpoints
+        charObj.hitpoints.temporary_hitpoints = character.hitpoints.temporary_hitpoints
+        charObj.hitpoints.hitdice = character.hitpoints.hitdice
+
+        charObj.hitpoints.deathsaves_success1 = character.hitpoints.deathsaves_success1
+        charObj.hitpoints.deathsaves_success2 = character.hitpoints.deathsaves_success2
+        charObj.hitpoints.deathsaves_success3 = character.hitpoints.deathsaves_success3
+
+        charObj.hitpoints.deathsaves_failures1 = character.hitpoints.deathsaves_failures1
+        charObj.hitpoints.deathsaves_failures2 = character.hitpoints.deathsaves_failures2
+        charObj.hitpoints.deathsaves_failures3 = character.hitpoints.deathsaves_failures3
 
         charObj.status = status
 
@@ -508,18 +558,52 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             nature=_skills.nature,
             nature_proficient=_skills.nature_proficient,
             perception=_skills.perception,
-            perception_proficient=_skills.persuasion_proficient,
+            perception_proficient=_skills.perception_proficient,
             performance=_skills.performance,
             performance_proficient=_skills.performance_proficient,
             persuasion=_skills.persuasion,
             persuasion_proficient=_skills.persuasion_proficient,
             religion=_skills.religion,
+            religion_proficient=_skills.religion_proficient,
             sleight_of_hand=_skills.sleight_of_hand,
             sleight_of_hand_proficient=_skills.sleight_of_hand_proficient,
             stealth=_skills.stealth,
             stealth_proficient=_skills.stealth_proficient,
             survival=_skills.survival,
             survival_proficient=_skills.survival_proficient
+        )
+
+        _hitpoints = server_pb2.Hitpoints()
+        _hitpoints.armor_class = request.character.hitpoints.armor_class
+        _hitpoints.initiative = request.character.hitpoints.initiative
+        _hitpoints.speed = request.character.hitpoints.speed
+        _hitpoints.current_hitpoints = request.character.hitpoints.current_hitpoints
+        _hitpoints.max_hitpoints = request.character.hitpoints.max_hitpoints
+        _hitpoints.temporary_hitpoints = request.character.hitpoints.temporary_hitpoints
+        _hitpoints.hitdice = request.character.hitpoints.hitdice
+
+        _hitpoints.deathsaves_success1 = request.character.hitpoints.deathsaves_success1
+        _hitpoints.deathsaves_success2 = request.character.hitpoints.deathsaves_success2
+        _hitpoints.deathsaves_success3 = request.character.hitpoints.deathsaves_success3
+
+        _hitpoints.deathsaves_failures1 = request.character.hitpoints.deathsaves_failures1
+        _hitpoints.deathsaves_failures2 = request.character.hitpoints.deathsaves_failures2
+        _hitpoints.deathsaves_failures3 = request.character.hitpoints.deathsaves_failures3
+
+        hitpoints_db = db.Hitpoints(
+            armor_class = _hitpoints.armor_class,
+            initiative = _hitpoints.initiative,
+            speed = _hitpoints.speed,
+            current_hitpoints = _hitpoints.current_hitpoints,
+            max_hitpoints = _hitpoints.max_hitpoints,
+            temporary_hitpoints = _hitpoints.temporary_hitpoints,
+            hitdice = _hitpoints.hitdice,
+            deathsaves_success1 = _hitpoints.deathsaves_success1,
+            deathsaves_success2 = _hitpoints.deathsaves_success2,
+            deathsaves_success3 = _hitpoints.deathsaves_success3,
+            deathsaves_failures1 = _hitpoints.deathsaves_failures1,
+            deathsaves_failures2 = _hitpoints.deathsaves_failures2,
+            deathsaves_failures3 = _hitpoints.deathsaves_failures3
         )
 
         character = db.Character(
@@ -546,7 +630,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             inspiration=_inspiration,
             proficiency_bonus=_proficiency_bonus,
             skills=skills_db,
-            saving_throws=saving_throws_db
+            saving_throws=saving_throws_db,
+            hitpoints=hitpoints_db
             )
 
         self.conn.add(character)

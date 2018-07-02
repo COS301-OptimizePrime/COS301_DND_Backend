@@ -303,10 +303,13 @@ message Hitpoints {
   sint32 max_hitpoints = 5;
   sint32 temporary_hitpoints = 6;
   string hitdice = 7;
-  DeathSaves death_saves = 8;
-}
 
-message DeathSaves {
-  repeated bool success = 1;
-  repeated bool failuers = 2;
+  // Death saves
+  bool deathsaves_success1 = 8;
+  bool deathsaves_success2 = 9;
+  bool deathsaves_success3 = 10;
+
+  bool deathsaves_failures1 = 11;
+  bool deathsaves_failures2 = 12;
+  bool deathsaves_failures3 = 13;
 }
