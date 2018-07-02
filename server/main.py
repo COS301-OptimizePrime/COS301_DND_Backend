@@ -12,7 +12,7 @@ import log
 import server_pb2
 import server_pb2_grpc
 from session import Session
-from character import Character
+from character import CharacterManager
 
 
 class GracefulKiller:
@@ -42,7 +42,7 @@ def serve():
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=20))
     server_pb2_grpc.add_SessionsManagerServicer_to_server(Session(), server)
-    server_pb2_grpc.add_CharactersManagerServicer_to_server(Character(), server)
+    server_pb2_grpc.add_CharactersManagerServicer_to_server(CharacterManager(), server)
     server.add_insecure_port("[::]:50051")
     server.start()
 

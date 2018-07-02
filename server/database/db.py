@@ -179,6 +179,12 @@ class Character(Base):
     inspiration = Column(Integer, nullable=False)
     proficiency_bonus = Column(Integer, nullable=False)
 
+    passive_wisdom = Column(Integer, nullable=False)
+
+    personality_traits = Column(String(200), nullable=False)
+    ideals = Column(String(200), nullable=False)
+    bonds = Column(String(200), nullable=False)
+    flaws = Column(String(200), nullable=False)
 
 class SavingThrow(Base):
     __tablename__ = 'savingthrows'
@@ -301,3 +307,11 @@ class Hitpoints(Base):
     max_hitpoints = Column(Integer, nullable=False)
     temporary_hitpoints = Column(Integer, nullable=False)
     hitdice = Column(String(100), nullable=False)
+
+    deathsaves_success1 = Column(Boolean, nullable=False)
+    deathsaves_success2 = Column(Boolean, nullable=False)
+    deathsaves_success3 = Column(Boolean, nullable=False)
+
+    deathsaves_failures1 = Column(Boolean, nullable=False)
+    deathsaves_failures2 = Column(Boolean, nullable=False)
+    deathsaves_failures3 = Column(Boolean, nullable=False)
