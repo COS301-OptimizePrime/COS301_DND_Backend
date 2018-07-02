@@ -208,6 +208,12 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         charObj.hitpoints.deathsaves_failures2 = character.hitpoints.deathsaves_failures2
         charObj.hitpoints.deathsaves_failures3 = character.hitpoints.deathsaves_failures3
 
+        charObj.passive_wisdom = character.passive_wisdom
+        charObj.personality_traits = character.personality_traits
+        charObj.ideals = character.ideals
+        charObj.bonds = character.bonds
+        charObj.flaws = character.flaws
+
         charObj.status = status
 
         return charObj
@@ -467,6 +473,12 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         _inspiration = request.character.inspiration
         _proficiency_bonus = request.character.proficiency_bonus
 
+        _passive_wisdom = request.character.passive_wisdom
+        _personality_traits = request.character.personality_traits
+        _ideals = request.character.ideals
+        _bonds = request.character.bonds
+        _flaws = request.character.flaws
+
         _saving_throws = server_pb2.SavingThrows()
         _saving_throws.strength = request.character.saving_throws.strength
         _saving_throws.strength_proficient = request.character.saving_throws.strength_proficient
@@ -631,7 +643,12 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             proficiency_bonus=_proficiency_bonus,
             skills=skills_db,
             saving_throws=saving_throws_db,
-            hitpoints=hitpoints_db
+            hitpoints=hitpoints_db,
+            passive_wisdom=_passive_wisdom,
+            personality_traits=_personality_traits,
+            ideals=_ideals,
+            bonds=_bonds,
+            flaws=_flaws
             )
 
         self.conn.add(character)

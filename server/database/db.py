@@ -179,12 +179,12 @@ class Character(Base):
     inspiration = Column(Integer, nullable=False)
     proficiency_bonus = Column(Integer, nullable=False)
 
-    #passive_wisdom = Column(Integer, nullable=False)
+    passive_wisdom = Column(Integer, nullable=False)
 
-    #personality_traits = Column(String(200), nullable=False)
-    #ideals = Column(String(200), nullable=False)
-    #bonds = Column(String(200), nullable=False)
-    #flaws = Column(String(200), nullable=False)
+    personality_traits = Column(String(200), nullable=False)
+    ideals = Column(String(200), nullable=False)
+    bonds = Column(String(200), nullable=False)
+    flaws = Column(String(200), nullable=False)
 
 class SavingThrow(Base):
     __tablename__ = 'savingthrows'

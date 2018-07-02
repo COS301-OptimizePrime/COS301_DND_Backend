@@ -46,6 +46,12 @@ def getRandomCharacter():
     _character.inspiration = random.randint(1,50)
     _character.proficiency_bonus = random.randint(1,50)
     
+    _character.passive_wisdom = random.randint(1,50)
+    _character.personality_traits = "TEST PERSONALITY TRAITS"
+    _character.ideals = "TEST IDEALS"
+    _character.bonds = "TEST BONDS"
+    _character.flaws = "TEST FLAWS"
+
     _character.saving_throws.strength = random.randint(1,50)
     _character.saving_throws.strength_proficient = random.choice([True, False])
     _character.saving_throws.dexterity = random.randint(1,50)
@@ -115,6 +121,7 @@ def getRandomCharacter():
     return _character
 
 def compareCharacters(character1,character2):
+    #assert character1.character_id == character2.character_id
 
     assert character1.name == character2.name
     assert character1.strength == character2.strength
@@ -136,6 +143,12 @@ def compareCharacters(character1,character2):
     assert character1.background == character2.background
     assert character1.inspiration == character2.inspiration
     assert character1.proficiency_bonus == character2.proficiency_bonus
+
+    assert character1.passive_wisdom == character2.passive_wisdom
+    assert character1.personality_traits == character2.personality_traits
+    assert character1.ideals == character2.ideals
+    assert character1.bonds == character2.bonds
+    assert character1.flaws == character2.flaws
 
     assert character1.hitpoints.armor_class == character2.hitpoints.armor_class
     assert character1.hitpoints.initiative == character2.hitpoints.initiative
