@@ -1,6 +1,6 @@
 .PHONY: test run install upload clean bootstrap
 test:
-	cd ./test; echo "===Runing python tests!==="; sh -c 'pytest test_characters.py'; echo "===Runing dart tests!==="; dart test.dart;
+	cd ./test; echo "===Runing python tests!==="; sh -c 'pytest test_sessions.py'; sh -c 'pytest test_characters.py'; echo "===Runing dart tests!==="; dart test.dart;
 
 run:
 	rm dnd_backend.db; export ENV=dev; sh -c 'python ./server/main.py'
