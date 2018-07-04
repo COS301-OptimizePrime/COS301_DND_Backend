@@ -882,6 +882,7 @@ class Character extends GeneratedMessage {
     ..aOS(32, 'dateCreated')
     ..aOS(33, 'status')
     ..aOS(34, 'statusMessage')
+    ..pp<Equipment>(35, 'equipment', PbFieldType.PM, Equipment.$checkItem, Equipment.create)
     ..hasRequiredFields = false
   ;
 
@@ -1070,6 +1071,8 @@ class Character extends GeneratedMessage {
   set statusMessage(String v) { $_setString(33, v); }
   bool hasStatusMessage() => $_has(33);
   void clearStatusMessage() => clearField(34);
+
+  List<Equipment> get equipment => $_getList(34);
 }
 
 class _ReadonlyCharacter extends Character with ReadonlyMessageMixin {}
@@ -1589,4 +1592,40 @@ class Hitpoints extends GeneratedMessage {
 }
 
 class _ReadonlyHitpoints extends Hitpoints with ReadonlyMessageMixin {}
+
+class Equipment extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('Equipment')
+    ..aOS(1, 'name')
+    ..a<int>(2, 'value', PbFieldType.OS3)
+    ..hasRequiredFields = false
+  ;
+
+  Equipment() : super();
+  Equipment.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  Equipment.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  Equipment clone() => new Equipment()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static Equipment create() => new Equipment();
+  static PbList<Equipment> createRepeated() => new PbList<Equipment>();
+  static Equipment getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlyEquipment();
+    return _defaultInstance;
+  }
+  static Equipment _defaultInstance;
+  static void $checkItem(Equipment v) {
+    if (v is! Equipment) checkItemFailed(v, 'Equipment');
+  }
+
+  String get name => $_getS(0, '');
+  set name(String v) { $_setString(0, v); }
+  bool hasName() => $_has(0);
+  void clearName() => clearField(1);
+
+  int get value => $_get(1, 0);
+  set value(int v) { $_setSignedInt32(1, v); }
+  bool hasValue() => $_has(1);
+  void clearValue() => clearField(2);
+}
+
+class _ReadonlyEquipment extends Equipment with ReadonlyMessageMixin {}
 

@@ -224,6 +224,7 @@ const Character$json = const {
     const {'1': 'date_created', '3': 32, '4': 1, '5': 9, '10': 'dateCreated'},
     const {'1': 'status', '3': 33, '4': 1, '5': 9, '10': 'status'},
     const {'1': 'status_message', '3': 34, '4': 1, '5': 9, '10': 'statusMessage'},
+    const {'1': 'equipment', '3': 35, '4': 3, '5': 11, '6': '.session.Equipment', '10': 'equipment'},
   ],
 };
 
@@ -318,6 +319,14 @@ const Hitpoints$json = const {
     const {'1': 'deathsaves_failures1', '3': 11, '4': 1, '5': 8, '10': 'deathsavesFailures1'},
     const {'1': 'deathsaves_failures2', '3': 12, '4': 1, '5': 8, '10': 'deathsavesFailures2'},
     const {'1': 'deathsaves_failures3', '3': 13, '4': 1, '5': 8, '10': 'deathsavesFailures3'},
+  ],
+};
+
+const Equipment$json = const {
+  '1': 'Equipment',
+  '2': const [
+    const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 17, '10': 'value'},
   ],
 };
 
