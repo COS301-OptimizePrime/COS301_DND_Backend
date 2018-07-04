@@ -120,6 +120,18 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         character.bonds = request.bonds
         character.flaws = request.flaws
 
+        for equipment in character.equipment:
+            self.conn.delete(equipment)
+        
+        #Equipment
+        for equipment in request.equipment:
+            _eq = db.Equipment(
+                character_id=character.character_id,
+                name=equipment.name,
+                value=equipment.value
+            )
+            character.equipment.append(_eq)
+
     # Converts a Database Character object to a grpc Character object
     def _convertToGrpcCharacter(self, character, status):
         charObj = server_pb2.Character()
@@ -219,6 +231,14 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         charObj.ideals = character.ideals
         charObj.bonds = character.bonds
         charObj.flaws = character.flaws
+
+        charObj.equipment.extend([])
+
+        for eq in character.equipment:
+            _eq = server_pb2.Equipment()
+            _eq.name = eq.name
+            _eq.value = eq.value
+            charObj.equipment.extend([_eq])
 
         charObj.status = status
 
@@ -676,6 +696,16 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 bonds=_bonds,
                 flaws=_flaws
                 )
+
+
+            # Equipment
+            for equipment in request.character.equipment:
+                _eq = db.Equipment(
+                    character_id = _character_id,
+                    name=equipment.name,
+                    value=equipment.value
+                )
+                character.equipment.append(_eq)
 
             self.conn.add(character)
             self.conn.commit()

@@ -227,6 +227,8 @@ message Character {
   string date_created = 32;
   string status = 33;
   string status_message = 34;
+
+  repeated Equipment equipment = 35;
 }
 
 message SavingThrows {
@@ -312,4 +314,9 @@ message Hitpoints {
   bool deathsaves_failures1 = 11;
   bool deathsaves_failures2 = 12;
   bool deathsaves_failures3 = 13;
+}
+
+message Equipment {
+  string name = 1;
+  sint32 value = 2;
 }

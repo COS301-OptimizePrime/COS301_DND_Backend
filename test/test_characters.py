@@ -118,6 +118,18 @@ def getRandomCharacter():
     _character.hitpoints.deathsaves_failures2 = random.choice([True, False])
     _character.hitpoints.deathsaves_failures3 = random.choice([True, False])
 
+    _character.equipment.extend([])
+
+    _eq = server_pb2.Equipment()
+    _eq.name  = "TEST EQ"
+    _eq.value  = random.randint(1,50)
+    _eq2 = server_pb2.Equipment()
+    _eq2.name  = "TEST EQ"
+    _eq2.value  = random.randint(1,50)
+
+    _character.equipment.extend([_eq])
+    _character.equipment.extend([_eq2])
+
     return _character
 
 def compareCharacters(character1,character2):
@@ -215,6 +227,11 @@ def compareCharacters(character1,character2):
     assert character1.skills.stealth_proficient == character2.skills.stealth_proficient
     assert character1.skills.survival == character2.skills.survival
     assert character1.skills.survival_proficient == character2.skills.survival_proficient
+
+    assert character1.equipment[0].name == character2.equipment[0].name 
+    assert character1.equipment[1].name == character2.equipment[1].name 
+    assert character1.equipment[0].value == character2.equipment[0].value 
+    assert character1.equipment[1].value == character2.equipment[1].value 
 
 global_token = str(
         subprocess.check_output(
@@ -344,10 +361,15 @@ def test_update_character():
     assert response.creator.name == 'mockuser@test.co.za'
     assert response.name == 'MyTestCharacter'
 
-    _char = response
+    _char = getRandomCharacter()
+    _char.character_id = response.character_id
     _char.name = 'Modified name!'
+    _char.equipment[0].name = "Modified name!"
+    _char.equipment[0].value = 99
     
     response = stub.UpdateCharacter(server_pb2.UpdateCharacterRequest(auth_id_token=global_token, character=_char))
     assert response.status == 'SUCCESS'
     assert response.creator.name == 'mockuser@test.co.za'
     assert response.name == 'Modified name!'
+    assert response.equipment[0].name == 'Modified name!'
+    assert response.equipment[0].value == 99

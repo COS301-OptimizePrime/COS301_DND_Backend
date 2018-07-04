@@ -138,18 +138,26 @@ class Character(Base):
     saving_throws = relationship(
         "SavingThrow",
         uselist=False,
-        back_populates="character")
+        back_populates="character",
+        cascade="all, delete-orphan")
 
-    skills = relationship("Skill", uselist=False, back_populates="character")
+    skills = relationship("Skill", uselist=False, back_populates="character", cascade="all, delete-orphan")
 
     attacks_and_spellcasting = relationship(
         "Attacks_And_Spellcasting",
         uselist=False,
-        back_populates="character")
+        back_populates="character",
+        cascade="all, delete-orphan")
     hitpoints = relationship(
         "Hitpoints",
         uselist=False,
-        back_populates="character")
+        back_populates="character",
+        cascade="all, delete-orphan")
+
+    equipment = relationship(
+        "Equipment",
+        back_populates="character",
+        cascade="all, delete-orphan")
 
     strength = Column(Integer, nullable=False)
     strength_subscript = Column(Integer, nullable=False, default=False)
@@ -315,3 +323,13 @@ class Hitpoints(Base):
     deathsaves_failures1 = Column(Boolean, nullable=False)
     deathsaves_failures2 = Column(Boolean, nullable=False)
     deathsaves_failures3 = Column(Boolean, nullable=False)
+
+class Equipment(Base):
+    __tablename__ = 'equipment'
+
+    id = Column(Integer, primary_key=True)
+    character_id = Column(Integer, ForeignKey('characters.id'))
+    character = relationship("Character", back_populates="equipment")
+
+    name = Column(String(100), nullable=False)
+    value = Column(Integer, nullable=False)
