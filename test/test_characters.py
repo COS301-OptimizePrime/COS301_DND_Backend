@@ -131,6 +131,7 @@ def getRandomCharacter():
     _character.equipment.extend([_eq2])
 
     _character.session_id = 'TESTSESSIONID'
+    _character.features_and_traits = 'FEATURESANDTRAITS'
 
     return _character
 
@@ -236,6 +237,8 @@ def compareCharacters(character1,character2):
     assert character1.equipment[1].value == character2.equipment[1].value 
 
     assert character1.session_id == character2.session_id
+
+    assert character1.features_and_traits == character2.features_and_traits
 
 global_token = str(
         subprocess.check_output(

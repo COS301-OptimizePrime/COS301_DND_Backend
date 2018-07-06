@@ -231,6 +231,7 @@ message Character {
   repeated Equipment equipment = 35;
 
   string session_id = 36;
+  string features_and_traits = 37;
 }
 
 message SavingThrows {

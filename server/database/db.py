@@ -196,6 +196,8 @@ class Character(Base):
 
     session_id = Column(String(36), nullable=False)
 
+    features_and_traits = Column(String(350), nullable=False)
+
 class SavingThrow(Base):
     __tablename__ = 'savingthrows'
 

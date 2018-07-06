@@ -49,6 +49,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         character.proficiency_bonus=request.proficiency_bonus
 
         character.session_id = request.session_id
+        character.features_and_traits = request.features_and_traits
 
         character.skills.acrobatics = request.skills.acrobatics
         character.skills.acrobatics_proficient = request.skills.acrobatics_proficient
@@ -163,6 +164,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         charObj.proficiency_bonus = character.proficiency_bonus
 
         charObj.session_id = character.session_id
+
+        charObj.features_and_traits = character.features_and_traits
 
         charObj.saving_throws.strength = character.saving_throws.strength
         charObj.saving_throws.strength_proficient = character.saving_throws.strength_proficient
@@ -538,6 +541,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             _flaws = request.character.flaws
 
             _session_id = request.character.session_id
+            _features_and_traits = request.character.features_and_traits
 
             _saving_throws = server_pb2.SavingThrows()
             _saving_throws.strength = request.character.saving_throws.strength
@@ -709,9 +713,9 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 ideals=_ideals,
                 bonds=_bonds,
                 flaws=_flaws,
-                session_id=_session_id
-                )
-
+                session_id=_session_id,
+                features_and_traits=_features_and_traits
+            )
 
             # Equipment
             for equipment in request.character.equipment:
