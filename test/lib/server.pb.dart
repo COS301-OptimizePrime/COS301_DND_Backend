@@ -883,6 +883,8 @@ class Character extends GeneratedMessage {
     ..aOS(33, 'status')
     ..aOS(34, 'statusMessage')
     ..pp<Equipment>(35, 'equipment', PbFieldType.PM, Equipment.$checkItem, Equipment.create)
+    ..aOS(36, 'sessionId')
+    ..aOS(37, 'featuresAndTraits')
     ..hasRequiredFields = false
   ;
 
@@ -1073,6 +1075,16 @@ class Character extends GeneratedMessage {
   void clearStatusMessage() => clearField(34);
 
   List<Equipment> get equipment => $_getList(34);
+
+  String get sessionId => $_getS(35, '');
+  set sessionId(String v) { $_setString(35, v); }
+  bool hasSessionId() => $_has(35);
+  void clearSessionId() => clearField(36);
+
+  String get featuresAndTraits => $_getS(36, '');
+  set featuresAndTraits(String v) { $_setString(36, v); }
+  bool hasFeaturesAndTraits() => $_has(36);
+  void clearFeaturesAndTraits() => clearField(37);
 }
 
 class _ReadonlyCharacter extends Character with ReadonlyMessageMixin {}

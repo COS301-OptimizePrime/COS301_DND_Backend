@@ -48,6 +48,9 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         character.inspiration=request.inspiration
         character.proficiency_bonus=request.proficiency_bonus
 
+        character.session_id = request.session_id
+        character.features_and_traits = request.features_and_traits
+
         character.skills.acrobatics = request.skills.acrobatics
         character.skills.acrobatics_proficient = request.skills.acrobatics_proficient
         character.skills.animal_handling = request.skills.animal_handling
@@ -90,7 +93,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         character.saving_throws.dexterity = request.saving_throws.dexterity
         character.saving_throws.dexterity_proficient = request.saving_throws.dexterity_proficient
         character.saving_throws.constitution = request.saving_throws.constitution
-        character.saving_throws.constitution = request.saving_throws.constitution_proficient
+        character.saving_throws.constitution_proficient = request.saving_throws.constitution_proficient
         character.saving_throws.intelligence = request.saving_throws.intelligence
         character.saving_throws.intelligence_proficient = request.saving_throws.intelligence_proficient
         character.saving_throws.wisdom = request.saving_throws.wisdom
@@ -159,6 +162,10 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         charObj.background = character.background
         charObj.inspiration = character.inspiration
         charObj.proficiency_bonus = character.proficiency_bonus
+
+        charObj.session_id = character.session_id
+
+        charObj.features_and_traits = character.features_and_traits
 
         charObj.saving_throws.strength = character.saving_throws.strength
         charObj.saving_throws.strength_proficient = character.saving_throws.strength_proficient
@@ -494,7 +501,15 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                     status="FAILED",
                     status_message="[CreateChar] User has too many characters already!")
 
-            #
+            
+            # Name may not be blank
+            if len(request.character.name.strip()) == 0:
+                self.logger.error(
+                    "Failed to create new character, character name can not be blank")
+                return server_pb2.Character(
+                    status="FAILED",
+                    status_message="[CreateChar] Character name may not be blank!")
+
             _creator = server_pb2.User()
             _creator.name = user.name
             _creator.uid = user.uid
@@ -524,6 +539,9 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             _ideals = request.character.ideals
             _bonds = request.character.bonds
             _flaws = request.character.flaws
+
+            _session_id = request.character.session_id
+            _features_and_traits = request.character.features_and_traits
 
             _saving_throws = server_pb2.SavingThrows()
             _saving_throws.strength = request.character.saving_throws.strength
@@ -694,9 +712,10 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 personality_traits=_personality_traits,
                 ideals=_ideals,
                 bonds=_bonds,
-                flaws=_flaws
-                )
-
+                flaws=_flaws,
+                session_id=_session_id,
+                features_and_traits=_features_and_traits
+            )
 
             # Equipment
             for equipment in request.character.equipment:
