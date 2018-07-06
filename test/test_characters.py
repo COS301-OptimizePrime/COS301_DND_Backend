@@ -130,6 +130,8 @@ def getRandomCharacter():
     _character.equipment.extend([_eq])
     _character.equipment.extend([_eq2])
 
+    _character.session_id = 'TESTSESSIONID'
+
     return _character
 
 def compareCharacters(character1,character2):
@@ -233,6 +235,8 @@ def compareCharacters(character1,character2):
     assert character1.equipment[0].value == character2.equipment[0].value 
     assert character1.equipment[1].value == character2.equipment[1].value 
 
+    assert character1.session_id == character2.session_id
+
 global_token = str(
         subprocess.check_output(
             'node ./login.mjs',
@@ -261,6 +265,19 @@ def test_create_character():
     assert response.skills.acrobatics == 5
 
     compareCharacters(_char, response)
+
+    # Appears to be a front end error.
+    # Will however test for empty name
+    def test_create_character_empty_name():
+        channel = grpc.insecure_channel(server)
+        stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+        _char = server_pb2.Character()
+        _char.name = ""
+
+        response = stub.CreateCharacter(server_pb2.NewCharacterRequest(auth_id_token=global_token, character=_char))
+        assert response.status == 'FAILED'
+        assert response.status_message == '[CreateChar] Character name may not be blank!'
 
 def test_get_characters():
     channel = grpc.insecure_channel(server)
@@ -373,3 +390,5 @@ def test_update_character():
     assert response.name == 'Modified name!'
     assert response.equipment[0].name == 'Modified name!'
     assert response.equipment[0].value == 99
+
+    compareCharacters(_char, response)

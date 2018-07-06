@@ -229,6 +229,8 @@ message Character {
   string status_message = 34;
 
   repeated Equipment equipment = 35;
+
+  string session_id = 36;
 }
 
 message SavingThrows {
