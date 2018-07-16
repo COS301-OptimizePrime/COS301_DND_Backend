@@ -56,7 +56,8 @@ message GetCharactersRequest {
 
 message GetCharactersReply{
   string status = 1;
-  repeated Character characters = 2;
+  string status_message = 2;
+  repeated Character characters = 3;
 }
 
 message GetSessionsOfUserRequest {
@@ -232,6 +233,8 @@ message Character {
 
   string session_id = 36;
   string features_and_traits = 37;
+
+  bool online = 38;
 }
 
 message SavingThrows {

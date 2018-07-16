@@ -80,6 +80,9 @@ class User(Base):
     characters = relationship(
         "Character", back_populates="creator")
 
+    # Last socket
+    #socket = Column(String, nullable=False)
+
     def __repr__(self):
         return "<User(id='%s', uid='%s', name='%s')>" % (
             self.id, self.uid, self.name)

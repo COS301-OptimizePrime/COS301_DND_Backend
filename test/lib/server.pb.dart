@@ -156,7 +156,8 @@ class _ReadonlyGetCharactersRequest extends GetCharactersRequest with ReadonlyMe
 class GetCharactersReply extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('GetCharactersReply')
     ..aOS(1, 'status')
-    ..pp<Character>(2, 'characters', PbFieldType.PM, Character.$checkItem, Character.create)
+    ..aOS(2, 'statusMessage')
+    ..pp<Character>(3, 'characters', PbFieldType.PM, Character.$checkItem, Character.create)
     ..hasRequiredFields = false
   ;
 
@@ -181,7 +182,12 @@ class GetCharactersReply extends GeneratedMessage {
   bool hasStatus() => $_has(0);
   void clearStatus() => clearField(1);
 
-  List<Character> get characters => $_getList(1);
+  String get statusMessage => $_getS(1, '');
+  set statusMessage(String v) { $_setString(1, v); }
+  bool hasStatusMessage() => $_has(1);
+  void clearStatusMessage() => clearField(2);
+
+  List<Character> get characters => $_getList(2);
 }
 
 class _ReadonlyGetCharactersReply extends GetCharactersReply with ReadonlyMessageMixin {}
@@ -885,6 +891,7 @@ class Character extends GeneratedMessage {
     ..pp<Equipment>(35, 'equipment', PbFieldType.PM, Equipment.$checkItem, Equipment.create)
     ..aOS(36, 'sessionId')
     ..aOS(37, 'featuresAndTraits')
+    ..aOB(38, 'online')
     ..hasRequiredFields = false
   ;
 
@@ -1085,6 +1092,11 @@ class Character extends GeneratedMessage {
   set featuresAndTraits(String v) { $_setString(36, v); }
   bool hasFeaturesAndTraits() => $_has(36);
   void clearFeaturesAndTraits() => clearField(37);
+
+  bool get online => $_get(37, false);
+  set online(bool v) { $_setBool(37, v); }
+  bool hasOnline() => $_has(37);
+  void clearOnline() => clearField(38);
 }
 
 class _ReadonlyCharacter extends Character with ReadonlyMessageMixin {}
