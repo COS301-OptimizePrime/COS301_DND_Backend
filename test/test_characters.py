@@ -289,6 +289,7 @@ def test_get_characters():
     response = stub.GetCharacters(server_pb2.GetCharactersRequest(auth_id_token=global_token))
     
     assert response.status == 'SUCCESS'
+    assert response.status_message == ''
     assert len(response.characters) > 0 
     assert response.characters[0].name == 'MyTestCharacter'
     assert response.characters[0].creator.name == 'mockuser@test.co.za'

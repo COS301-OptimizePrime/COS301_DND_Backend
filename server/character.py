@@ -15,6 +15,20 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
     conn = None
     logger = logging.getLogger("cos301-DND")
 
+    def _determineOnline(self, socket, user):
+        # Associate socket with user uid.
+        #     connectionId = str(uuid.uuid4())
+        try:
+            self._connectDatabase()
+            user.socket = socket.peer()
+            self.conn.commit()
+        except exc.SQLAlchemyError:
+            self.logger.error("[DeterminOnline] SQLAlchemyError!")
+            return server_pb2.Character(
+                status="FAILED",
+                status_message="Database error!")
+
+
     def _connectDatabase(self):
         if not self.conn:
             self.conn = db.connect()
@@ -274,6 +288,9 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             self.conn.commit()
 
         self.logger.debug("Successfully verified token! UID=" + uid)
+
+        #_determineOnline(context, user)
+
         try:
             self._connectDatabase()
 
@@ -734,7 +751,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return grpcSession
         except exc.SQLAlchemyError:
             self.logger.error("[CreateCharacter] SQLAlchemyError!")
-            return server_pb2.CreateCharacter(
+            return server_pb2.Character(
                 status="FAILED",
                 status_message="Database error!")
         finally:
