@@ -144,7 +144,11 @@ class Character(Base):
         back_populates="character",
         cascade="all, delete-orphan")
 
-    skills = relationship("Skill", uselist=False, back_populates="character", cascade="all, delete-orphan")
+    skills = relationship(
+        "Skill",
+        uselist=False,
+        back_populates="character",
+        cascade="all, delete-orphan")
 
     attacks_and_spellcasting = relationship(
         "Attacks_And_Spellcasting",
@@ -200,6 +204,7 @@ class Character(Base):
     session_id = Column(String(36), nullable=False)
 
     features_and_traits = Column(String(350), nullable=False)
+
 
 class SavingThrow(Base):
     __tablename__ = 'savingthrows'
@@ -330,6 +335,7 @@ class Hitpoints(Base):
     deathsaves_failures1 = Column(Boolean, nullable=False)
     deathsaves_failures2 = Column(Boolean, nullable=False)
     deathsaves_failures3 = Column(Boolean, nullable=False)
+
 
 class Equipment(Base):
     __tablename__ = 'equipment'

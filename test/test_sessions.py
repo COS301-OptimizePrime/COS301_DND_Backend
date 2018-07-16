@@ -16,7 +16,7 @@ cred = credentials.Certificate(
 firebase = firebase_admin.initialize_app(cred)
 
 server = 'localhost:50051'
-#server = 'develop.optimizeprime.co.za:50051'
+# server = 'develop.optimizeprime.co.za:50051'
 test_session_id = ''
 uid = 'mT8HzwXWjDc1FX472qTfcsUUcQt1'
 
@@ -26,7 +26,7 @@ def _create_rpc_good_login(token=str(
         'node ./login.mjs',
         shell=True,
         universal_newlines=False).decode("utf-8")).strip(), session_name=None):
-    
+
     if session_name is None:
         session_name = 'mysession'
 
@@ -294,10 +294,10 @@ def test_setmax_rpc_good_login_setmax_session():
             session_id=session.session_id,
             number=0))
 
-    assert(response.name == 'mysession')
-    assert(len(response.session_id) == 36)
-    assert(response.status == 'SUCCESS')
-    assert(response.max_players == 0)
+    assert response.name == 'mysession'
+    assert len(response.session_id) == 36
+    assert response.status == 'SUCCESS'
+    assert response.max_players == 0
 
 
 def test_join_rpc_good_login_full_session():
@@ -328,11 +328,11 @@ def test_join_rpc_good_login_full_session():
             auth_id_token=token,
             session_id=session.session_id))
 
-    assert(response.name == 'NULL')
-    assert(response.session_id == 'NULL')
-    assert(response.status == 'FAILED')
-    assert(response.status_message == '[JOIN] This session is full!')
-    assert(response.full)
+    assert response.name == 'NULL'
+    assert response.session_id == 'NULL'
+    assert response.status == 'FAILED'
+    assert response.status_message == '[JOIN] This session is full!'
+    assert response.full
 
 
 def test_rpc_good_login_get_session_by_id():
@@ -353,9 +353,9 @@ def test_rpc_good_login_get_session_by_id():
             auth_id_token=token,
             session_id=session.session_id))
 
-    assert(response.name == 'mysession')
-    assert(response.session_id == session.session_id)
-    assert(response.status == 'SUCCESS')
+    assert response.name == 'mysession'
+    assert response.session_id == session.session_id
+    assert response.status == 'SUCCESS'
 
 
 def test_setmax_rpc_good_login_setmax_session_invalid_user():
@@ -378,10 +378,9 @@ def test_setmax_rpc_good_login_setmax_session_invalid_user():
             session_id=session.session_id,
             number=0))
 
-    assert(response.name == 'NULL')
-    assert(response.status_message ==
-           '[SetMax] You must be the dungeon master to use this command!')
-    assert(response.status == 'FAILED')
+    assert response.name == 'NULL'
+    assert response.status_message == '[SetMax] You must be the dungeon master to use this command!'
+    assert response.status == 'FAILED'
 
 
 def test_list_rpc_good_login_list_sessions_that_are_full():
@@ -412,9 +411,9 @@ def test_list_rpc_good_login_list_sessions_that_are_full():
             limit=3,
             full=True))
 
-    assert(response.status == 'SUCCESS')
-    assert(response.sessions[0].full)
-    assert(len(response.sessions) <= 3)
+    assert response.status == 'SUCCESS'
+    assert response.sessions[0].full
+    assert len(response.sessions) <= 3
 
 
 def test_kick_good_login():
@@ -446,9 +445,9 @@ def test_kick_good_login():
             auth_id_token=token,
             session_id=session.session_id))
 
-    assert(response.status == 'SUCCESS')
-    assert(len(response.users) == 1)
-    assert(response.users[0].name == 'mockuser3@test.co.za')
+    assert response.status == 'SUCCESS'
+    assert len(response.users) == 1
+    assert response.users[0].name == 'mockuser3@test.co.za'
 
     # Second player join
     token = str(
@@ -461,10 +460,10 @@ def test_kick_good_login():
             auth_id_token=token,
             session_id=session.session_id))
 
-    assert(response.status == 'SUCCESS')
-    assert(len(response.users) == 2)
-    assert(response.users[0].name == 'mockuser3@test.co.za')
-    assert(response.users[1].name == 'mockuser2@test.co.za')
+    assert response.status == 'SUCCESS'
+    assert len(response.users) == 2
+    assert response.users[0].name == 'mockuser3@test.co.za'
+    assert response.users[1].name == 'mockuser2@test.co.za'
 
     user2 = response.users[1]
 
@@ -482,9 +481,9 @@ def test_kick_good_login():
             user=user2))
 
     # check if user still in session
-    assert(response.status == 'SUCCESS')
-    assert(len(response.users) == 1)
-    assert(response.users[0].name == 'mockuser3@test.co.za')
+    assert response.status == 'SUCCESS'
+    assert len(response.users) == 1
+    assert response.users[0].name == 'mockuser3@test.co.za'
 
 
 def test_kick_unauthorised_good_login():
@@ -516,9 +515,9 @@ def test_kick_unauthorised_good_login():
             auth_id_token=token,
             session_id=session.session_id))
 
-    assert(response.status == 'SUCCESS')
-    assert(len(response.users) == 1)
-    assert(response.users[0].name == 'mockuser3@test.co.za')
+    assert response.status == 'SUCCESS'
+    assert len(response.users) == 1
+    assert response.users[0].name == 'mockuser3@test.co.za'
 
     # Second player join
     token = str(
@@ -684,7 +683,7 @@ def test_leaving_a_session_as_dungeon_master_should_assign_new_DM():
             max_players=2,
             private=False))
 
-    assert(session.status == 'SUCCESS')
+    assert session.status == 'SUCCESS'
 
     # Join as player 2
     token = str(
@@ -697,7 +696,7 @@ def test_leaving_a_session_as_dungeon_master_should_assign_new_DM():
             auth_id_token=token,
             session_id=session.session_id))
 
-    assert(response.status == 'SUCCESS')
+    assert response.status == 'SUCCESS'
 
     # Leave as Dungeon Master
     token = str(
@@ -710,16 +709,16 @@ def test_leaving_a_session_as_dungeon_master_should_assign_new_DM():
             auth_id_token=token,
             session_id=session.session_id))
 
-    assert(response.status == 'SUCCESS')
+    assert response.status == 'SUCCESS'
 
     # player 2 should now have become the next dungeon master
     response = stub.GetSessionById(
         server_pb2.GetSessionRequest(
             auth_id_token=token,
             session_id=session.session_id))
-    assert(response.status == 'SUCCESS')
-    assert(response.dungeon_master.name == 'mockuser2@test.co.za')
-    assert(len(response.users) == 0)
+    assert response.status == 'SUCCESS'
+    assert response.dungeon_master.name == 'mockuser2@test.co.za'
+    assert len(response.users) == 0
 
 
 def test_setname_rpc():
@@ -740,7 +739,7 @@ def test_setname_rpc():
             max_players=2,
             private=False))
 
-    assert(session.status == 'SUCCESS')
+    assert session.status == 'SUCCESS'
 
     response = stub.SetName(
         server_pb2.SetNameRequest(
@@ -748,8 +747,8 @@ def test_setname_rpc():
             name='newNameForMySession',
             auth_id_token=token))
 
-    assert(response.status == 'SUCCESS')
-    assert(response.name == 'newNameForMySession')
+    assert response.status == 'SUCCESS'
+    assert response.name == 'newNameForMySession'
 
 
 def test_setname_rpc_unauthorised_user():
@@ -770,7 +769,7 @@ def test_setname_rpc_unauthorised_user():
             max_players=2,
             private=False))
 
-    assert(session.status == 'SUCCESS')
+    assert session.status == 'SUCCESS'
 
     token = str(
         subprocess.check_output(
@@ -783,9 +782,8 @@ def test_setname_rpc_unauthorised_user():
             name='newNameForMySession',
             auth_id_token=token))
 
-    assert(response.status == 'FAILED')
-    assert(response.status_message ==
-           '[SetName] You must be the dungeon master to use this command!')
+    assert response.status == 'FAILED'
+    assert response.status_message == '[SetName] You must be the dungeon master to use this command!'
 
 
 def test_setprivate_rpc():
@@ -936,7 +934,7 @@ def test_list_user_sessions_rpc_good_login():
     assert response.sessions[0].dungeon_master.name == 'mockuser@test.co.za'
     assert response.sessions[0].users[0].name == 'mockuser4@test.co.za'
     assert len(response.sessions[0].users) == 1
-  
+
 
 # def test_max_sessions_for_user():
 #    auth.revoke_refresh_tokens(uid)
