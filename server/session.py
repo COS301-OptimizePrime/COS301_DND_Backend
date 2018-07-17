@@ -32,13 +32,35 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         sessionObj.max_players = session.max_players
         sessionObj.full = session.full
         sessionObj.private = session.private
+
+        sessionObj.state = session.state
+        sessionObj.state_meta = session.state_meta
+        sessionObj.state_ready_start_time = str(session.state_ready_start_time)
+
+        sessionObj.last_updated = str(session.date_updated)
+
         sessionObj.users.extend([])
 
         for _user in session.users_in_session:
             userInSession = server_pb2.User()
             userInSession.uid = _user.uid
             userInSession.name = _user.name
+
+            if _user in session.ready_users:
+                userInSession.ready_in_this_session = True
+            else:
+                userInSession.ready_in_this_session = False
+
             sessionObj.users.extend([userInSession])
+
+        sessionObj.ready_users.extend([])
+
+        for _user in session.ready_users:
+            userInSession = server_pb2.User()
+            userInSession.uid = _user.uid
+            userInSession.name = _user.name
+            userInSession.ready_in_this_session = True
+            sessionObj.ready_users.extend([userInSession])
 
         sessionObj.status = status
 
@@ -47,19 +69,10 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         return sessionObj
 
     def Create(self, request, context):
-        if not context.is_active():
-            self.__del__()
-
         self.logger.debug(context.peer())
         self.logger.info("Create new session called! Name:" + request.name)
 
-        _session_id = str(uuid.uuid4())
-        _name = request.name
         _auth_id_token = request.auth_id_token
-        _max_players = request.max_players
-        _private = request.private
-
-        _date_created = datetime.datetime.utcnow()
 
         try:
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
@@ -71,6 +84,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="[Create] Failed to verify user token!")
+
+        _session_id = str(uuid.uuid4())
+        _name = request.name
+        _max_players = request.max_players
+        _private = request.private
 
         try:
             self._connectDatabase()
@@ -99,7 +117,10 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name=_name,
                 dungeon_master_id=user.id,
                 max_players=_max_players,
-                private=_private)
+                private=_private,
+                state="PAUSED",
+                state_meta=0
+            )
             if session.max_players <= len(session.users_in_session):
                 session.full = True
             self.conn.add(session)
@@ -109,20 +130,16 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             return grpcSession
         except exc.SQLAlchemyError as err:
-            self.logger.error("[CREATE] SQLAlchemyError! " + err)
+            self.logger.error("[CREATE] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
         finally:
-            self.logger.debug("Closed DB connection...")
             self.conn.close()
 
     def Join(self, request, context):
-        if not context.is_active():
-            self.__del__()
-
         logger = logging.getLogger("cos301-DND")
         logger.info("Join requested!")
         _auth_id_token = request.auth_id_token
@@ -199,9 +216,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Leave(self, request, context):
-        if not context.is_active():
-            self.__del__()
-
         logger = logging.getLogger("cos301-DND")
         logger.info("Leave request called!")
         _auth_id_token = request.auth_id_token
@@ -294,10 +308,101 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         finally:
             self.conn.close()
 
-    def Kick(self, request, context):
-        if not context.is_active():
-            self.__del__()
+    def Ready(self, request, context):
+        logger = logging.getLogger("cos301-DND")
+        logger.info("Ready request called!")
+        _auth_id_token = request.auth_id_token
 
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            logger.error("Failed to verify login!")
+            return server_pb2.ReadyUpReply(
+                status="FAILED",
+                status_message="Failed to verify login!")
+
+        logger.debug("Successfully verified token! UID=" + uid)
+
+        _session_id = request.session_id
+
+        try:
+            self._connectDatabase()
+            session = self.conn.query(db.Session).filter(
+                db.Session.session_id == _session_id).first()
+
+            if not session:
+                logger.error(
+                    "Failed to ready up in session, that ID does not exist!")
+
+                return server_pb2.ReadyUpReply(
+                    status="FAILED",
+                    status_message="[Ready] No session with that ID exists!")
+
+            if session.state != "READYUP":
+                logger.error(
+                    "Failed to ready up in session, not in READYUP phase!")
+                return server_pb2.ReadyUpReply(
+                    status="FAILED",
+                    status_message="[Ready] Can't ready up now. Not in the ready up phase!")
+            else:
+                # If ready up older than 20 seconds it has expired
+                if session.state_ready_start_time < datetime.datetime.now() - datetime.timedelta(seconds=20):
+                    # Expired ready up phase reset.
+                    # Delete all ready users in session
+
+                    for _user in session.ready_users:
+                        session.ready_users.remove(_user)
+
+                    # Update state
+                    session.state = "PAUSED"
+                    session.state_meta = session.state_meta + 1
+
+                    logger.error(
+                        "Failed to ready up in session, READYUP phase has expired!")
+
+                    return server_pb2.ReadyUpReply(
+                        status="FAILED",
+                        status_message="[Ready] Can't ready up now. Ready up time expired!")
+
+            user = self.conn.query(
+                db.User).join(
+                db.User.joined_sessions).filter(
+                and_(
+                    db.Session.session_id == _session_id,
+                    db.User.uid == uid)).first()
+
+            if not user:
+                logger.error(
+                    "User does not exist. This could mean that the"
+                    " user is not in the session")
+
+                return server_pb2.ReadyUpReply(
+                    status="FAILED",
+                    status_message="[Ready] User is not in the session!")
+
+            session.ready_users.append(user)
+
+            if len(session.ready_users) == len(session.users_in_session):
+                self.logger.info("[Ready] Everyone is ready starting game!")
+                # All users are ready change the state
+                session.state = "EXPLORING"
+                session.state_meta = session.state_meta + 1
+                for _user in session.ready_users:
+                    session.ready_users.remove(_user)
+
+            self.conn.commit()
+
+            return server_pb2.ReadyUpReply(status="SUCCESS")
+        except exc.SQLAlchemyError:
+            self.logger.error("[Ready] SQLAlchemyError!")
+            return server_pb2.ReadyUpReply(
+                status="FAILED",
+                status_message="Database error!")
+        finally:
+            self.conn.close()
+
+    def Kick(self, request, context):
         logger = logging.getLogger("cos301-DND")
         logger.info("Kick player request called!")
         _auth_id_token = request.auth_id_token
@@ -385,9 +490,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetMax(self, request, context):
-        if not context.is_active():
-            self.__del__()
-
         logger = logging.getLogger("cos301-DND")
         logger.info("SetMax called!")
 
@@ -449,9 +551,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetName(self, request, context):
-        if not context.is_active():
-            self.__del__()
-
         logger = logging.getLogger("cos301-DND")
         logger.info("SetName called!")
 
@@ -511,10 +610,86 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     # This is a Dungeon Master only command.
-    def SetPrivate(self, request, context):
-        if not context.is_active():
-            self.__del__()
+    def ChangeState(self, request, context):
+        logger = logging.getLogger("cos301-DND")
+        logger.info("ChangeState called!")
 
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            logger.error("Failed to verify login!")
+
+        _session_id = request.session_id
+
+        try:
+            self._connectDatabase()
+            session = self.conn.query(db.Session).filter(
+                db.Session.session_id == _session_id).first()
+
+            if not session:
+                logger.error(
+                    "[ChangeState] Failed to change state of session,"
+                    " that ID does not exist!")
+
+                return server_pb2.ChangeStateReply(
+                    session_id="NULL",
+                    name="NULL",
+                    status="FAILED",
+                    status_message="[ChangeState] No session with that ID exists!")
+
+            if session.dungeon_master.uid != uid:
+                logger.error(
+                    "[ChangeState] Unauthorised user tried to"
+                    " modify (Not the dungeon master)")
+
+                return server_pb2.ChangeStateReply(
+                    session_id="NULL",
+                    name="NULL",
+                    status="FAILED",
+                    status_message="[ChangeState] You must be the dungeon"
+                                   " master to use this command!")
+
+            # Check if it is a valid state
+            if request.state in ["PAUSED", "READYUP", "BATTLE", "EXPLORING"]:
+                if session.state == "BATTLE" and request.state == "PAUSED":
+                    return server_pb2.Session(
+                        session_id="NULL",
+                        name="NULL",
+                        status="FAILED",
+                        status_message="[ChangeState] Can not pause during battle!")
+
+                session.state = request.state
+                session.state_meta = session.state_meta + 1
+                if request.state == "READYUP":
+                    session.state_ready_start_time = datetime.datetime.now()
+
+            else:
+                return server_pb2.Session(
+                    session_id="NULL",
+                    name="NULL",
+                    status="FAILED",
+                    status_message="[ChangeState] Invalid state can only be PAUSED, READYUP, BATTLE or EXPLORING")
+
+            self.conn.commit()
+
+            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
+
+            return grpcSession
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[ChangeState] SQLAlchemyError! " + str(err))
+            return server_pb2.Session(
+                session_id="NULL",
+                name="NULL",
+                status="FAILED",
+                status_message="Database error!")
+        finally:
+            self.conn.close()
+
+    # This is a Dungeon Master only command.
+    def SetPrivate(self, request, context):
         logger = logging.getLogger("cos301-DND")
         logger.info("SetPrivate called!")
 
@@ -574,8 +749,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def List(self, request, context):
-        if not context.is_active():
-            self.__del__()
+        #if not context.is_active():
+        #    self.__del__()
 
         logger = logging.getLogger("cos301-DND")
         logger.info("List sessions called!")
@@ -615,7 +790,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             for _session in _sessions_query:
                 # logger.debug(_session.session_id)
-
+                # TODO: Remove this function or update it with ready up phase
                 sessionObj = server_pb2.Session()
                 sessionObj.session_id = _session.session_id
                 sessionObj.name = _session.name
@@ -647,9 +822,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetSessionById(self, request, context):
-        if not context.is_active():
-            self.__del__()
-
         logger = logging.getLogger("cos301-DND")
         logger.info("GetSessionById called!")
 
@@ -699,9 +871,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetSessionsOfUser(self, request, context):
-        if not context.is_active():
-            self.__del__()
-
         logger = logging.getLogger("cos301-DND")
         logger.info("GetSessionsOfUser sessions called!")
 
@@ -735,6 +904,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 limit = limit + 1
 
                 # logger.debug(_session.session_id)
+                # TODO: This will need to support the new state and ready system
 
                 sessionObj = server_pb2.Session()
                 sessionObj.session_id = _session.session_id
@@ -770,5 +940,5 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def __del__(self):
-        self.logger.info("Closed DB connection...")
+        self.logger.info("Socket destroyed closing DB connection...")
         self.conn.close()

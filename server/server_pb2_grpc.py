@@ -64,6 +64,16 @@ class SessionsManagerStub(object):
         request_serializer=server__pb2.GetSessionsOfUserRequest.SerializeToString,
         response_deserializer=server__pb2.ListReply.FromString,
         )
+    self.Ready = channel.unary_unary(
+        '/session.SessionsManager/Ready',
+        request_serializer=server__pb2.ReadyUpRequest.SerializeToString,
+        response_deserializer=server__pb2.ReadyUpReply.FromString,
+        )
+    self.ChangeState = channel.unary_unary(
+        '/session.SessionsManager/ChangeState',
+        request_serializer=server__pb2.ChangeStateRequest.SerializeToString,
+        response_deserializer=server__pb2.Session.FromString,
+        )
 
 
 class SessionsManagerServicer(object):
@@ -140,6 +150,20 @@ class SessionsManagerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def Ready(self, request, context):
+    """Ready up a user in the requested session
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def ChangeState(self, request, context):
+    """Change session state (DM only)
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_SessionsManagerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -192,6 +216,16 @@ def add_SessionsManagerServicer_to_server(servicer, server):
           servicer.GetSessionsOfUser,
           request_deserializer=server__pb2.GetSessionsOfUserRequest.FromString,
           response_serializer=server__pb2.ListReply.SerializeToString,
+      ),
+      'Ready': grpc.unary_unary_rpc_method_handler(
+          servicer.Ready,
+          request_deserializer=server__pb2.ReadyUpRequest.FromString,
+          response_serializer=server__pb2.ReadyUpReply.SerializeToString,
+      ),
+      'ChangeState': grpc.unary_unary_rpc_method_handler(
+          servicer.ChangeState,
+          request_deserializer=server__pb2.ChangeStateRequest.FromString,
+          response_serializer=server__pb2.Session.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(

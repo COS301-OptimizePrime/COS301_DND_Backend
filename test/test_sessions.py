@@ -936,6 +936,108 @@ def test_list_user_sessions_rpc_good_login():
     assert len(response.sessions[0].users) == 1
 
 
+def test_ready_up():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    session = _create_rpc_good_login()
+
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser4@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.Join(
+        server_pb2.JoinRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+    assert response.status == 'SUCCESS'
+
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser3@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.Join(
+        server_pb2.JoinRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+
+    assert response.status == 'SUCCESS'
+
+    # Now we should have 2 users in our session
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    # Change state as DM
+    response = stub.ChangeState(
+        server_pb2.ChangeStateRequest(
+            auth_id_token=token,
+            session_id=session.session_id,
+            state="READYUP"))
+
+    assert response.status == 'SUCCESS'
+
+    response = stub.GetSessionById(
+        server_pb2.GetSessionRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+
+    assert response.status == 'SUCCESS'
+
+    org_state_meta = response.state_meta
+    org_state_ready = response.state_ready_start_time
+
+    # Other users should now be able to ready up
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser4@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.Ready(
+        server_pb2.ReadyUpRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+    assert response.status == 'SUCCESS'
+
+    response = stub.GetSessionById(
+        server_pb2.GetSessionRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+    assert response.status == 'SUCCESS'
+    assert response.state == 'READYUP'
+    assert response.state_meta == org_state_meta
+    assert response.state_ready_start_time == org_state_ready
+
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser3@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.Ready(
+        server_pb2.ReadyUpRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+    assert response.status == 'SUCCESS'
+
+    # Session should now be in exploring state
+    response = stub.GetSessionById(
+        server_pb2.GetSessionRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+    assert response.status == 'SUCCESS'
+    assert response.state == 'EXPLORING'
+    assert response.state_meta != org_state_meta
+    assert response.state_ready_start_time == org_state_ready
+
+
 # def test_max_sessions_for_user():
 #    auth.revoke_refresh_tokens(uid)
 

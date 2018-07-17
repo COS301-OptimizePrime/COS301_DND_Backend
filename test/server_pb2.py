@@ -19,10 +19,131 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='server.proto',
   package='session',
   syntax='proto3',
-  serialized_pb=_b('\n\x0cserver.proto\x12\x07session\"F\n\x17GetCharacterByIdRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x14\n\x0c\x63haracter_id\x18\x02 \x01(\t\"E\n\x16\x44\x65leteCharacterRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x14\n\x0c\x63haracter_id\x18\x02 \x01(\t\"V\n\x16UpdateCharacterRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12%\n\tcharacter\x18\x02 \x01(\x0b\x32\x12.session.Character\"<\n\x14GetCharactersRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\r\"d\n\x12GetCharactersReply\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\x12&\n\ncharacters\x18\x03 \x03(\x0b\x32\x12.session.Character\"@\n\x18GetSessionsOfUserRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\r\">\n\x11GetSessionRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"^\n\x11NewSessionRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0bmax_players\x18\x03 \x01(\r\x12\x0f\n\x07private\x18\x04 \x01(\x08\"A\n\x0bListRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\r\x12\x0c\n\x04\x66ull\x18\x03 \x01(\x08\"9\n\x0cLeaveRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"8\n\x0bJoinRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"[\n\x11KickPlayerRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\x12\x1b\n\x04user\x18\x03 \x01(\x0b\x32\r.session.User\"O\n\x11SetPrivateRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\x12\x0f\n\x07private\x18\x03 \x01(\x08\"Q\n\x14SetMaxPlayersRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0e\n\x06number\x18\x02 \x01(\r\x12\x12\n\nsession_id\x18\x03 \x01(\t\"I\n\x0eSetNameRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\"?\n\tListReply\x12\"\n\x08sessions\x18\x01 \x03(\x0b\x32\x10.session.Session\x12\x0e\n\x06status\x18\x02 \x01(\t\"4\n\nLeaveReply\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\"\xe2\x01\n\x07Session\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\x12\x12\n\nsession_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\x12%\n\x0e\x64ungeon_master\x18\x05 \x01(\x0b\x32\r.session.User\x12\x14\n\x0c\x64\x61te_created\x18\x06 \x01(\t\x12\x13\n\x0bmax_players\x18\x07 \x01(\r\x12\x1c\n\x05users\x18\x08 \x03(\x0b\x32\r.session.User\x12\x0f\n\x07private\x18\t \x01(\x08\x12\x0c\n\x04\x66ull\x18\n \x01(\x08\"!\n\x04User\x12\x0b\n\x03uid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"S\n\x13NewCharacterRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12%\n\tcharacter\x18\x02 \x01(\x0b\x32\x12.session.Character\">\n\x14\x44\x65leteCharacterReply\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\"\xb6\x07\n\tCharacter\x12\x14\n\x0c\x63haracter_id\x18\x01 \x01(\t\x12\x1e\n\x07\x63reator\x18\x02 \x01(\x0b\x32\r.session.User\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x10\n\x08strength\x18\x04 \x01(\x11\x12\x1a\n\x12strength_subscript\x18\x05 \x01(\x11\x12\x11\n\tdexterity\x18\x06 \x01(\x11\x12\x1b\n\x13\x64\x65xterity_subscript\x18\x07 \x01(\x11\x12\x14\n\x0c\x63onstitution\x18\x08 \x01(\x11\x12\x1e\n\x16\x63onstitution_subscript\x18\t \x01(\x11\x12\x14\n\x0cintelligence\x18\n \x01(\x11\x12\x1e\n\x16intelligence_subscript\x18\x0b \x01(\x11\x12\x0e\n\x06wisdom\x18\x0c \x01(\x11\x12\x18\n\x10wisdom_subscript\x18\r \x01(\x11\x12\x10\n\x08\x63harisma\x18\x0e \x01(\x11\x12\x1a\n\x12\x63harisma_subscript\x18\x0f \x01(\x11\x12\x17\n\x0f\x63haracter_class\x18\x10 \x01(\t\x12\x0c\n\x04race\x18\x11 \x01(\t\x12\n\n\x02xp\x18\x12 \x01(\x11\x12\x11\n\talignment\x18\x13 \x01(\t\x12\x12\n\nbackground\x18\x14 \x01(\t\x12\x13\n\x0binspiration\x18\x15 \x01(\x11\x12\x19\n\x11proficiency_bonus\x18\x16 \x01(\x11\x12,\n\rsaving_throws\x18\x17 \x01(\x0b\x32\x15.session.SavingThrows\x12\x1f\n\x06skills\x18\x18 \x01(\x0b\x32\x0f.session.Skills\x12\x16\n\x0epassive_wisdom\x18\x19 \x01(\x11\x12;\n\x14\x61ttacks_spellcasting\x18\x1a \x01(\x0b\x32\x1d.session.Attacks_Spellcasting\x12%\n\thitpoints\x18\x1b \x01(\x0b\x32\x12.session.Hitpoints\x12\x1a\n\x12personality_traits\x18\x1c \x01(\t\x12\x0e\n\x06ideals\x18\x1d \x01(\t\x12\r\n\x05\x62onds\x18\x1e \x01(\t\x12\r\n\x05\x66laws\x18\x1f \x01(\t\x12\x14\n\x0c\x64\x61te_created\x18  \x01(\t\x12\x0e\n\x06status\x18! \x01(\t\x12\x16\n\x0estatus_message\x18\" \x01(\t\x12%\n\tequipment\x18# \x03(\x0b\x32\x12.session.Equipment\x12\x12\n\nsession_id\x18$ \x01(\t\x12\x1b\n\x13\x66\x65\x61tures_and_traits\x18% \x01(\t\x12\x0e\n\x06online\x18& \x01(\x08\"\xb5\x02\n\x0cSavingThrows\x12\x10\n\x08strength\x18\x01 \x01(\x11\x12\x1b\n\x13strength_proficient\x18\x02 \x01(\x08\x12\x11\n\tdexterity\x18\x03 \x01(\x11\x12\x1c\n\x14\x64\x65xterity_proficient\x18\x04 \x01(\x08\x12\x14\n\x0c\x63onstitution\x18\x05 \x01(\x11\x12\x1f\n\x17\x63onstitution_proficient\x18\x06 \x01(\x08\x12\x14\n\x0cintelligence\x18\x07 \x01(\x11\x12\x1f\n\x17intelligence_proficient\x18\x08 \x01(\x08\x12\x0e\n\x06wisdom\x18\t \x01(\x11\x12\x19\n\x11wisdom_proficient\x18\n \x01(\x08\x12\x10\n\x08\x63harisma\x18\x0b \x01(\x11\x12\x1a\n\x12\x63harisma_subscript\x18\x0c \x01(\x08\"\x8c\x07\n\x06Skills\x12\x12\n\nacrobatics\x18\x01 \x01(\x11\x12\x1d\n\x15\x61\x63robatics_proficient\x18\x02 \x01(\x08\x12\x17\n\x0f\x61nimal_handling\x18\x03 \x01(\x11\x12\"\n\x1a\x61nimal_handling_proficient\x18\x04 \x01(\x08\x12\x0e\n\x06\x61rcana\x18\x05 \x01(\x11\x12\x19\n\x11\x61rcana_proficient\x18\x06 \x01(\x08\x12\x11\n\tathletics\x18\x07 \x01(\x11\x12\x1c\n\x14\x61thletics_proficient\x18\x08 \x01(\x08\x12\x11\n\tdeception\x18\t \x01(\x11\x12\x1c\n\x14\x64\x65\x63\x65ption_proficient\x18\n \x01(\x08\x12\x0f\n\x07history\x18\x0b \x01(\x11\x12\x1a\n\x12history_proficient\x18\x0c \x01(\x08\x12\x0f\n\x07insight\x18\r \x01(\x11\x12\x1a\n\x12insight_proficient\x18\x0e \x01(\x08\x12\x14\n\x0cintimidation\x18\x0f \x01(\x11\x12\x1f\n\x17intimidation_proficient\x18\x10 \x01(\x08\x12\x15\n\rinvestigation\x18\x11 \x01(\x11\x12 \n\x18investigation_proficient\x18\x12 \x01(\x08\x12\x10\n\x08medicine\x18\x13 \x01(\x11\x12\x1b\n\x13medicine_proficient\x18\x14 \x01(\x08\x12\x0e\n\x06nature\x18\x15 \x01(\x11\x12\x19\n\x11nature_proficient\x18\x16 \x01(\x08\x12\x12\n\nperception\x18\x17 \x01(\x11\x12\x1d\n\x15perception_proficient\x18\x18 \x01(\x08\x12\x13\n\x0bperformance\x18\x19 \x01(\x11\x12\x1e\n\x16performance_proficient\x18\x1a \x01(\x08\x12\x12\n\npersuasion\x18\x1b \x01(\x11\x12\x1d\n\x15persuasion_proficient\x18\x1c \x01(\x08\x12\x10\n\x08religion\x18\x1d \x01(\x11\x12\x1b\n\x13religion_proficient\x18\x1e \x01(\x08\x12\x17\n\x0fsleight_of_hand\x18\x1f \x01(\x11\x12\"\n\x1asleight_of_hand_proficient\x18  \x01(\x08\x12\x0f\n\x07stealth\x18! \x01(\x11\x12\x1a\n\x12stealth_proficient\x18\" \x01(\x08\x12\x10\n\x08survival\x18# \x01(\x11\x12\x1b\n\x13survival_proficient\x18$ \x01(\x08\"\xca\x01\n\x14\x41ttacks_Spellcasting\x12\x0e\n\x06name_1\x18\x01 \x01(\t\x12\x0e\n\x06name_2\x18\x02 \x01(\t\x12\x0e\n\x06name_3\x18\x03 \x01(\t\x12\x13\n\x0b\x61tk_bonus_1\x18\x04 \x01(\x11\x12\x13\n\x0b\x61tk_bonus_2\x18\x05 \x01(\x11\x12\x13\n\x0b\x61tk_bonus_3\x18\x06 \x01(\x11\x12\x15\n\rdamage_type_1\x18\x07 \x01(\t\x12\x15\n\rdamage_type_2\x18\x08 \x01(\t\x12\x15\n\rdamage_type_3\x18\t \x01(\t\"\xd4\x02\n\tHitpoints\x12\x13\n\x0b\x61rmor_class\x18\x01 \x01(\x11\x12\x12\n\ninitiative\x18\x02 \x01(\x11\x12\r\n\x05speed\x18\x03 \x01(\x11\x12\x19\n\x11\x63urrent_hitpoints\x18\x04 \x01(\x11\x12\x15\n\rmax_hitpoints\x18\x05 \x01(\x11\x12\x1b\n\x13temporary_hitpoints\x18\x06 \x01(\x11\x12\x0f\n\x07hitdice\x18\x07 \x01(\t\x12\x1b\n\x13\x64\x65\x61thsaves_success1\x18\x08 \x01(\x08\x12\x1b\n\x13\x64\x65\x61thsaves_success2\x18\t \x01(\x08\x12\x1b\n\x13\x64\x65\x61thsaves_success3\x18\n \x01(\x08\x12\x1c\n\x14\x64\x65\x61thsaves_failures1\x18\x0b \x01(\x08\x12\x1c\n\x14\x64\x65\x61thsaves_failures2\x18\x0c \x01(\x08\x12\x1c\n\x14\x64\x65\x61thsaves_failures3\x18\r \x01(\x08\"(\n\tEquipment\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x11\x32\xe3\x04\n\x0fSessionsManager\x12\x38\n\x06\x43reate\x12\x1a.session.NewSessionRequest\x1a\x10.session.Session\"\x00\x12\x30\n\x04Join\x12\x14.session.JoinRequest\x1a\x10.session.Session\"\x00\x12\x35\n\x05Leave\x12\x15.session.LeaveRequest\x1a\x13.session.LeaveReply\"\x00\x12;\n\x06SetMax\x12\x1d.session.SetMaxPlayersRequest\x1a\x10.session.Session\"\x00\x12\x36\n\x04Kick\x12\x1a.session.KickPlayerRequest\x1a\x10.session.Session\"\x00\x12\x36\n\x07SetName\x12\x17.session.SetNameRequest\x1a\x10.session.Session\"\x00\x12<\n\nSetPrivate\x12\x1a.session.SetPrivateRequest\x1a\x10.session.Session\"\x00\x12\x32\n\x04List\x12\x14.session.ListRequest\x1a\x12.session.ListReply\"\x00\x12@\n\x0eGetSessionById\x12\x1a.session.GetSessionRequest\x1a\x10.session.Session\"\x00\x12L\n\x11GetSessionsOfUser\x12!.session.GetSessionsOfUserRequest\x1a\x12.session.ListReply\"\x00\x32\x94\x03\n\x11\x43haractersManager\x12\x45\n\x0f\x43reateCharacter\x12\x1c.session.NewCharacterRequest\x1a\x12.session.Character\"\x00\x12S\n\x0f\x44\x65leteCharacter\x12\x1f.session.DeleteCharacterRequest\x1a\x1d.session.DeleteCharacterReply\"\x00\x12M\n\rGetCharacters\x12\x1d.session.GetCharactersRequest\x1a\x1b.session.GetCharactersReply\"\x00\x12H\n\x0fUpdateCharacter\x12\x1f.session.UpdateCharacterRequest\x1a\x12.session.Character\"\x00\x12J\n\x10GetCharacterById\x12 .session.GetCharacterByIdRequest\x1a\x12.session.Character\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0cserver.proto\x12\x07session\"N\n\x12\x43hangeStateRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\x12\r\n\x05state\x18\x03 \x01(\t\";\n\x0eReadyUpRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"6\n\x0cReadyUpReply\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\"F\n\x17GetCharacterByIdRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x14\n\x0c\x63haracter_id\x18\x02 \x01(\t\"E\n\x16\x44\x65leteCharacterRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x14\n\x0c\x63haracter_id\x18\x02 \x01(\t\"V\n\x16UpdateCharacterRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12%\n\tcharacter\x18\x02 \x01(\x0b\x32\x12.session.Character\"<\n\x14GetCharactersRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\r\"d\n\x12GetCharactersReply\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\x12&\n\ncharacters\x18\x03 \x03(\x0b\x32\x12.session.Character\"@\n\x18GetSessionsOfUserRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\r\">\n\x11GetSessionRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"^\n\x11NewSessionRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0bmax_players\x18\x03 \x01(\r\x12\x0f\n\x07private\x18\x04 \x01(\x08\"A\n\x0bListRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\r\x12\x0c\n\x04\x66ull\x18\x03 \x01(\x08\"9\n\x0cLeaveRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"8\n\x0bJoinRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\"[\n\x11KickPlayerRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\x12\x1b\n\x04user\x18\x03 \x01(\x0b\x32\r.session.User\"O\n\x11SetPrivateRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\x12\x0f\n\x07private\x18\x03 \x01(\x08\"Q\n\x14SetMaxPlayersRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x0e\n\x06number\x18\x02 \x01(\r\x12\x12\n\nsession_id\x18\x03 \x01(\t\"I\n\x0eSetNameRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12\x12\n\nsession_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\"?\n\tListReply\x12\"\n\x08sessions\x18\x01 \x03(\x0b\x32\x10.session.Session\x12\x0e\n\x06status\x18\x02 \x01(\t\"4\n\nLeaveReply\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\"\xdf\x02\n\x07Session\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\x12\x12\n\nsession_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\x12%\n\x0e\x64ungeon_master\x18\x05 \x01(\x0b\x32\r.session.User\x12\x14\n\x0c\x64\x61te_created\x18\x06 \x01(\t\x12\x13\n\x0bmax_players\x18\x07 \x01(\r\x12\x1c\n\x05users\x18\x08 \x03(\x0b\x32\r.session.User\x12\x0f\n\x07private\x18\t \x01(\x08\x12\x0c\n\x04\x66ull\x18\n \x01(\x08\x12\r\n\x05state\x18\x0b \x01(\t\x12\x12\n\nstate_meta\x18\x0c \x01(\r\x12\x1e\n\x16state_ready_start_time\x18\r \x01(\t\x12\"\n\x0bready_users\x18\x0e \x03(\x0b\x32\r.session.User\x12\x14\n\x0clast_updated\x18\x0f \x01(\t\"@\n\x04User\x12\x0b\n\x03uid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x1d\n\x15ready_in_this_session\x18\x03 \x01(\x08\"S\n\x13NewCharacterRequest\x12\x15\n\rauth_id_token\x18\x01 \x01(\t\x12%\n\tcharacter\x18\x02 \x01(\x0b\x32\x12.session.Character\">\n\x14\x44\x65leteCharacterReply\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x16\n\x0estatus_message\x18\x02 \x01(\t\"\xb6\x07\n\tCharacter\x12\x14\n\x0c\x63haracter_id\x18\x01 \x01(\t\x12\x1e\n\x07\x63reator\x18\x02 \x01(\x0b\x32\r.session.User\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x10\n\x08strength\x18\x04 \x01(\x11\x12\x1a\n\x12strength_subscript\x18\x05 \x01(\x11\x12\x11\n\tdexterity\x18\x06 \x01(\x11\x12\x1b\n\x13\x64\x65xterity_subscript\x18\x07 \x01(\x11\x12\x14\n\x0c\x63onstitution\x18\x08 \x01(\x11\x12\x1e\n\x16\x63onstitution_subscript\x18\t \x01(\x11\x12\x14\n\x0cintelligence\x18\n \x01(\x11\x12\x1e\n\x16intelligence_subscript\x18\x0b \x01(\x11\x12\x0e\n\x06wisdom\x18\x0c \x01(\x11\x12\x18\n\x10wisdom_subscript\x18\r \x01(\x11\x12\x10\n\x08\x63harisma\x18\x0e \x01(\x11\x12\x1a\n\x12\x63harisma_subscript\x18\x0f \x01(\x11\x12\x17\n\x0f\x63haracter_class\x18\x10 \x01(\t\x12\x0c\n\x04race\x18\x11 \x01(\t\x12\n\n\x02xp\x18\x12 \x01(\x11\x12\x11\n\talignment\x18\x13 \x01(\t\x12\x12\n\nbackground\x18\x14 \x01(\t\x12\x13\n\x0binspiration\x18\x15 \x01(\x11\x12\x19\n\x11proficiency_bonus\x18\x16 \x01(\x11\x12,\n\rsaving_throws\x18\x17 \x01(\x0b\x32\x15.session.SavingThrows\x12\x1f\n\x06skills\x18\x18 \x01(\x0b\x32\x0f.session.Skills\x12\x16\n\x0epassive_wisdom\x18\x19 \x01(\x11\x12;\n\x14\x61ttacks_spellcasting\x18\x1a \x01(\x0b\x32\x1d.session.Attacks_Spellcasting\x12%\n\thitpoints\x18\x1b \x01(\x0b\x32\x12.session.Hitpoints\x12\x1a\n\x12personality_traits\x18\x1c \x01(\t\x12\x0e\n\x06ideals\x18\x1d \x01(\t\x12\r\n\x05\x62onds\x18\x1e \x01(\t\x12\r\n\x05\x66laws\x18\x1f \x01(\t\x12\x14\n\x0c\x64\x61te_created\x18  \x01(\t\x12\x0e\n\x06status\x18! \x01(\t\x12\x16\n\x0estatus_message\x18\" \x01(\t\x12%\n\tequipment\x18# \x03(\x0b\x32\x12.session.Equipment\x12\x12\n\nsession_id\x18$ \x01(\t\x12\x1b\n\x13\x66\x65\x61tures_and_traits\x18% \x01(\t\x12\x0e\n\x06online\x18& \x01(\x08\"\xb5\x02\n\x0cSavingThrows\x12\x10\n\x08strength\x18\x01 \x01(\x11\x12\x1b\n\x13strength_proficient\x18\x02 \x01(\x08\x12\x11\n\tdexterity\x18\x03 \x01(\x11\x12\x1c\n\x14\x64\x65xterity_proficient\x18\x04 \x01(\x08\x12\x14\n\x0c\x63onstitution\x18\x05 \x01(\x11\x12\x1f\n\x17\x63onstitution_proficient\x18\x06 \x01(\x08\x12\x14\n\x0cintelligence\x18\x07 \x01(\x11\x12\x1f\n\x17intelligence_proficient\x18\x08 \x01(\x08\x12\x0e\n\x06wisdom\x18\t \x01(\x11\x12\x19\n\x11wisdom_proficient\x18\n \x01(\x08\x12\x10\n\x08\x63harisma\x18\x0b \x01(\x11\x12\x1a\n\x12\x63harisma_subscript\x18\x0c \x01(\x08\"\x8c\x07\n\x06Skills\x12\x12\n\nacrobatics\x18\x01 \x01(\x11\x12\x1d\n\x15\x61\x63robatics_proficient\x18\x02 \x01(\x08\x12\x17\n\x0f\x61nimal_handling\x18\x03 \x01(\x11\x12\"\n\x1a\x61nimal_handling_proficient\x18\x04 \x01(\x08\x12\x0e\n\x06\x61rcana\x18\x05 \x01(\x11\x12\x19\n\x11\x61rcana_proficient\x18\x06 \x01(\x08\x12\x11\n\tathletics\x18\x07 \x01(\x11\x12\x1c\n\x14\x61thletics_proficient\x18\x08 \x01(\x08\x12\x11\n\tdeception\x18\t \x01(\x11\x12\x1c\n\x14\x64\x65\x63\x65ption_proficient\x18\n \x01(\x08\x12\x0f\n\x07history\x18\x0b \x01(\x11\x12\x1a\n\x12history_proficient\x18\x0c \x01(\x08\x12\x0f\n\x07insight\x18\r \x01(\x11\x12\x1a\n\x12insight_proficient\x18\x0e \x01(\x08\x12\x14\n\x0cintimidation\x18\x0f \x01(\x11\x12\x1f\n\x17intimidation_proficient\x18\x10 \x01(\x08\x12\x15\n\rinvestigation\x18\x11 \x01(\x11\x12 \n\x18investigation_proficient\x18\x12 \x01(\x08\x12\x10\n\x08medicine\x18\x13 \x01(\x11\x12\x1b\n\x13medicine_proficient\x18\x14 \x01(\x08\x12\x0e\n\x06nature\x18\x15 \x01(\x11\x12\x19\n\x11nature_proficient\x18\x16 \x01(\x08\x12\x12\n\nperception\x18\x17 \x01(\x11\x12\x1d\n\x15perception_proficient\x18\x18 \x01(\x08\x12\x13\n\x0bperformance\x18\x19 \x01(\x11\x12\x1e\n\x16performance_proficient\x18\x1a \x01(\x08\x12\x12\n\npersuasion\x18\x1b \x01(\x11\x12\x1d\n\x15persuasion_proficient\x18\x1c \x01(\x08\x12\x10\n\x08religion\x18\x1d \x01(\x11\x12\x1b\n\x13religion_proficient\x18\x1e \x01(\x08\x12\x17\n\x0fsleight_of_hand\x18\x1f \x01(\x11\x12\"\n\x1asleight_of_hand_proficient\x18  \x01(\x08\x12\x0f\n\x07stealth\x18! \x01(\x11\x12\x1a\n\x12stealth_proficient\x18\" \x01(\x08\x12\x10\n\x08survival\x18# \x01(\x11\x12\x1b\n\x13survival_proficient\x18$ \x01(\x08\"\xca\x01\n\x14\x41ttacks_Spellcasting\x12\x0e\n\x06name_1\x18\x01 \x01(\t\x12\x0e\n\x06name_2\x18\x02 \x01(\t\x12\x0e\n\x06name_3\x18\x03 \x01(\t\x12\x13\n\x0b\x61tk_bonus_1\x18\x04 \x01(\x11\x12\x13\n\x0b\x61tk_bonus_2\x18\x05 \x01(\x11\x12\x13\n\x0b\x61tk_bonus_3\x18\x06 \x01(\x11\x12\x15\n\rdamage_type_1\x18\x07 \x01(\t\x12\x15\n\rdamage_type_2\x18\x08 \x01(\t\x12\x15\n\rdamage_type_3\x18\t \x01(\t\"\xd4\x02\n\tHitpoints\x12\x13\n\x0b\x61rmor_class\x18\x01 \x01(\x11\x12\x12\n\ninitiative\x18\x02 \x01(\x11\x12\r\n\x05speed\x18\x03 \x01(\x11\x12\x19\n\x11\x63urrent_hitpoints\x18\x04 \x01(\x11\x12\x15\n\rmax_hitpoints\x18\x05 \x01(\x11\x12\x1b\n\x13temporary_hitpoints\x18\x06 \x01(\x11\x12\x0f\n\x07hitdice\x18\x07 \x01(\t\x12\x1b\n\x13\x64\x65\x61thsaves_success1\x18\x08 \x01(\x08\x12\x1b\n\x13\x64\x65\x61thsaves_success2\x18\t \x01(\x08\x12\x1b\n\x13\x64\x65\x61thsaves_success3\x18\n \x01(\x08\x12\x1c\n\x14\x64\x65\x61thsaves_failures1\x18\x0b \x01(\x08\x12\x1c\n\x14\x64\x65\x61thsaves_failures2\x18\x0c \x01(\x08\x12\x1c\n\x14\x64\x65\x61thsaves_failures3\x18\r \x01(\x08\"(\n\tEquipment\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x11\x32\xde\x05\n\x0fSessionsManager\x12\x38\n\x06\x43reate\x12\x1a.session.NewSessionRequest\x1a\x10.session.Session\"\x00\x12\x30\n\x04Join\x12\x14.session.JoinRequest\x1a\x10.session.Session\"\x00\x12\x35\n\x05Leave\x12\x15.session.LeaveRequest\x1a\x13.session.LeaveReply\"\x00\x12;\n\x06SetMax\x12\x1d.session.SetMaxPlayersRequest\x1a\x10.session.Session\"\x00\x12\x36\n\x04Kick\x12\x1a.session.KickPlayerRequest\x1a\x10.session.Session\"\x00\x12\x36\n\x07SetName\x12\x17.session.SetNameRequest\x1a\x10.session.Session\"\x00\x12<\n\nSetPrivate\x12\x1a.session.SetPrivateRequest\x1a\x10.session.Session\"\x00\x12\x32\n\x04List\x12\x14.session.ListRequest\x1a\x12.session.ListReply\"\x00\x12@\n\x0eGetSessionById\x12\x1a.session.GetSessionRequest\x1a\x10.session.Session\"\x00\x12L\n\x11GetSessionsOfUser\x12!.session.GetSessionsOfUserRequest\x1a\x12.session.ListReply\"\x00\x12\x39\n\x05Ready\x12\x17.session.ReadyUpRequest\x1a\x15.session.ReadyUpReply\"\x00\x12>\n\x0b\x43hangeState\x12\x1b.session.ChangeStateRequest\x1a\x10.session.Session\"\x00\x32\x94\x03\n\x11\x43haractersManager\x12\x45\n\x0f\x43reateCharacter\x12\x1c.session.NewCharacterRequest\x1a\x12.session.Character\"\x00\x12S\n\x0f\x44\x65leteCharacter\x12\x1f.session.DeleteCharacterRequest\x1a\x1d.session.DeleteCharacterReply\"\x00\x12M\n\rGetCharacters\x12\x1d.session.GetCharactersRequest\x1a\x1b.session.GetCharactersReply\"\x00\x12H\n\x0fUpdateCharacter\x12\x1f.session.UpdateCharacterRequest\x1a\x12.session.Character\"\x00\x12J\n\x10GetCharacterById\x12 .session.GetCharacterByIdRequest\x1a\x12.session.Character\"\x00\x62\x06proto3')
 )
 
 
+
+
+_CHANGESTATEREQUEST = _descriptor.Descriptor(
+  name='ChangeStateRequest',
+  full_name='session.ChangeStateRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='auth_id_token', full_name='session.ChangeStateRequest.auth_id_token', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='session_id', full_name='session.ChangeStateRequest.session_id', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='state', full_name='session.ChangeStateRequest.state', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=25,
+  serialized_end=103,
+)
+
+
+_READYUPREQUEST = _descriptor.Descriptor(
+  name='ReadyUpRequest',
+  full_name='session.ReadyUpRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='auth_id_token', full_name='session.ReadyUpRequest.auth_id_token', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='session_id', full_name='session.ReadyUpRequest.session_id', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=105,
+  serialized_end=164,
+)
+
+
+_READYUPREPLY = _descriptor.Descriptor(
+  name='ReadyUpReply',
+  full_name='session.ReadyUpReply',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='session.ReadyUpReply.status', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='status_message', full_name='session.ReadyUpReply.status_message', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=166,
+  serialized_end=220,
+)
 
 
 _GETCHARACTERBYIDREQUEST = _descriptor.Descriptor(
@@ -58,8 +179,8 @@ _GETCHARACTERBYIDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=25,
-  serialized_end=95,
+  serialized_start=222,
+  serialized_end=292,
 )
 
 
@@ -96,8 +217,8 @@ _DELETECHARACTERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=97,
-  serialized_end=166,
+  serialized_start=294,
+  serialized_end=363,
 )
 
 
@@ -134,8 +255,8 @@ _UPDATECHARACTERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=168,
-  serialized_end=254,
+  serialized_start=365,
+  serialized_end=451,
 )
 
 
@@ -172,8 +293,8 @@ _GETCHARACTERSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=256,
-  serialized_end=316,
+  serialized_start=453,
+  serialized_end=513,
 )
 
 
@@ -217,8 +338,8 @@ _GETCHARACTERSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=318,
-  serialized_end=418,
+  serialized_start=515,
+  serialized_end=615,
 )
 
 
@@ -255,8 +376,8 @@ _GETSESSIONSOFUSERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=420,
-  serialized_end=484,
+  serialized_start=617,
+  serialized_end=681,
 )
 
 
@@ -293,8 +414,8 @@ _GETSESSIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=486,
-  serialized_end=548,
+  serialized_start=683,
+  serialized_end=745,
 )
 
 
@@ -345,8 +466,8 @@ _NEWSESSIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=550,
-  serialized_end=644,
+  serialized_start=747,
+  serialized_end=841,
 )
 
 
@@ -390,8 +511,8 @@ _LISTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=646,
-  serialized_end=711,
+  serialized_start=843,
+  serialized_end=908,
 )
 
 
@@ -428,8 +549,8 @@ _LEAVEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=713,
-  serialized_end=770,
+  serialized_start=910,
+  serialized_end=967,
 )
 
 
@@ -466,8 +587,8 @@ _JOINREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=772,
-  serialized_end=828,
+  serialized_start=969,
+  serialized_end=1025,
 )
 
 
@@ -511,8 +632,8 @@ _KICKPLAYERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=830,
-  serialized_end=921,
+  serialized_start=1027,
+  serialized_end=1118,
 )
 
 
@@ -556,8 +677,8 @@ _SETPRIVATEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=923,
-  serialized_end=1002,
+  serialized_start=1120,
+  serialized_end=1199,
 )
 
 
@@ -601,8 +722,8 @@ _SETMAXPLAYERSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1004,
-  serialized_end=1085,
+  serialized_start=1201,
+  serialized_end=1282,
 )
 
 
@@ -646,8 +767,8 @@ _SETNAMEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1087,
-  serialized_end=1160,
+  serialized_start=1284,
+  serialized_end=1357,
 )
 
 
@@ -684,8 +805,8 @@ _LISTREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1162,
-  serialized_end=1225,
+  serialized_start=1359,
+  serialized_end=1422,
 )
 
 
@@ -722,8 +843,8 @@ _LEAVEREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1227,
-  serialized_end=1279,
+  serialized_start=1424,
+  serialized_end=1476,
 )
 
 
@@ -804,6 +925,41 @@ _SESSION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='state', full_name='session.Session.state', index=10,
+      number=11, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='state_meta', full_name='session.Session.state_meta', index=11,
+      number=12, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='state_ready_start_time', full_name='session.Session.state_ready_start_time', index=12,
+      number=13, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='ready_users', full_name='session.Session.ready_users', index=13,
+      number=14, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='last_updated', full_name='session.Session.last_updated', index=14,
+      number=15, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -816,8 +972,8 @@ _SESSION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1282,
-  serialized_end=1508,
+  serialized_start=1479,
+  serialized_end=1830,
 )
 
 
@@ -842,6 +998,13 @@ _USER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='ready_in_this_session', full_name='session.User.ready_in_this_session', index=2,
+      number=3, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -854,8 +1017,8 @@ _USER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1510,
-  serialized_end=1543,
+  serialized_start=1832,
+  serialized_end=1896,
 )
 
 
@@ -892,8 +1055,8 @@ _NEWCHARACTERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1545,
-  serialized_end=1628,
+  serialized_start=1898,
+  serialized_end=1981,
 )
 
 
@@ -930,8 +1093,8 @@ _DELETECHARACTERREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1630,
-  serialized_end=1692,
+  serialized_start=1983,
+  serialized_end=2045,
 )
 
 
@@ -1220,8 +1383,8 @@ _CHARACTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1695,
-  serialized_end=2645,
+  serialized_start=2048,
+  serialized_end=2998,
 )
 
 
@@ -1328,8 +1491,8 @@ _SAVINGTHROWS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2648,
-  serialized_end=2957,
+  serialized_start=3001,
+  serialized_end=3310,
 )
 
 
@@ -1604,8 +1767,8 @@ _SKILLS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2960,
-  serialized_end=3868,
+  serialized_start=3313,
+  serialized_end=4221,
 )
 
 
@@ -1691,8 +1854,8 @@ _ATTACKS_SPELLCASTING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3871,
-  serialized_end=4073,
+  serialized_start=4224,
+  serialized_end=4426,
 )
 
 
@@ -1806,8 +1969,8 @@ _HITPOINTS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4076,
-  serialized_end=4416,
+  serialized_start=4429,
+  serialized_end=4769,
 )
 
 
@@ -1844,8 +2007,8 @@ _EQUIPMENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4418,
-  serialized_end=4458,
+  serialized_start=4771,
+  serialized_end=4811,
 )
 
 _UPDATECHARACTERREQUEST.fields_by_name['character'].message_type = _CHARACTER
@@ -1854,6 +2017,7 @@ _KICKPLAYERREQUEST.fields_by_name['user'].message_type = _USER
 _LISTREPLY.fields_by_name['sessions'].message_type = _SESSION
 _SESSION.fields_by_name['dungeon_master'].message_type = _USER
 _SESSION.fields_by_name['users'].message_type = _USER
+_SESSION.fields_by_name['ready_users'].message_type = _USER
 _NEWCHARACTERREQUEST.fields_by_name['character'].message_type = _CHARACTER
 _CHARACTER.fields_by_name['creator'].message_type = _USER
 _CHARACTER.fields_by_name['saving_throws'].message_type = _SAVINGTHROWS
@@ -1861,6 +2025,9 @@ _CHARACTER.fields_by_name['skills'].message_type = _SKILLS
 _CHARACTER.fields_by_name['attacks_spellcasting'].message_type = _ATTACKS_SPELLCASTING
 _CHARACTER.fields_by_name['hitpoints'].message_type = _HITPOINTS
 _CHARACTER.fields_by_name['equipment'].message_type = _EQUIPMENT
+DESCRIPTOR.message_types_by_name['ChangeStateRequest'] = _CHANGESTATEREQUEST
+DESCRIPTOR.message_types_by_name['ReadyUpRequest'] = _READYUPREQUEST
+DESCRIPTOR.message_types_by_name['ReadyUpReply'] = _READYUPREPLY
 DESCRIPTOR.message_types_by_name['GetCharacterByIdRequest'] = _GETCHARACTERBYIDREQUEST
 DESCRIPTOR.message_types_by_name['DeleteCharacterRequest'] = _DELETECHARACTERREQUEST
 DESCRIPTOR.message_types_by_name['UpdateCharacterRequest'] = _UPDATECHARACTERREQUEST
@@ -1889,6 +2056,27 @@ DESCRIPTOR.message_types_by_name['Attacks_Spellcasting'] = _ATTACKS_SPELLCASTING
 DESCRIPTOR.message_types_by_name['Hitpoints'] = _HITPOINTS
 DESCRIPTOR.message_types_by_name['Equipment'] = _EQUIPMENT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+ChangeStateRequest = _reflection.GeneratedProtocolMessageType('ChangeStateRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CHANGESTATEREQUEST,
+  __module__ = 'server_pb2'
+  # @@protoc_insertion_point(class_scope:session.ChangeStateRequest)
+  ))
+_sym_db.RegisterMessage(ChangeStateRequest)
+
+ReadyUpRequest = _reflection.GeneratedProtocolMessageType('ReadyUpRequest', (_message.Message,), dict(
+  DESCRIPTOR = _READYUPREQUEST,
+  __module__ = 'server_pb2'
+  # @@protoc_insertion_point(class_scope:session.ReadyUpRequest)
+  ))
+_sym_db.RegisterMessage(ReadyUpRequest)
+
+ReadyUpReply = _reflection.GeneratedProtocolMessageType('ReadyUpReply', (_message.Message,), dict(
+  DESCRIPTOR = _READYUPREPLY,
+  __module__ = 'server_pb2'
+  # @@protoc_insertion_point(class_scope:session.ReadyUpReply)
+  ))
+_sym_db.RegisterMessage(ReadyUpReply)
 
 GetCharacterByIdRequest = _reflection.GeneratedProtocolMessageType('GetCharacterByIdRequest', (_message.Message,), dict(
   DESCRIPTOR = _GETCHARACTERBYIDREQUEST,
@@ -2087,8 +2275,8 @@ _SESSIONSMANAGER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=4461,
-  serialized_end=5072,
+  serialized_start=4814,
+  serialized_end=5548,
   methods=[
   _descriptor.MethodDescriptor(
     name='Create',
@@ -2180,6 +2368,24 @@ _SESSIONSMANAGER = _descriptor.ServiceDescriptor(
     output_type=_LISTREPLY,
     options=None,
   ),
+  _descriptor.MethodDescriptor(
+    name='Ready',
+    full_name='session.SessionsManager.Ready',
+    index=10,
+    containing_service=None,
+    input_type=_READYUPREQUEST,
+    output_type=_READYUPREPLY,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='ChangeState',
+    full_name='session.SessionsManager.ChangeState',
+    index=11,
+    containing_service=None,
+    input_type=_CHANGESTATEREQUEST,
+    output_type=_SESSION,
+    options=None,
+  ),
 ])
 _sym_db.RegisterServiceDescriptor(_SESSIONSMANAGER)
 
@@ -2192,8 +2398,8 @@ _CHARACTERSMANAGER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   options=None,
-  serialized_start=5075,
-  serialized_end=5479,
+  serialized_start=5551,
+  serialized_end=5955,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateCharacter',

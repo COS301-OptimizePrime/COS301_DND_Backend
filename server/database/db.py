@@ -46,6 +46,11 @@ user_sessions = Table('usersessions', Base.metadata,
                       Column('sessions_id', Integer, ForeignKey('sessions.id'))
                       )
 
+user_ready_sessions = Table('userreadysession', Base.metadata,
+                            Column('users_id', Integer, ForeignKey('users.id')),
+                            Column('sessions_id', Integer, ForeignKey('sessions.id'))
+                            )
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -80,8 +85,14 @@ class User(Base):
     characters = relationship(
         "Character", back_populates="creator")
 
+    # User can be ready in multiple sessions although this is prevented by the program logic.
+    ready_in_session = relationship(
+        "Session",
+        secondary=user_ready_sessions,
+        order_by="desc(Session.date_created)")
+
     # Last socket
-    #socket = Column(String, nullable=False)
+    # socket = Column(String, nullable=False)
 
     def __repr__(self):
         return "<User(id='%s', uid='%s', name='%s')>" % (
@@ -98,9 +109,29 @@ class Session(Base):
         DateTime,
         nullable=False,
         default=datetime.datetime.now)
+
+    date_updated = Column(
+        DateTime,
+        nullable=False,
+        default=datetime.datetime.now,
+        onupdate=datetime.datetime.now)
+
     max_players = Column(SmallInteger, nullable=False)
     full = Column(Boolean, nullable=False, default=False)
     private = Column(Boolean, nullable=False, default=False)
+
+    state = Column(String(50), nullable=False)
+    state_ready_start_time = Column(
+        DateTime,
+        nullable=False,
+        default=datetime.datetime.now)
+    state_meta = Column(Integer, nullable=False)
+
+    # Session can have many ready users.
+    ready_users = relationship(
+        "User",
+        secondary=user_ready_sessions,
+        back_populates="ready_in_session")
 
     # Session has only one dungeon master
     dungeon_master_id = Column(Integer, ForeignKey('users.id'))
@@ -118,6 +149,7 @@ class Session(Base):
     def __repr__(self):
         return "<Session(id='%s', session_id='%s', name='%s', dungeon_master='%s')>" % (
             self.id, self.session_id, self.name, self.dungeon_master)
+
 
 # class Party(Base):
 # class Combat(Base):

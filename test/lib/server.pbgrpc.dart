@@ -53,6 +53,14 @@ class SessionsManagerClient extends Client {
           '/session.SessionsManager/GetSessionsOfUser',
           (GetSessionsOfUserRequest value) => value.writeToBuffer(),
           (List<int> value) => new ListReply.fromBuffer(value));
+  static final _$ready = new ClientMethod<ReadyUpRequest, ReadyUpReply>(
+      '/session.SessionsManager/Ready',
+      (ReadyUpRequest value) => value.writeToBuffer(),
+      (List<int> value) => new ReadyUpReply.fromBuffer(value));
+  static final _$changeState = new ClientMethod<ChangeStateRequest, Session>(
+      '/session.SessionsManager/ChangeState',
+      (ChangeStateRequest value) => value.writeToBuffer(),
+      (List<int> value) => new Session.fromBuffer(value));
 
   SessionsManagerClient(ClientChannel channel, {CallOptions options})
       : super(channel, options: options);
@@ -123,6 +131,20 @@ class SessionsManagerClient extends Client {
       {CallOptions options}) {
     final call = $createCall(
         _$getSessionsOfUser, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<ReadyUpReply> ready(ReadyUpRequest request,
+      {CallOptions options}) {
+    final call = $createCall(_$ready, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<Session> changeState(ChangeStateRequest request,
+      {CallOptions options}) {
+    final call = $createCall(_$changeState, new Stream.fromIterable([request]),
         options: options);
     return new ResponseFuture(call);
   }
@@ -202,6 +224,20 @@ abstract class SessionsManagerServiceBase extends Service {
         false,
         (List<int> value) => new GetSessionsOfUserRequest.fromBuffer(value),
         (ListReply value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<ReadyUpRequest, ReadyUpReply>(
+        'Ready',
+        ready_Pre,
+        false,
+        false,
+        (List<int> value) => new ReadyUpRequest.fromBuffer(value),
+        (ReadyUpReply value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<ChangeStateRequest, Session>(
+        'ChangeState',
+        changeState_Pre,
+        false,
+        false,
+        (List<int> value) => new ChangeStateRequest.fromBuffer(value),
+        (Session value) => value.writeToBuffer()));
   }
 
   Future<Session> create_Pre(ServiceCall call, Future request) async {
@@ -245,6 +281,14 @@ abstract class SessionsManagerServiceBase extends Service {
     return getSessionsOfUser(call, await request);
   }
 
+  Future<ReadyUpReply> ready_Pre(ServiceCall call, Future request) async {
+    return ready(call, await request);
+  }
+
+  Future<Session> changeState_Pre(ServiceCall call, Future request) async {
+    return changeState(call, await request);
+  }
+
   Future<Session> create(ServiceCall call, NewSessionRequest request);
   Future<Session> join(ServiceCall call, JoinRequest request);
   Future<LeaveReply> leave(ServiceCall call, LeaveRequest request);
@@ -256,6 +300,8 @@ abstract class SessionsManagerServiceBase extends Service {
   Future<Session> getSessionById(ServiceCall call, GetSessionRequest request);
   Future<ListReply> getSessionsOfUser(
       ServiceCall call, GetSessionsOfUserRequest request);
+  Future<ReadyUpReply> ready(ServiceCall call, ReadyUpRequest request);
+  Future<Session> changeState(ServiceCall call, ChangeStateRequest request);
 }
 
 class CharactersManagerClient extends Client {
