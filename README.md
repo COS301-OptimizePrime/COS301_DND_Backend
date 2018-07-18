@@ -1,5 +1,9 @@
 # COS301-DND-Backend
-[![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=develop)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend)
+
+| Branch  |                                                                               Status                                                                               |
+| ------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Master  | [![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=master)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend)  |
+| Develop | [![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=develop)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend) |
 
 Backed API Server
 
@@ -12,6 +16,7 @@ The API "Language" uses ProtocolBuffers
 https://developers.google.com/protocol-buffers/docs/proto3
 
 ## Requirements
+
 ```bash
 sudo apt-get update
 sudo apt-get install python3
@@ -21,16 +26,19 @@ sudo apt-get install dart
 ```
 
 ## Installing packages
+
 ```bash
 make install
 ```
 
 ## Running server
+
 ```bash
 make run
 ```
 
 ## Running the tests
+
 ```bash
 make test
 ```

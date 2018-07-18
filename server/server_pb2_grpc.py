@@ -59,6 +59,26 @@ class SessionsManagerStub(object):
         request_serializer=server__pb2.GetSessionRequest.SerializeToString,
         response_deserializer=server__pb2.Session.FromString,
         )
+    self.GetSessionsOfUser = channel.unary_unary(
+        '/session.SessionsManager/GetSessionsOfUser',
+        request_serializer=server__pb2.GetSessionsOfUserRequest.SerializeToString,
+        response_deserializer=server__pb2.ListReply.FromString,
+        )
+    self.Ready = channel.unary_unary(
+        '/session.SessionsManager/Ready',
+        request_serializer=server__pb2.ReadyUpRequest.SerializeToString,
+        response_deserializer=server__pb2.ReadyUpReply.FromString,
+        )
+    self.ChangeState = channel.unary_unary(
+        '/session.SessionsManager/ChangeState',
+        request_serializer=server__pb2.ChangeStateRequest.SerializeToString,
+        response_deserializer=server__pb2.Session.FromString,
+        )
+    self.ChangeReadyUpExpiryTime = channel.unary_unary(
+        '/session.SessionsManager/ChangeReadyUpExpiryTime',
+        request_serializer=server__pb2.ChangeReadyUpExpiryTimeRequest.SerializeToString,
+        response_deserializer=server__pb2.ChangeReadyUpExpiryTimeResponse.FromString,
+        )
 
 
 class SessionsManagerServicer(object):
@@ -128,6 +148,34 @@ class SessionsManagerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def GetSessionsOfUser(self, request, context):
+    """Get all sessions of user
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def Ready(self, request, context):
+    """Ready up a user in the requested session
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def ChangeState(self, request, context):
+    """Change session state (DM only)
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def ChangeReadyUpExpiryTime(self, request, context):
+    """Change the expiry time of ready up. (DM only)
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_SessionsManagerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -176,7 +224,137 @@ def add_SessionsManagerServicer_to_server(servicer, server):
           request_deserializer=server__pb2.GetSessionRequest.FromString,
           response_serializer=server__pb2.Session.SerializeToString,
       ),
+      'GetSessionsOfUser': grpc.unary_unary_rpc_method_handler(
+          servicer.GetSessionsOfUser,
+          request_deserializer=server__pb2.GetSessionsOfUserRequest.FromString,
+          response_serializer=server__pb2.ListReply.SerializeToString,
+      ),
+      'Ready': grpc.unary_unary_rpc_method_handler(
+          servicer.Ready,
+          request_deserializer=server__pb2.ReadyUpRequest.FromString,
+          response_serializer=server__pb2.ReadyUpReply.SerializeToString,
+      ),
+      'ChangeState': grpc.unary_unary_rpc_method_handler(
+          servicer.ChangeState,
+          request_deserializer=server__pb2.ChangeStateRequest.FromString,
+          response_serializer=server__pb2.Session.SerializeToString,
+      ),
+      'ChangeReadyUpExpiryTime': grpc.unary_unary_rpc_method_handler(
+          servicer.ChangeReadyUpExpiryTime,
+          request_deserializer=server__pb2.ChangeReadyUpExpiryTimeRequest.FromString,
+          response_serializer=server__pb2.ChangeReadyUpExpiryTimeResponse.SerializeToString,
+      ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
       'session.SessionsManager', rpc_method_handlers)
+  server.add_generic_rpc_handlers((generic_handler,))
+
+
+class CharactersManagerStub(object):
+  # missing associated documentation comment in .proto file
+  pass
+
+  def __init__(self, channel):
+    """Constructor.
+
+    Args:
+      channel: A grpc.Channel.
+    """
+    self.CreateCharacter = channel.unary_unary(
+        '/session.CharactersManager/CreateCharacter',
+        request_serializer=server__pb2.NewCharacterRequest.SerializeToString,
+        response_deserializer=server__pb2.Character.FromString,
+        )
+    self.DeleteCharacter = channel.unary_unary(
+        '/session.CharactersManager/DeleteCharacter',
+        request_serializer=server__pb2.DeleteCharacterRequest.SerializeToString,
+        response_deserializer=server__pb2.DeleteCharacterReply.FromString,
+        )
+    self.GetCharacters = channel.unary_unary(
+        '/session.CharactersManager/GetCharacters',
+        request_serializer=server__pb2.GetCharactersRequest.SerializeToString,
+        response_deserializer=server__pb2.GetCharactersReply.FromString,
+        )
+    self.UpdateCharacter = channel.unary_unary(
+        '/session.CharactersManager/UpdateCharacter',
+        request_serializer=server__pb2.UpdateCharacterRequest.SerializeToString,
+        response_deserializer=server__pb2.Character.FromString,
+        )
+    self.GetCharacterById = channel.unary_unary(
+        '/session.CharactersManager/GetCharacterById',
+        request_serializer=server__pb2.GetCharacterByIdRequest.SerializeToString,
+        response_deserializer=server__pb2.Character.FromString,
+        )
+
+
+class CharactersManagerServicer(object):
+  # missing associated documentation comment in .proto file
+  pass
+
+  def CreateCharacter(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def DeleteCharacter(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def GetCharacters(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def UpdateCharacter(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def GetCharacterById(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+
+def add_CharactersManagerServicer_to_server(servicer, server):
+  rpc_method_handlers = {
+      'CreateCharacter': grpc.unary_unary_rpc_method_handler(
+          servicer.CreateCharacter,
+          request_deserializer=server__pb2.NewCharacterRequest.FromString,
+          response_serializer=server__pb2.Character.SerializeToString,
+      ),
+      'DeleteCharacter': grpc.unary_unary_rpc_method_handler(
+          servicer.DeleteCharacter,
+          request_deserializer=server__pb2.DeleteCharacterRequest.FromString,
+          response_serializer=server__pb2.DeleteCharacterReply.SerializeToString,
+      ),
+      'GetCharacters': grpc.unary_unary_rpc_method_handler(
+          servicer.GetCharacters,
+          request_deserializer=server__pb2.GetCharactersRequest.FromString,
+          response_serializer=server__pb2.GetCharactersReply.SerializeToString,
+      ),
+      'UpdateCharacter': grpc.unary_unary_rpc_method_handler(
+          servicer.UpdateCharacter,
+          request_deserializer=server__pb2.UpdateCharacterRequest.FromString,
+          response_serializer=server__pb2.Character.SerializeToString,
+      ),
+      'GetCharacterById': grpc.unary_unary_rpc_method_handler(
+          servicer.GetCharacterById,
+          request_deserializer=server__pb2.GetCharacterByIdRequest.FromString,
+          response_serializer=server__pb2.Character.SerializeToString,
+      ),
+  }
+  generic_handler = grpc.method_handlers_generic_handler(
+      'session.CharactersManager', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))

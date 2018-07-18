@@ -48,6 +48,25 @@ class SessionsManagerClient extends Client {
       '/session.SessionsManager/GetSessionById',
       (GetSessionRequest value) => value.writeToBuffer(),
       (List<int> value) => new Session.fromBuffer(value));
+  static final _$getSessionsOfUser =
+      new ClientMethod<GetSessionsOfUserRequest, ListReply>(
+          '/session.SessionsManager/GetSessionsOfUser',
+          (GetSessionsOfUserRequest value) => value.writeToBuffer(),
+          (List<int> value) => new ListReply.fromBuffer(value));
+  static final _$ready = new ClientMethod<ReadyUpRequest, ReadyUpReply>(
+      '/session.SessionsManager/Ready',
+      (ReadyUpRequest value) => value.writeToBuffer(),
+      (List<int> value) => new ReadyUpReply.fromBuffer(value));
+  static final _$changeState = new ClientMethod<ChangeStateRequest, Session>(
+      '/session.SessionsManager/ChangeState',
+      (ChangeStateRequest value) => value.writeToBuffer(),
+      (List<int> value) => new Session.fromBuffer(value));
+  static final _$changeReadyUpExpiryTime = new ClientMethod<
+          ChangeReadyUpExpiryTimeRequest, ChangeReadyUpExpiryTimeResponse>(
+      '/session.SessionsManager/ChangeReadyUpExpiryTime',
+      (ChangeReadyUpExpiryTimeRequest value) => value.writeToBuffer(),
+      (List<int> value) =>
+          new ChangeReadyUpExpiryTimeResponse.fromBuffer(value));
 
   SessionsManagerClient(ClientChannel channel, {CallOptions options})
       : super(channel, options: options);
@@ -110,6 +129,37 @@ class SessionsManagerClient extends Client {
       {CallOptions options}) {
     final call = $createCall(
         _$getSessionById, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<ListReply> getSessionsOfUser(GetSessionsOfUserRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$getSessionsOfUser, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<ReadyUpReply> ready(ReadyUpRequest request,
+      {CallOptions options}) {
+    final call = $createCall(_$ready, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<Session> changeState(ChangeStateRequest request,
+      {CallOptions options}) {
+    final call = $createCall(_$changeState, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<ChangeReadyUpExpiryTimeResponse> changeReadyUpExpiryTime(
+      ChangeReadyUpExpiryTimeRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$changeReadyUpExpiryTime, new Stream.fromIterable([request]),
         options: options);
     return new ResponseFuture(call);
   }
@@ -182,6 +232,36 @@ abstract class SessionsManagerServiceBase extends Service {
         false,
         (List<int> value) => new GetSessionRequest.fromBuffer(value),
         (Session value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<GetSessionsOfUserRequest, ListReply>(
+        'GetSessionsOfUser',
+        getSessionsOfUser_Pre,
+        false,
+        false,
+        (List<int> value) => new GetSessionsOfUserRequest.fromBuffer(value),
+        (ListReply value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<ReadyUpRequest, ReadyUpReply>(
+        'Ready',
+        ready_Pre,
+        false,
+        false,
+        (List<int> value) => new ReadyUpRequest.fromBuffer(value),
+        (ReadyUpReply value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<ChangeStateRequest, Session>(
+        'ChangeState',
+        changeState_Pre,
+        false,
+        false,
+        (List<int> value) => new ChangeStateRequest.fromBuffer(value),
+        (Session value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<ChangeReadyUpExpiryTimeRequest,
+            ChangeReadyUpExpiryTimeResponse>(
+        'ChangeReadyUpExpiryTime',
+        changeReadyUpExpiryTime_Pre,
+        false,
+        false,
+        (List<int> value) =>
+            new ChangeReadyUpExpiryTimeRequest.fromBuffer(value),
+        (ChangeReadyUpExpiryTimeResponse value) => value.writeToBuffer()));
   }
 
   Future<Session> create_Pre(ServiceCall call, Future request) async {
@@ -220,6 +300,24 @@ abstract class SessionsManagerServiceBase extends Service {
     return getSessionById(call, await request);
   }
 
+  Future<ListReply> getSessionsOfUser_Pre(
+      ServiceCall call, Future request) async {
+    return getSessionsOfUser(call, await request);
+  }
+
+  Future<ReadyUpReply> ready_Pre(ServiceCall call, Future request) async {
+    return ready(call, await request);
+  }
+
+  Future<Session> changeState_Pre(ServiceCall call, Future request) async {
+    return changeState(call, await request);
+  }
+
+  Future<ChangeReadyUpExpiryTimeResponse> changeReadyUpExpiryTime_Pre(
+      ServiceCall call, Future request) async {
+    return changeReadyUpExpiryTime(call, await request);
+  }
+
   Future<Session> create(ServiceCall call, NewSessionRequest request);
   Future<Session> join(ServiceCall call, JoinRequest request);
   Future<LeaveReply> leave(ServiceCall call, LeaveRequest request);
@@ -229,4 +327,160 @@ abstract class SessionsManagerServiceBase extends Service {
   Future<Session> setPrivate(ServiceCall call, SetPrivateRequest request);
   Future<ListReply> list(ServiceCall call, ListRequest request);
   Future<Session> getSessionById(ServiceCall call, GetSessionRequest request);
+  Future<ListReply> getSessionsOfUser(
+      ServiceCall call, GetSessionsOfUserRequest request);
+  Future<ReadyUpReply> ready(ServiceCall call, ReadyUpRequest request);
+  Future<Session> changeState(ServiceCall call, ChangeStateRequest request);
+  Future<ChangeReadyUpExpiryTimeResponse> changeReadyUpExpiryTime(
+      ServiceCall call, ChangeReadyUpExpiryTimeRequest request);
+}
+
+class CharactersManagerClient extends Client {
+  static final _$createCharacter =
+      new ClientMethod<NewCharacterRequest, Character>(
+          '/session.CharactersManager/CreateCharacter',
+          (NewCharacterRequest value) => value.writeToBuffer(),
+          (List<int> value) => new Character.fromBuffer(value));
+  static final _$deleteCharacter =
+      new ClientMethod<DeleteCharacterRequest, DeleteCharacterReply>(
+          '/session.CharactersManager/DeleteCharacter',
+          (DeleteCharacterRequest value) => value.writeToBuffer(),
+          (List<int> value) => new DeleteCharacterReply.fromBuffer(value));
+  static final _$getCharacters =
+      new ClientMethod<GetCharactersRequest, GetCharactersReply>(
+          '/session.CharactersManager/GetCharacters',
+          (GetCharactersRequest value) => value.writeToBuffer(),
+          (List<int> value) => new GetCharactersReply.fromBuffer(value));
+  static final _$updateCharacter =
+      new ClientMethod<UpdateCharacterRequest, Character>(
+          '/session.CharactersManager/UpdateCharacter',
+          (UpdateCharacterRequest value) => value.writeToBuffer(),
+          (List<int> value) => new Character.fromBuffer(value));
+  static final _$getCharacterById =
+      new ClientMethod<GetCharacterByIdRequest, Character>(
+          '/session.CharactersManager/GetCharacterById',
+          (GetCharacterByIdRequest value) => value.writeToBuffer(),
+          (List<int> value) => new Character.fromBuffer(value));
+
+  CharactersManagerClient(ClientChannel channel, {CallOptions options})
+      : super(channel, options: options);
+
+  ResponseFuture<Character> createCharacter(NewCharacterRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$createCharacter, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<DeleteCharacterReply> deleteCharacter(
+      DeleteCharacterRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$deleteCharacter, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<GetCharactersReply> getCharacters(GetCharactersRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$getCharacters, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<Character> updateCharacter(UpdateCharacterRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$updateCharacter, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<Character> getCharacterById(GetCharacterByIdRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$getCharacterById, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+}
+
+abstract class CharactersManagerServiceBase extends Service {
+  String get $name => 'session.CharactersManager';
+
+  CharactersManagerServiceBase() {
+    $addMethod(new ServiceMethod<NewCharacterRequest, Character>(
+        'CreateCharacter',
+        createCharacter_Pre,
+        false,
+        false,
+        (List<int> value) => new NewCharacterRequest.fromBuffer(value),
+        (Character value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<DeleteCharacterRequest, DeleteCharacterReply>(
+        'DeleteCharacter',
+        deleteCharacter_Pre,
+        false,
+        false,
+        (List<int> value) => new DeleteCharacterRequest.fromBuffer(value),
+        (DeleteCharacterReply value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<GetCharactersRequest, GetCharactersReply>(
+        'GetCharacters',
+        getCharacters_Pre,
+        false,
+        false,
+        (List<int> value) => new GetCharactersRequest.fromBuffer(value),
+        (GetCharactersReply value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<UpdateCharacterRequest, Character>(
+        'UpdateCharacter',
+        updateCharacter_Pre,
+        false,
+        false,
+        (List<int> value) => new UpdateCharacterRequest.fromBuffer(value),
+        (Character value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<GetCharacterByIdRequest, Character>(
+        'GetCharacterById',
+        getCharacterById_Pre,
+        false,
+        false,
+        (List<int> value) => new GetCharacterByIdRequest.fromBuffer(value),
+        (Character value) => value.writeToBuffer()));
+  }
+
+  Future<Character> createCharacter_Pre(
+      ServiceCall call, Future request) async {
+    return createCharacter(call, await request);
+  }
+
+  Future<DeleteCharacterReply> deleteCharacter_Pre(
+      ServiceCall call, Future request) async {
+    return deleteCharacter(call, await request);
+  }
+
+  Future<GetCharactersReply> getCharacters_Pre(
+      ServiceCall call, Future request) async {
+    return getCharacters(call, await request);
+  }
+
+  Future<Character> updateCharacter_Pre(
+      ServiceCall call, Future request) async {
+    return updateCharacter(call, await request);
+  }
+
+  Future<Character> getCharacterById_Pre(
+      ServiceCall call, Future request) async {
+    return getCharacterById(call, await request);
+  }
+
+  Future<Character> createCharacter(
+      ServiceCall call, NewCharacterRequest request);
+  Future<DeleteCharacterReply> deleteCharacter(
+      ServiceCall call, DeleteCharacterRequest request);
+  Future<GetCharactersReply> getCharacters(
+      ServiceCall call, GetCharactersRequest request);
+  Future<Character> updateCharacter(
+      ServiceCall call, UpdateCharacterRequest request);
+  Future<Character> getCharacterById(
+      ServiceCall call, GetCharacterByIdRequest request);
 }
