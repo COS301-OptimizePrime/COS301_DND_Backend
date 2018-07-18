@@ -35,11 +35,6 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         return self.conn
 
     def _conecterToORMCharacter(self, character, request):
-        # TODO: Double check all values
-        # TODO: Complete all converstions
-        # TODO: Maybe move into a different class
-        # TODO: Write a full test for each value (Random values?)
-
         character.character_id = request.character_id
         character.name = request.name
         character.strength = request.strength

@@ -1034,8 +1034,65 @@ def test_ready_up():
             session_id=session.session_id))
     assert response.status == 'SUCCESS'
     assert response.state == 'EXPLORING'
-    assert response.state_meta != org_state_meta
+    assert response.state_meta > org_state_meta
     assert response.state_ready_start_time == org_state_ready
+
+def test_expiry_readyup_session():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    session = _create_rpc_good_login()
+    # DM
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+    response = stub.ChangeReadyUpExpiryTime(
+        server_pb2.ChangeReadyUpExpiryTimeRequest(
+            auth_id_token=token,
+            session_id=session.session_id,
+            ready_up_expiry_time=0))
+    assert response.status == 'SUCCESS'
+
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser4@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.Join(
+        server_pb2.JoinRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+    assert response.status == 'SUCCESS'
+
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser3@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.Join(
+        server_pb2.JoinRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+
+    assert response.status == 'SUCCESS'
+
+    # Other users should now be able to ready up
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser4@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.Ready(
+        server_pb2.ReadyUpRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+    assert response.status == 'FAILED'
+
 
 
 # def test_max_sessions_for_user():

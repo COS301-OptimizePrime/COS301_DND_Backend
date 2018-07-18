@@ -61,6 +61,12 @@ class SessionsManagerClient extends Client {
       '/session.SessionsManager/ChangeState',
       (ChangeStateRequest value) => value.writeToBuffer(),
       (List<int> value) => new Session.fromBuffer(value));
+  static final _$changeReadyUpExpiryTime = new ClientMethod<
+          ChangeReadyUpExpiryTimeRequest, ChangeReadyUpExpiryTimeResponse>(
+      '/session.SessionsManager/ChangeReadyUpExpiryTime',
+      (ChangeReadyUpExpiryTimeRequest value) => value.writeToBuffer(),
+      (List<int> value) =>
+          new ChangeReadyUpExpiryTimeResponse.fromBuffer(value));
 
   SessionsManagerClient(ClientChannel channel, {CallOptions options})
       : super(channel, options: options);
@@ -145,6 +151,15 @@ class SessionsManagerClient extends Client {
   ResponseFuture<Session> changeState(ChangeStateRequest request,
       {CallOptions options}) {
     final call = $createCall(_$changeState, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<ChangeReadyUpExpiryTimeResponse> changeReadyUpExpiryTime(
+      ChangeReadyUpExpiryTimeRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$changeReadyUpExpiryTime, new Stream.fromIterable([request]),
         options: options);
     return new ResponseFuture(call);
   }
@@ -238,6 +253,15 @@ abstract class SessionsManagerServiceBase extends Service {
         false,
         (List<int> value) => new ChangeStateRequest.fromBuffer(value),
         (Session value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<ChangeReadyUpExpiryTimeRequest,
+            ChangeReadyUpExpiryTimeResponse>(
+        'ChangeReadyUpExpiryTime',
+        changeReadyUpExpiryTime_Pre,
+        false,
+        false,
+        (List<int> value) =>
+            new ChangeReadyUpExpiryTimeRequest.fromBuffer(value),
+        (ChangeReadyUpExpiryTimeResponse value) => value.writeToBuffer()));
   }
 
   Future<Session> create_Pre(ServiceCall call, Future request) async {
@@ -289,6 +313,11 @@ abstract class SessionsManagerServiceBase extends Service {
     return changeState(call, await request);
   }
 
+  Future<ChangeReadyUpExpiryTimeResponse> changeReadyUpExpiryTime_Pre(
+      ServiceCall call, Future request) async {
+    return changeReadyUpExpiryTime(call, await request);
+  }
+
   Future<Session> create(ServiceCall call, NewSessionRequest request);
   Future<Session> join(ServiceCall call, JoinRequest request);
   Future<LeaveReply> leave(ServiceCall call, LeaveRequest request);
@@ -302,6 +331,8 @@ abstract class SessionsManagerServiceBase extends Service {
       ServiceCall call, GetSessionsOfUserRequest request);
   Future<ReadyUpReply> ready(ServiceCall call, ReadyUpRequest request);
   Future<Session> changeState(ServiceCall call, ChangeStateRequest request);
+  Future<ChangeReadyUpExpiryTimeResponse> changeReadyUpExpiryTime(
+      ServiceCall call, ChangeReadyUpExpiryTimeRequest request);
 }
 
 class CharactersManagerClient extends Client {

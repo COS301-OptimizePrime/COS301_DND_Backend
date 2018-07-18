@@ -120,6 +120,8 @@ class Session(Base):
     full = Column(Boolean, nullable=False, default=False)
     private = Column(Boolean, nullable=False, default=False)
 
+    ready_up_expiry_time = Column(SmallInteger, nullable=False)
+
     state = Column(String(50), nullable=False)
     state_ready_start_time = Column(
         DateTime,

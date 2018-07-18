@@ -40,6 +40,10 @@ service SessionsManager {
     // Change session state (DM only)
     rpc ChangeState (ChangeStateRequest) returns (Session) {
     }
+
+    // Change the expiry time of ready up. (DM only)
+    rpc ChangeReadyUpExpiryTime (ChangeReadyUpExpiryTimeRequest) returns (ChangeReadyUpExpiryTimeResponse) {
+    }
 }
 
 service CharactersManager {
@@ -53,6 +57,17 @@ service CharactersManager {
     }
     rpc GetCharacterById (GetCharacterByIdRequest) returns (Character) {
     }
+}
+
+message ChangeReadyUpExpiryTimeRequest {
+    string auth_id_token = 1;
+    string session_id = 2;
+    uint32 ready_up_expiry_time = 3;
+}
+
+message ChangeReadyUpExpiryTimeResponse {
+    string status = 1;
+    string status_message = 2;
 }
 
 message ChangeStateRequest {
@@ -211,6 +226,7 @@ message Session {
     string state_ready_start_time = 13;
     repeated User ready_users = 14;
     string last_updated = 15;
+    uint32 ready_up_expiry_time = 16;
 }
 
 message User {

@@ -74,6 +74,11 @@ class SessionsManagerStub(object):
         request_serializer=server__pb2.ChangeStateRequest.SerializeToString,
         response_deserializer=server__pb2.Session.FromString,
         )
+    self.ChangeReadyUpExpiryTime = channel.unary_unary(
+        '/session.SessionsManager/ChangeReadyUpExpiryTime',
+        request_serializer=server__pb2.ChangeReadyUpExpiryTimeRequest.SerializeToString,
+        response_deserializer=server__pb2.ChangeReadyUpExpiryTimeResponse.FromString,
+        )
 
 
 class SessionsManagerServicer(object):
@@ -164,6 +169,13 @@ class SessionsManagerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def ChangeReadyUpExpiryTime(self, request, context):
+    """Change the expiry time of ready up. (DM only)
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_SessionsManagerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -226,6 +238,11 @@ def add_SessionsManagerServicer_to_server(servicer, server):
           servicer.ChangeState,
           request_deserializer=server__pb2.ChangeStateRequest.FromString,
           response_serializer=server__pb2.Session.SerializeToString,
+      ),
+      'ChangeReadyUpExpiryTime': grpc.unary_unary_rpc_method_handler(
+          servicer.ChangeReadyUpExpiryTime,
+          request_deserializer=server__pb2.ChangeReadyUpExpiryTimeRequest.FromString,
+          response_serializer=server__pb2.ChangeReadyUpExpiryTimeResponse.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(

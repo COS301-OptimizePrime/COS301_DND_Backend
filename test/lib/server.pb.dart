@@ -9,6 +9,84 @@ import 'dart:core' show int, bool, double, String, List, override;
 
 import 'package:protobuf/protobuf.dart';
 
+class ChangeReadyUpExpiryTimeRequest extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('ChangeReadyUpExpiryTimeRequest')
+    ..aOS(1, 'authIdToken')
+    ..aOS(2, 'sessionId')
+    ..a<int>(3, 'readyUpExpiryTime', PbFieldType.OU3)
+    ..hasRequiredFields = false
+  ;
+
+  ChangeReadyUpExpiryTimeRequest() : super();
+  ChangeReadyUpExpiryTimeRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  ChangeReadyUpExpiryTimeRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  ChangeReadyUpExpiryTimeRequest clone() => new ChangeReadyUpExpiryTimeRequest()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static ChangeReadyUpExpiryTimeRequest create() => new ChangeReadyUpExpiryTimeRequest();
+  static PbList<ChangeReadyUpExpiryTimeRequest> createRepeated() => new PbList<ChangeReadyUpExpiryTimeRequest>();
+  static ChangeReadyUpExpiryTimeRequest getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlyChangeReadyUpExpiryTimeRequest();
+    return _defaultInstance;
+  }
+  static ChangeReadyUpExpiryTimeRequest _defaultInstance;
+  static void $checkItem(ChangeReadyUpExpiryTimeRequest v) {
+    if (v is! ChangeReadyUpExpiryTimeRequest) checkItemFailed(v, 'ChangeReadyUpExpiryTimeRequest');
+  }
+
+  String get authIdToken => $_getS(0, '');
+  set authIdToken(String v) { $_setString(0, v); }
+  bool hasAuthIdToken() => $_has(0);
+  void clearAuthIdToken() => clearField(1);
+
+  String get sessionId => $_getS(1, '');
+  set sessionId(String v) { $_setString(1, v); }
+  bool hasSessionId() => $_has(1);
+  void clearSessionId() => clearField(2);
+
+  int get readyUpExpiryTime => $_get(2, 0);
+  set readyUpExpiryTime(int v) { $_setUnsignedInt32(2, v); }
+  bool hasReadyUpExpiryTime() => $_has(2);
+  void clearReadyUpExpiryTime() => clearField(3);
+}
+
+class _ReadonlyChangeReadyUpExpiryTimeRequest extends ChangeReadyUpExpiryTimeRequest with ReadonlyMessageMixin {}
+
+class ChangeReadyUpExpiryTimeResponse extends GeneratedMessage {
+  static final BuilderInfo _i = new BuilderInfo('ChangeReadyUpExpiryTimeResponse')
+    ..aOS(1, 'status')
+    ..aOS(2, 'statusMessage')
+    ..hasRequiredFields = false
+  ;
+
+  ChangeReadyUpExpiryTimeResponse() : super();
+  ChangeReadyUpExpiryTimeResponse.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  ChangeReadyUpExpiryTimeResponse.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  ChangeReadyUpExpiryTimeResponse clone() => new ChangeReadyUpExpiryTimeResponse()..mergeFromMessage(this);
+  BuilderInfo get info_ => _i;
+  static ChangeReadyUpExpiryTimeResponse create() => new ChangeReadyUpExpiryTimeResponse();
+  static PbList<ChangeReadyUpExpiryTimeResponse> createRepeated() => new PbList<ChangeReadyUpExpiryTimeResponse>();
+  static ChangeReadyUpExpiryTimeResponse getDefault() {
+    if (_defaultInstance == null) _defaultInstance = new _ReadonlyChangeReadyUpExpiryTimeResponse();
+    return _defaultInstance;
+  }
+  static ChangeReadyUpExpiryTimeResponse _defaultInstance;
+  static void $checkItem(ChangeReadyUpExpiryTimeResponse v) {
+    if (v is! ChangeReadyUpExpiryTimeResponse) checkItemFailed(v, 'ChangeReadyUpExpiryTimeResponse');
+  }
+
+  String get status => $_getS(0, '');
+  set status(String v) { $_setString(0, v); }
+  bool hasStatus() => $_has(0);
+  void clearStatus() => clearField(1);
+
+  String get statusMessage => $_getS(1, '');
+  set statusMessage(String v) { $_setString(1, v); }
+  bool hasStatusMessage() => $_has(1);
+  void clearStatusMessage() => clearField(2);
+}
+
+class _ReadonlyChangeReadyUpExpiryTimeResponse extends ChangeReadyUpExpiryTimeResponse with ReadonlyMessageMixin {}
+
 class ChangeStateRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ChangeStateRequest')
     ..aOS(1, 'authIdToken')
@@ -794,6 +872,7 @@ class Session extends GeneratedMessage {
     ..aOS(13, 'stateReadyStartTime')
     ..pp<User>(14, 'readyUsers', PbFieldType.PM, User.$checkItem, User.create)
     ..aOS(15, 'lastUpdated')
+    ..a<int>(16, 'readyUpExpiryTime', PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
 
@@ -881,6 +960,11 @@ class Session extends GeneratedMessage {
   set lastUpdated(String v) { $_setString(14, v); }
   bool hasLastUpdated() => $_has(14);
   void clearLastUpdated() => clearField(15);
+
+  int get readyUpExpiryTime => $_get(15, 0);
+  set readyUpExpiryTime(int v) { $_setUnsignedInt32(15, v); }
+  bool hasReadyUpExpiryTime() => $_has(15);
+  void clearReadyUpExpiryTime() => clearField(16);
 }
 
 class _ReadonlySession extends Session with ReadonlyMessageMixin {}

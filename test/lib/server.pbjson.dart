@@ -4,6 +4,23 @@
 // ignore_for_file: non_constant_identifier_names,library_prefixes
 library session_server_pbjson;
 
+const ChangeReadyUpExpiryTimeRequest$json = const {
+  '1': 'ChangeReadyUpExpiryTimeRequest',
+  '2': const [
+    const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
+    const {'1': 'session_id', '3': 2, '4': 1, '5': 9, '10': 'sessionId'},
+    const {'1': 'ready_up_expiry_time', '3': 3, '4': 1, '5': 13, '10': 'readyUpExpiryTime'},
+  ],
+};
+
+const ChangeReadyUpExpiryTimeResponse$json = const {
+  '1': 'ChangeReadyUpExpiryTimeResponse',
+  '2': const [
+    const {'1': 'status', '3': 1, '4': 1, '5': 9, '10': 'status'},
+    const {'1': 'status_message', '3': 2, '4': 1, '5': 9, '10': 'statusMessage'},
+  ],
+};
+
 const ChangeStateRequest$json = const {
   '1': 'ChangeStateRequest',
   '2': const [
@@ -191,6 +208,7 @@ const Session$json = const {
     const {'1': 'state_ready_start_time', '3': 13, '4': 1, '5': 9, '10': 'stateReadyStartTime'},
     const {'1': 'ready_users', '3': 14, '4': 3, '5': 11, '6': '.session.User', '10': 'readyUsers'},
     const {'1': 'last_updated', '3': 15, '4': 1, '5': 9, '10': 'lastUpdated'},
+    const {'1': 'ready_up_expiry_time', '3': 16, '4': 1, '5': 13, '10': 'readyUpExpiryTime'},
   ],
 };
 

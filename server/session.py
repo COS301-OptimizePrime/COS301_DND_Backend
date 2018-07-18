@@ -37,6 +37,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         sessionObj.state_meta = session.state_meta
         sessionObj.state_ready_start_time = str(session.state_ready_start_time)
 
+        sessionObj.ready_up_expiry_time = session.ready_up_expiry_time
+
         sessionObj.last_updated = str(session.date_updated)
 
         sessionObj.users.extend([])
@@ -119,7 +121,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 max_players=_max_players,
                 private=_private,
                 state="PAUSED",
-                state_meta=0
+                state_meta=0,
+                ready_up_expiry_time=20  # Default expiry time
             )
             if session.max_players <= len(session.users_in_session):
                 session.full = True
@@ -347,7 +350,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[Ready] Can't ready up now. Not in the ready up phase!")
             else:
                 # If ready up older than 20 seconds it has expired
-                if session.state_ready_start_time < datetime.datetime.now() - datetime.timedelta(seconds=20):
+                if session.state_ready_start_time < datetime.datetime.now() - datetime.timedelta(seconds=session.ready_up_expiry_time):
                     # Expired ready up phase reset.
                     # Delete all ready users in session
 
@@ -383,6 +386,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             session.ready_users.append(user)
 
+            # TODO: There should be a more optimal way of doing this.
             if len(session.ready_users) == len(session.users_in_session):
                 self.logger.info("[Ready] Everyone is ready starting game!")
                 # All users are ready change the state
@@ -686,6 +690,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 status="FAILED",
                 status_message="Database error!")
         finally:
+            # TODO: Investigate is this worsens performance
             self.conn.close()
 
     # This is a Dungeon Master only command.
@@ -748,10 +753,67 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         finally:
             self.conn.close()
 
-    def List(self, request, context):
-        #if not context.is_active():
-        #    self.__del__()
+        # This is a Dungeon Master only command.
 
+    def ChangeReadyUpExpiryTime(self, request, context):
+        self.logger.info("ChangeReadyUpExpiryTime called!")
+
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.error("Failed to verify login!")
+
+        _session_id = request.session_id
+
+        try:
+            self._connectDatabase()
+            session = self.conn.query(db.Session).filter(
+                db.Session.session_id == _session_id).first()
+
+            if not session:
+                self.logger.error(
+                    "[ChangeReadyUpExpiryTime] Failed to update expiry time of ready up of session,"
+                    " that ID does not exist!")
+
+                return server_pb2.Session(
+                    session_id="NULL",
+                    name="NULL",
+                    status="FAILED",
+                    status_message="[ChangeReadyUpExpiryTime] No session with that ID exists!")
+
+            if session.dungeon_master.uid != uid:
+                self.logger.error(
+                    "[ChangeReadyUpExpiryTime] Unauthorised user tried to modify"
+                    " (Not the dungeon master)")
+
+                return server_pb2.Session(
+                    session_id="NULL",
+                    name="NULL",
+                    status="FAILED",
+                    status_message="[ChangeReadyUpExpiryTime] You must be the dungeon"
+                                   " master to use this command!")
+
+            session.ready_up_expiry_time = request.ready_up_expiry_time
+
+            self.conn.commit()
+
+            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
+
+            return grpcSession
+        except exc.SQLAlchemyError:
+            self.logger.error("[ChangeReadyUpExpiryTime] SQLAlchemyError!")
+            return server_pb2.Session(
+                session_id="NULL",
+                name="NULL",
+                status="FAILED",
+                status_message="Database error!")
+        finally:
+            self.conn.close()
+
+    def List(self, request, context):
         logger = logging.getLogger("cos301-DND")
         logger.info("List sessions called!")
 
@@ -856,6 +918,17 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status="FAILED",
                     status_message="[GetSessionById] No session"
                                    " with that ID exists!")
+
+            if session.state_ready_start_time < datetime.datetime.now() - datetime.timedelta(seconds=session.ready_up_expiry_time):
+                # Expired ready up phase reset.
+                # Delete all ready users in session
+
+                for _user in session.ready_users:
+                    session.ready_users.remove(_user)
+
+                # Update state
+                session.state = "PAUSED"
+                self.conn.commit()
 
             grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
