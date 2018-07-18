@@ -18,15 +18,15 @@ password = \"\"
 def getConfigDict(configPath):
     configDict = None
     try:
-        configRaw = codecs.open(configPath, "rb", encoding='utf-8').read()
+        configraw = codecs.open(configPath, "rb", encoding='utf-8').read()
     except IOError:
         # Failed to read, create new config file.
         fh = open(configPath, "w")
         fh.write(default_config)
         fh.close()
-        configRaw = codecs.open(configPath, "rb", encoding='utf-8').read()
+        configraw = codecs.open(configPath, "rb", encoding='utf-8').read()
     try:
-        configDict = toml.loads(configRaw)
+        configDict = toml.loads(configraw)
     except toml.TomlDecodeError as tomlExp:
         for string in tomlExp.args:
             print("ERROR: Invalid TOML syntax. " + string)
@@ -43,3 +43,4 @@ def getConfigDict(configPath):
     return configDict
 
 val = getConfigDict("config.toml")
+

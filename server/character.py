@@ -11,6 +11,7 @@ import log
 import server_pb2
 import server_pb2_grpc
 
+
 class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
     conn = None
     logger = logging.getLogger("cos301-DND")
@@ -28,39 +29,33 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 status="FAILED",
                 status_message="Database error!")
 
-
     def _connectDatabase(self):
         if not self.conn:
             self.conn = db.connect()
         return self.conn
 
     def _conecterToORMCharacter(self, character, request):
-        # TODO: Double check all values
-        # TODO: Complete all converstions
-        # TODO: Maybe move into a different class
-        # TODO: Write a full test for each value (Random values?)
-
-        character.character_id=request.character_id
-        character.name=request.name
-        character.strength=request.strength
-        character.strength_subscript=request.strength_subscript
-        character.dexterity=request.dexterity
-        character.dexterity_subscript=request.dexterity_subscript
-        character.constitution=request.constitution
-        character.constitution_subscript=request.constitution_subscript
-        character.intelligence=request.intelligence
-        character.intelligence_subscript=request.intelligence_subscript
-        character.wisdom=request.wisdom
-        character.wisdom_subscript=request.wisdom_subscript
-        character.charisma=request.charisma
-        character.charisma_subscript=request.charisma_subscript
-        character.character_class=request.character_class
-        character.race=request.race
-        character.xp=request.xp
-        character.alignment=request.alignment
-        character.background=request.background
-        character.inspiration=request.inspiration
-        character.proficiency_bonus=request.proficiency_bonus
+        character.character_id = request.character_id
+        character.name = request.name
+        character.strength = request.strength
+        character.strength_subscript = request.strength_subscript
+        character.dexterity = request.dexterity
+        character.dexterity_subscript = request.dexterity_subscript
+        character.constitution = request.constitution
+        character.constitution_subscript = request.constitution_subscript
+        character.intelligence = request.intelligence
+        character.intelligence_subscript = request.intelligence_subscript
+        character.wisdom = request.wisdom
+        character.wisdom_subscript = request.wisdom_subscript
+        character.charisma = request.charisma
+        character.charisma_subscript = request.charisma_subscript
+        character.character_class = request.character_class
+        character.race = request.race
+        character.xp = request.xp
+        character.alignment = request.alignment
+        character.background = request.background
+        character.inspiration = request.inspiration
+        character.proficiency_bonus = request.proficiency_bonus
 
         character.session_id = request.session_id
         character.features_and_traits = request.features_and_traits
@@ -139,8 +134,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
 
         for equipment in character.equipment:
             self.conn.delete(equipment)
-        
-        #Equipment
+
+        # Equipment
         for equipment in request.equipment:
             _eq = db.Equipment(
                 character_id=character.character_id,
@@ -269,7 +264,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         self.logger.debug(context.peer())
         self.logger.info("UpdateCharacter called!")
 
-        _auth_id_token = request.auth_id_token   
+        _auth_id_token = request.auth_id_token
         _character = request.character
         try:
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
@@ -295,7 +290,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             self._connectDatabase()
 
             # Check if the user owns the character
-            character = self.conn.query(db.Character).filter(db.Character.character_id == _character.character_id).first()
+            character = self.conn.query(db.Character).filter(
+                db.Character.character_id == _character.character_id).first()
             if not character:
                 self.logger.error("Character doesn't exist!")
                 return server_pb2.Character(
@@ -314,7 +310,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
 
             self.logger.info("Updated character!")
 
-            return self._convertToGrpcCharacter(character=character,status="SUCCESS")
+            return self._convertToGrpcCharacter(
+                character=character, status="SUCCESS")
         except exc.SQLAlchemyError as e:
             self.logger.error(e)
             self.logger.error("[UpdateCharacter] SQLAlchemyError!")
@@ -357,10 +354,12 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             _characters = []
 
             for _character in _characters_query:
-                charObj = self._convertToGrpcCharacter(_character, status="SUCCESS")
+                charObj = self._convertToGrpcCharacter(
+                    _character, status="SUCCESS")
                 _characters.append(charObj)
 
-            return server_pb2.GetCharactersReply(status="SUCCESS", characters=_characters)
+            return server_pb2.GetCharactersReply(
+                status="SUCCESS", characters=_characters)
         except exc.SQLAlchemyError:
             self.logger.error("[GetCharacters] SQLAlchemyError!")
             return server_pb2.GetCharactersReply(
@@ -396,7 +395,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             self.logger.debug("Successfully verified token! UID=" + uid)
 
             # Check if the character is owned by the user.
-            character = self.conn.query(db.Character).filter(db.Character.character_id == _character_id).first()
+            character = self.conn.query(db.Character).filter(
+                db.Character.character_id == _character_id).first()
             if not character:
                 self.logger.error("Character doesn't exist!")
                 return server_pb2.DeleteCharacterReply(
@@ -418,8 +418,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             self.logger.debug("Successfully deleted character!")
 
             return server_pb2.DeleteCharacterReply(
-                    status="SUCCESS",
-                    status_message="[Delete Character] Successfully deleted character!")
+                status="SUCCESS",
+                status_message="[Delete Character] Successfully deleted character!")
 
         except exc.SQLAlchemyError:
             self.logger.error("[DeleteCharacters] SQLAlchemyError!")
@@ -428,7 +428,6 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 status_message="Database error!")
         finally:
             self.conn.close()
-
 
     def GetCharacterById(self, request, context):
         self.logger.debug(context.peer())
@@ -457,7 +456,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             self.logger.debug("Successfully verified token! UID=" + uid)
 
             # Check if the user owns the character
-            character = self.conn.query(db.Character).filter(db.Character.character_id == _character_id).first()
+            character = self.conn.query(db.Character).filter(
+                db.Character.character_id == _character_id).first()
             if not character:
                 self.logger.error("Character doesn't exist!")
                 return server_pb2.Character(
@@ -472,7 +472,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                     status_message="[GetCharacterById] Character doesn't exist!")
 
             # Else return the character
-            return self._convertToGrpcCharacter(character=character, status="SUCCESS")
+            return self._convertToGrpcCharacter(
+                character=character, status="SUCCESS")
         except exc.SQLAlchemyError:
             self.logger.error("[GetCharacterById] SQLAlchemyError!")
             return server_pb2.Character(
@@ -480,7 +481,6 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 status_message="Database error!")
         finally:
             self.conn.close()
-
 
     def CreateCharacter(self, request, context):
         self.logger.debug(context.peer())
@@ -518,7 +518,6 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                     status="FAILED",
                     status_message="[CreateChar] User has too many characters already!")
 
-            
             # Name may not be blank
             if len(request.character.name.strip()) == 0:
                 self.logger.error(
@@ -587,7 +586,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 wisdom_proficient=_saving_throws.wisdom_proficient,
                 charisma=_saving_throws.charisma,
                 charisma_subscript=_saving_throws.charisma_subscript
-                )
+            )
 
             _skills = server_pb2.Skills()
             _skills.acrobatics = request.character.skills.acrobatics
@@ -684,19 +683,19 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             _hitpoints.deathsaves_failures3 = request.character.hitpoints.deathsaves_failures3
 
             hitpoints_db = db.Hitpoints(
-                armor_class = _hitpoints.armor_class,
-                initiative = _hitpoints.initiative,
-                speed = _hitpoints.speed,
-                current_hitpoints = _hitpoints.current_hitpoints,
-                max_hitpoints = _hitpoints.max_hitpoints,
-                temporary_hitpoints = _hitpoints.temporary_hitpoints,
-                hitdice = _hitpoints.hitdice,
-                deathsaves_success1 = _hitpoints.deathsaves_success1,
-                deathsaves_success2 = _hitpoints.deathsaves_success2,
-                deathsaves_success3 = _hitpoints.deathsaves_success3,
-                deathsaves_failures1 = _hitpoints.deathsaves_failures1,
-                deathsaves_failures2 = _hitpoints.deathsaves_failures2,
-                deathsaves_failures3 = _hitpoints.deathsaves_failures3
+                armor_class=_hitpoints.armor_class,
+                initiative=_hitpoints.initiative,
+                speed=_hitpoints.speed,
+                current_hitpoints=_hitpoints.current_hitpoints,
+                max_hitpoints=_hitpoints.max_hitpoints,
+                temporary_hitpoints=_hitpoints.temporary_hitpoints,
+                hitdice=_hitpoints.hitdice,
+                deathsaves_success1=_hitpoints.deathsaves_success1,
+                deathsaves_success2=_hitpoints.deathsaves_success2,
+                deathsaves_success3=_hitpoints.deathsaves_success3,
+                deathsaves_failures1=_hitpoints.deathsaves_failures1,
+                deathsaves_failures2=_hitpoints.deathsaves_failures2,
+                deathsaves_failures3=_hitpoints.deathsaves_failures3
             )
 
             character = db.Character(
@@ -737,7 +736,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             # Equipment
             for equipment in request.character.equipment:
                 _eq = db.Equipment(
-                    character_id = _character_id,
+                    character_id=_character_id,
                     name=equipment.name,
                     value=equipment.value
                 )

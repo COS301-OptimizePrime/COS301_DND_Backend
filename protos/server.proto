@@ -4,70 +4,126 @@ package session;
 
 // The sessions manager service definition.
 service SessionsManager {
-  // Creates a new session.
-  rpc Create(NewSessionRequest) returns (Session) {}
-  // Join a session.
-  rpc Join(JoinRequest) returns (Session) {}
-  // Leave a session.
-  rpc Leave(LeaveRequest) returns (LeaveReply) {}
-  // Set the max amount of players that can be in the session.
-  rpc SetMax(SetMaxPlayersRequest) returns (Session) {}
-  // Kick player.
-  rpc Kick(KickPlayerRequest) returns (Session) {}
-  // Set the name of the session.
-  rpc SetName(SetNameRequest) returns (Session) {}
-  // Set the privacy status of the session.
-  rpc SetPrivate(SetPrivateRequest) returns (Session) {}
-  // List available sessions.
-  rpc List(ListRequest) returns (ListReply) {}
-  // Get session by ID
-  rpc GetSessionById(GetSessionRequest) returns (Session) {}
-  // Get all sessions of user
-  rpc GetSessionsOfUser(GetSessionsOfUserRequest) returns (ListReply) {}
+    // Creates a new session.
+    rpc Create (NewSessionRequest) returns (Session) {
+    }
+    // Join a session.
+    rpc Join (JoinRequest) returns (Session) {
+    }
+    // Leave a session.
+    rpc Leave (LeaveRequest) returns (LeaveReply) {
+    }
+    // Set the max amount of players that can be in the session.
+    rpc SetMax (SetMaxPlayersRequest) returns (Session) {
+    }
+    // Kick player.
+    rpc Kick (KickPlayerRequest) returns (Session) {
+    }
+    // Set the name of the session.
+    rpc SetName (SetNameRequest) returns (Session) {
+    }
+    // Set the privacy status of the session.
+    rpc SetPrivate (SetPrivateRequest) returns (Session) {
+    }
+    // List available sessions.
+    rpc List (ListRequest) returns (ListReply) {
+    }
+    // Get session by ID
+    rpc GetSessionById (GetSessionRequest) returns (Session) {
+    }
+    // Get all sessions of user
+    rpc GetSessionsOfUser (GetSessionsOfUserRequest) returns (ListReply) {
+    }
+    // Ready up a user in the requested session
+    rpc Ready (ReadyUpRequest) returns (ReadyUpReply) {
+    }
+    // Change session state (DM only)
+    rpc ChangeState (ChangeStateRequest) returns (Session) {
+    }
+
+    // Change the expiry time of ready up. (DM only)
+    rpc ChangeReadyUpExpiryTime (ChangeReadyUpExpiryTimeRequest) returns (ChangeReadyUpExpiryTimeResponse) {
+    }
 }
 
 service CharactersManager {
-  rpc CreateCharacter(NewCharacterRequest) returns (Character) {}
-  rpc DeleteCharacter(DeleteCharacterRequest) returns (DeleteCharacterReply) {}
-  rpc GetCharacters(GetCharactersRequest) returns (GetCharactersReply) {}
-  rpc UpdateCharacter(UpdateCharacterRequest) returns (Character) {}
-  rpc GetCharacterById(GetCharacterByIdRequest) returns (Character) {}
+    rpc CreateCharacter (NewCharacterRequest) returns (Character) {
+    }
+    rpc DeleteCharacter (DeleteCharacterRequest) returns (DeleteCharacterReply) {
+    }
+    rpc GetCharacters (GetCharactersRequest) returns (GetCharactersReply) {
+    }
+    rpc UpdateCharacter (UpdateCharacterRequest) returns (Character) {
+    }
+    rpc GetCharacterById (GetCharacterByIdRequest) returns (Character) {
+    }
+}
+
+message ChangeReadyUpExpiryTimeRequest {
+    string auth_id_token = 1;
+    string session_id = 2;
+    uint32 ready_up_expiry_time = 3;
+}
+
+message ChangeReadyUpExpiryTimeResponse {
+    string status = 1;
+    string status_message = 2;
+}
+
+message ChangeStateRequest {
+    string auth_id_token = 1;
+    string session_id = 2;
+    string state = 3;
+}
+
+/*
+  Requires the firebase id token.
+  Requires the id of the session.
+*/
+message ReadyUpRequest {
+    string auth_id_token = 1;
+    string session_id = 2;
+}
+
+message ReadyUpReply {
+    string status = 1;
+    string status_message = 2;
 }
 
 message GetCharacterByIdRequest {
-  string auth_id_token = 1;
-  string character_id = 2;
+    string auth_id_token = 1;
+    string character_id = 2;
 }
 
 message DeleteCharacterRequest {
-  string auth_id_token = 1;
-  string character_id = 2;
+    string auth_id_token = 1;
+    string character_id = 2;
 }
 
 message UpdateCharacterRequest {
-  string auth_id_token = 1;
-  Character character = 2;
+    string auth_id_token = 1;
+    Character character = 2;
 }
 
 message GetCharactersRequest {
-  string auth_id_token = 1;
-  uint32 limit = 2;
+    string auth_id_token = 1;
+    uint32 limit = 2;
 }
 
-message GetCharactersReply{
-  string status = 1;
-  string status_message = 2;
-  repeated Character characters = 3;
+message GetCharactersReply {
+    string status = 1;
+    string status_message = 2;
+    repeated Character characters = 3;
 }
 
 message GetSessionsOfUserRequest {
-  string auth_id_token = 1;
-  uint32 limit = 2;
+    string auth_id_token = 1;
+    uint32 limit = 2;
 }
 
 message GetSessionRequest {
-  string auth_id_token = 1;
-  string session_id = 2;
+    string auth_id_token = 1;
+    string session_id = 2;
 }
 
 /*
@@ -75,10 +131,10 @@ message GetSessionRequest {
   Requires the name of the new session.
 */
 message NewSessionRequest {
-  string auth_id_token = 1;
-  string name = 2;
-  uint32 max_players = 3;
-  bool private = 4;
+    string auth_id_token = 1;
+    string name = 2;
+    uint32 max_players = 3;
+    bool private = 4;
 }
 
 /*
@@ -86,10 +142,10 @@ message NewSessionRequest {
   Requires the number of sessions to list.
 */
 message ListRequest {
-  string auth_id_token = 1;
-  uint32 limit = 2;
-  // This will include sessions that are full.
-  bool full = 3;
+    string auth_id_token = 1;
+    uint32 limit = 2;
+    // This will include sessions that are full.
+    bool full = 3;
 }
 
 /*
@@ -97,8 +153,8 @@ message ListRequest {
   Requires the uuid of the session to leave.
 */
 message LeaveRequest {
-  string auth_id_token = 1;
-  string session_id = 2;
+    string auth_id_token = 1;
+    string session_id = 2;
 }
 
 /*
@@ -106,20 +162,20 @@ message LeaveRequest {
   Requires the uuid of the session to join.
 */
 message JoinRequest {
-  string auth_id_token = 1;
-  string session_id = 2;
+    string auth_id_token = 1;
+    string session_id = 2;
 }
 
 message KickPlayerRequest {
-  string auth_id_token = 1;
-  string session_id = 2;
-  User user = 3;
+    string auth_id_token = 1;
+    string session_id = 2;
+    User user = 3;
 }
 
 message SetPrivateRequest {
-  string auth_id_token = 1;
-  string session_id = 2;
-  bool private = 3;
+    string auth_id_token = 1;
+    string session_id = 2;
+    bool private = 3;
 }
 
 /*
@@ -127,202 +183,211 @@ message SetPrivateRequest {
   Requires the number of max players the session may have.
 */
 message SetMaxPlayersRequest {
-  string auth_id_token = 1;
-  uint32 number = 2;
-  string session_id = 3;
+    string auth_id_token = 1;
+    uint32 number = 2;
+    string session_id = 3;
 }
 
 message SetNameRequest {
-  string auth_id_token = 1;
-  string session_id = 2;
-  string name = 3;
+    string auth_id_token = 1;
+    string session_id = 2;
+    string name = 3;
 }
 
 message ListReply {
-  repeated Session sessions = 1;
-  string status = 2;
+    repeated Session sessions = 1;
+    string status = 2;
 }
 
 message LeaveReply {
-  string status = 1;
-  string status_message = 2;
+    string status = 1;
+    string status_message = 2;
 }
 
 message Session {
-  string status = 1;
-  string status_message = 2;
-  // Session uuid
-  string session_id = 3;
-  // The session's name
-  string name = 4;
-  // The dungeon master: UID of user
-  User dungeon_master = 5;
-  string date_created = 6;
-  uint32 max_players = 7;
-  repeated User users = 8;
-  // Determines if the session is public or private
-  bool private = 9;
-  bool full = 10;
+    string status = 1;
+    string status_message = 2;
+    // Session uuid
+    string session_id = 3;
+    // The session's name
+    string name = 4;
+    // The dungeon master: UID of user
+    User dungeon_master = 5;
+    string date_created = 6;
+    uint32 max_players = 7;
+    repeated User users = 8;
+    // Determines if the session is public or private
+    bool private = 9;
+    bool full = 10;
+    // State name (PAUSED, READYUP, EXPLORING, BATTLE)
+    string state = 11;
+    // Unique state name. Used to know if the state has had an update
+    uint32 state_meta = 12;
+    string state_ready_start_time = 13;
+    repeated User ready_users = 14;
+    string last_updated = 15;
+    uint32 ready_up_expiry_time = 16;
 }
 
 message User {
-  string uid = 1;
-  string name = 2;
+    string uid = 1;
+    string name = 2;
+    bool ready_in_this_session = 3;
 }
 
 message NewCharacterRequest {
-  string auth_id_token = 1;
-  Character character = 2;
+    string auth_id_token = 1;
+    Character character = 2;
 }
 
 message DeleteCharacterReply {
-  string status = 1;
-  string status_message = 2;
+    string status = 1;
+    string status_message = 2;
 }
 
 message Character {
-  string character_id = 1;
-  User creator = 2;
-  string name = 3;
-  // Base stats
-  sint32 strength = 4;
-  sint32 strength_subscript = 5;
-  sint32 dexterity = 6;
-  sint32 dexterity_subscript = 7;
-  sint32 constitution = 8;
-  sint32 constitution_subscript = 9;
-  sint32 intelligence = 10;
-  sint32 intelligence_subscript = 11;
-  sint32 wisdom = 12;
-  sint32 wisdom_subscript = 13;
-  sint32 charisma = 14;
-  sint32 charisma_subscript = 15;
-  // Traits
-  string character_class = 16;
-  string race = 17;
-  sint32 xp = 18;
-  string alignment = 19;
-  string background = 20;
+    string character_id = 1;
+    User creator = 2;
+    string name = 3;
+    // Base stats
+    sint32 strength = 4;
+    sint32 strength_subscript = 5;
+    sint32 dexterity = 6;
+    sint32 dexterity_subscript = 7;
+    sint32 constitution = 8;
+    sint32 constitution_subscript = 9;
+    sint32 intelligence = 10;
+    sint32 intelligence_subscript = 11;
+    sint32 wisdom = 12;
+    sint32 wisdom_subscript = 13;
+    sint32 charisma = 14;
+    sint32 charisma_subscript = 15;
+    // Traits
+    string character_class = 16;
+    string race = 17;
+    sint32 xp = 18;
+    string alignment = 19;
+    string background = 20;
 
-  sint32 inspiration = 21;
-  sint32 proficiency_bonus = 22;
+    sint32 inspiration = 21;
+    sint32 proficiency_bonus = 22;
 
-  // Saving throws
-  SavingThrows saving_throws = 23;
-  // Skills
-  Skills skills = 24;
-  // PASSIVE WISDOM (PERCEPTION)
-  sint32 passive_wisdom = 25;
-  // ATTACKS & SPELLCASTING
-  Attacks_Spellcasting attacks_spellcasting = 26;
+    // Saving throws
+    SavingThrows saving_throws = 23;
+    // Skills
+    Skills skills = 24;
+    // PASSIVE WISDOM (PERCEPTION)
+    sint32 passive_wisdom = 25;
+    // ATTACKS & SPELLCASTING
+    Attacks_Spellcasting attacks_spellcasting = 26;
 
-  // hitpoints and armor
-  Hitpoints hitpoints = 27;
+    // hitpoints and armor
+    Hitpoints hitpoints = 27;
 
-  // Personality
-  string personality_traits = 28;
-  string ideals = 29;
-  string bonds = 30;
-  string flaws = 31;
+    // Personality
+    string personality_traits = 28;
+    string ideals = 29;
+    string bonds = 30;
+    string flaws = 31;
 
-  string date_created = 32;
-  string status = 33;
-  string status_message = 34;
+    string date_created = 32;
+    string status = 33;
+    string status_message = 34;
 
-  repeated Equipment equipment = 35;
+    repeated Equipment equipment = 35;
 
-  string session_id = 36;
-  string features_and_traits = 37;
+    string session_id = 36;
+    string features_and_traits = 37;
 
-  bool online = 38;
+    bool online = 38;
 }
 
 message SavingThrows {
-  sint32 strength = 1;
-  bool strength_proficient = 2;
-  sint32 dexterity = 3;
-  bool dexterity_proficient = 4;
-  sint32 constitution = 5;
-  bool constitution_proficient = 6;
-  sint32 intelligence = 7;
-  bool intelligence_proficient = 8;
-  sint32 wisdom = 9;
-  bool wisdom_proficient = 10;
-  sint32 charisma = 11;
-  bool charisma_subscript = 12;
+    sint32 strength = 1;
+    bool strength_proficient = 2;
+    sint32 dexterity = 3;
+    bool dexterity_proficient = 4;
+    sint32 constitution = 5;
+    bool constitution_proficient = 6;
+    sint32 intelligence = 7;
+    bool intelligence_proficient = 8;
+    sint32 wisdom = 9;
+    bool wisdom_proficient = 10;
+    sint32 charisma = 11;
+    bool charisma_subscript = 12;
 }
 
 message Skills {
-  sint32 acrobatics = 1;
-  bool acrobatics_proficient = 2;
-  sint32 animal_handling = 3;
-  bool animal_handling_proficient = 4;
-  sint32 arcana = 5;
-  bool arcana_proficient = 6;
-  sint32 athletics = 7;
-  bool athletics_proficient = 8;
-  sint32 deception = 9;
-  bool deception_proficient = 10;
-  sint32 history = 11;
-  bool history_proficient = 12;
-  sint32 insight = 13;
-  bool insight_proficient = 14;
-  sint32 intimidation = 15;
-  bool intimidation_proficient = 16;
-  sint32 investigation = 17;
-  bool investigation_proficient = 18;
-  sint32 medicine = 19;
-  bool medicine_proficient = 20;
-  sint32 nature = 21;
-  bool nature_proficient = 22;
-  sint32 perception = 23;
-  bool perception_proficient = 24;
-  sint32 performance = 25;
-  bool performance_proficient = 26;
-  sint32 persuasion = 27;
-  bool persuasion_proficient = 28;
-  sint32 religion = 29;
-  bool religion_proficient = 30;
-  sint32 sleight_of_hand = 31;
-  bool sleight_of_hand_proficient = 32;
-  sint32 stealth = 33;
-  bool stealth_proficient = 34;
-  sint32 survival = 35;
-  bool survival_proficient = 36;
+    sint32 acrobatics = 1;
+    bool acrobatics_proficient = 2;
+    sint32 animal_handling = 3;
+    bool animal_handling_proficient = 4;
+    sint32 arcana = 5;
+    bool arcana_proficient = 6;
+    sint32 athletics = 7;
+    bool athletics_proficient = 8;
+    sint32 deception = 9;
+    bool deception_proficient = 10;
+    sint32 history = 11;
+    bool history_proficient = 12;
+    sint32 insight = 13;
+    bool insight_proficient = 14;
+    sint32 intimidation = 15;
+    bool intimidation_proficient = 16;
+    sint32 investigation = 17;
+    bool investigation_proficient = 18;
+    sint32 medicine = 19;
+    bool medicine_proficient = 20;
+    sint32 nature = 21;
+    bool nature_proficient = 22;
+    sint32 perception = 23;
+    bool perception_proficient = 24;
+    sint32 performance = 25;
+    bool performance_proficient = 26;
+    sint32 persuasion = 27;
+    bool persuasion_proficient = 28;
+    sint32 religion = 29;
+    bool religion_proficient = 30;
+    sint32 sleight_of_hand = 31;
+    bool sleight_of_hand_proficient = 32;
+    sint32 stealth = 33;
+    bool stealth_proficient = 34;
+    sint32 survival = 35;
+    bool survival_proficient = 36;
 }
 
 message Attacks_Spellcasting {
-  string name_1 = 1;
-  string name_2 = 2;
-  string name_3 = 3;
-  sint32 atk_bonus_1 = 4;
-  sint32 atk_bonus_2 = 5;
-  sint32 atk_bonus_3 = 6;
-  string damage_type_1 = 7;
-  string damage_type_2 = 8;
-  string damage_type_3 = 9;
+    string name_1 = 1;
+    string name_2 = 2;
+    string name_3 = 3;
+    sint32 atk_bonus_1 = 4;
+    sint32 atk_bonus_2 = 5;
+    sint32 atk_bonus_3 = 6;
+    string damage_type_1 = 7;
+    string damage_type_2 = 8;
+    string damage_type_3 = 9;
 }
 
 message Hitpoints {
-  sint32 armor_class = 1;
-  sint32 initiative = 2;
-  sint32 speed = 3;
-  sint32 current_hitpoints = 4;
-  sint32 max_hitpoints = 5;
-  sint32 temporary_hitpoints = 6;
-  string hitdice = 7;
+    sint32 armor_class = 1;
+    sint32 initiative = 2;
+    sint32 speed = 3;
+    sint32 current_hitpoints = 4;
+    sint32 max_hitpoints = 5;
+    sint32 temporary_hitpoints = 6;
+    string hitdice = 7;
 
-  // Death saves
-  bool deathsaves_success1 = 8;
-  bool deathsaves_success2 = 9;
-  bool deathsaves_success3 = 10;
+    // Death saves
+    bool deathsaves_success1 = 8;
+    bool deathsaves_success2 = 9;
+    bool deathsaves_success3 = 10;
 
-  bool deathsaves_failures1 = 11;
-  bool deathsaves_failures2 = 12;
-  bool deathsaves_failures3 = 13;
+    bool deathsaves_failures1 = 11;
+    bool deathsaves_failures2 = 12;
+    bool deathsaves_failures3 = 13;
 }
 
 message Equipment {
-  string name = 1;
-  sint32 value = 2;
+    string name = 1;
+    sint32 value = 2;
 }
