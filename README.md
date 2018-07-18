@@ -3,6 +3,9 @@
 
 Backed API Server
 
+## Deployment Diagram
+![deployment diagram](https://i.imgur.com/DFwdbp0.jpg)
+
 The implementation of the API uses gRPC (https://grpc.io/)
 
 The API "Language" uses ProtocolBuffers
