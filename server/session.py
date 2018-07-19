@@ -208,8 +208,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
             return grpcSession
-        except exc.SQLAlchemyError:
-            self.logger.error("[JOIN] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[JOIN] SQLAlchemyError!" + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -301,8 +301,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.commit()
 
             return server_pb2.LeaveReply(status="SUCCESS")
-        except exc.SQLAlchemyError:
-            self.logger.error("[LEAVE] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[LEAVE] SQLAlchemyError!" + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -398,8 +398,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.commit()
 
             return server_pb2.ReadyUpReply(status="SUCCESS")
-        except exc.SQLAlchemyError:
-            self.logger.error("[Ready] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[Ready] SQLAlchemyError!" + str(err))
             return server_pb2.ReadyUpReply(
                 status="FAILED",
                 status_message="Database error!")
@@ -483,7 +483,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             return grpcSession
         except exc.SQLAlchemyError as err:
-            self.logger.error("[KICK] SQLAlchemyError! " + err)
+            self.logger.error("[KICK] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -543,8 +543,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
             return grpcSession
-        except exc.SQLAlchemyError:
-            self.logger.error("[SETMAX] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[SETMAX] SQLAlchemyError!" + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -743,8 +743,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
             return grpcSession
-        except exc.SQLAlchemyError:
-            self.logger.error("[SETPRIVATE] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[SETPRIVATE] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -803,8 +803,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
             return grpcSession
-        except exc.SQLAlchemyError:
-            self.logger.error("[ChangeReadyUpExpiryTime] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[ChangeReadyUpExpiryTime] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -873,8 +873,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 _sessions.append(sessionObj)
 
             return server_pb2.ListReply(status="SUCCESS", sessions=_sessions)
-        except exc.SQLAlchemyError:
-            self.logger.error("[SETPRIVATE] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[SETPRIVATE] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -933,8 +933,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             grpcSession = self._convertToGrpcSession(session, "SUCCESS")
 
             return grpcSession
-        except exc.SQLAlchemyError:
-            self.logger.error("[SETPRIVATE] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[SETPRIVATE] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -977,7 +977,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 limit = limit + 1
 
                 # logger.debug(_session.session_id)
-                # TODO: This will need to support the new state and ready system
 
                 sessionObj = server_pb2.Session()
                 sessionObj.session_id = _session.session_id
@@ -988,13 +987,34 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 sessionObj.max_players = _session.max_players
                 sessionObj.full = _session.full
                 sessionObj.private = _session.private
+
+                sessionObj.state = _session.state
+                sessionObj.state_meta = _session.state_meta
+                sessionObj.state_ready_start_time = str(_session.state_ready_start_time)
+                sessionObj.last_updated = str(_session.date_updated)
+
                 sessionObj.users.extend([])
 
                 for _user in _session.users_in_session:
                     userInSession = server_pb2.User()
                     userInSession.uid = _user.uid
                     userInSession.name = _user.name
+
+                    if _user in _session.ready_users:
+                        userInSession.ready_in_this_session = True
+                    else:
+                        userInSession.ready_in_this_session = False
+
                     sessionObj.users.extend([userInSession])
+
+                sessionObj.ready_users.extend([])
+
+                for _user in _session.ready_users:
+                    userInSession = server_pb2.User()
+                    userInSession.uid = _user.uid
+                    userInSession.name = _user.name
+                    userInSession.ready_in_this_session = True
+                    sessionObj.ready_users.extend([userInSession])
 
                 _sessions.append(sessionObj)
 
@@ -1002,8 +1022,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     break
 
             return server_pb2.ListReply(status="SUCCESS", sessions=_sessions)
-        except exc.SQLAlchemyError:
-            self.logger.error("[GetSessionsOfUser] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[GetSessionsOfUser] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",

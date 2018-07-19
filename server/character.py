@@ -318,9 +318,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
 
             return self._convertToGrpcCharacter(
                 character=character, status="SUCCESS")
-        except exc.SQLAlchemyError as e:
-            self.logger.error(e)
-            self.logger.error("[UpdateCharacter] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[UpdateCharacter] SQLAlchemyError!" + str(err))
             return server_pb2.Character(
                 status="FAILED",
                 status_message="Database error!")
@@ -366,8 +365,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
 
             return server_pb2.GetCharactersReply(
                 status="SUCCESS", characters=_characters)
-        except exc.SQLAlchemyError:
-            self.logger.error("[GetCharacters] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[GetCharacters] SQLAlchemyError!" + str(err))
             return server_pb2.GetCharactersReply(
                 status="FAILED",
                 status_message="Database error!")
@@ -427,8 +426,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 status="SUCCESS",
                 status_message="[Delete Character] Successfully deleted character!")
 
-        except exc.SQLAlchemyError:
-            self.logger.error("[DeleteCharacters] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[DeleteCharacters] SQLAlchemyError!" + str(err))
             return server_pb2.DeleteCharacterReply(
                 status="FAILED",
                 status_message="Database error!")
@@ -480,8 +479,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             # Else return the character
             return self._convertToGrpcCharacter(
                 character=character, status="SUCCESS")
-        except exc.SQLAlchemyError:
-            self.logger.error("[GetCharacterById] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[GetCharacterById] SQLAlchemyError!" + str(err))
             return server_pb2.Character(
                 status="FAILED",
                 status_message="Database error!")
@@ -759,8 +758,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             grpcSession = self._convertToGrpcCharacter(character, "SUCCESS")
 
             return grpcSession
-        except exc.SQLAlchemyError:
-            self.logger.error("[CreateCharacter] SQLAlchemyError!")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[CreateCharacter] SQLAlchemyError!" + str(err))
             return server_pb2.Character(
                 status="FAILED",
                 status_message="Database error!")
