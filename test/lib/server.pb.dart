@@ -1123,6 +1123,8 @@ class Character extends GeneratedMessage {
     ..aOS(36, 'sessionId')
     ..aOS(37, 'featuresAndTraits')
     ..aOB(38, 'online')
+    ..a<int>(39, 'level', PbFieldType.OU3)
+    ..aOS(40, 'gender')
     ..hasRequiredFields = false
   ;
 
@@ -1328,6 +1330,16 @@ class Character extends GeneratedMessage {
   set online(bool v) { $_setBool(37, v); }
   bool hasOnline() => $_has(37);
   void clearOnline() => clearField(38);
+
+  int get level => $_get(38, 0);
+  set level(int v) { $_setUnsignedInt32(38, v); }
+  bool hasLevel() => $_has(38);
+  void clearLevel() => clearField(39);
+
+  String get gender => $_getS(39, '');
+  set gender(String v) { $_setString(39, v); }
+  bool hasGender() => $_has(39);
+  void clearGender() => clearField(40);
 }
 
 class _ReadonlyCharacter extends Character with ReadonlyMessageMixin {}
