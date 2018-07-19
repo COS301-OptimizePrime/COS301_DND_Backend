@@ -300,6 +300,9 @@ message Character {
     string features_and_traits = 37;
 
     bool online = 38;
+
+    uint32 level = 39;
+    string gender = 40;
 }
 
 message SavingThrows {

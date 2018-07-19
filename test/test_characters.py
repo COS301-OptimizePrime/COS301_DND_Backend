@@ -27,6 +27,9 @@ def getRandomCharacter():
     _character = server_pb2.Character()
     _character.name = "MyTestCharacter"
 
+    _character.gender = "Male"
+    _character.level = 34
+
     _character.strength = random.randint(1, 50)
     _character.strength_subscript = random.randint(1, 50)
     _character.dexterity = random.randint(1, 50)
@@ -163,6 +166,9 @@ def compareCharacters(character1, character2):
     assert character1.background == character2.background
     assert character1.inspiration == character2.inspiration
     assert character1.proficiency_bonus == character2.proficiency_bonus
+
+    assert character1.gender == character2.gender
+    assert character1.level == character2.level
 
     assert character1.passive_wisdom == character2.passive_wisdom
     assert character1.personality_traits == character2.personality_traits
@@ -422,12 +428,16 @@ def test_update_character():
     assert response.status == 'SUCCESS'
     assert response.creator.name == 'mockuser@test.co.za'
     assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
 
     _char = getRandomCharacter()
     _char.character_id = response.character_id
     _char.name = 'Modified name!'
     _char.equipment[0].name = "Modified name!"
     _char.equipment[0].value = 99
+    _char.level = 100
+    _char.gender = "Female"
 
     response = stub.UpdateCharacter(
         server_pb2.UpdateCharacterRequest(
@@ -438,5 +448,7 @@ def test_update_character():
     assert response.name == 'Modified name!'
     assert response.equipment[0].name == 'Modified name!'
     assert response.equipment[0].value == 99
+    assert response.level == 100
+    assert response.gender == "Female"
 
     compareCharacters(_char, response)

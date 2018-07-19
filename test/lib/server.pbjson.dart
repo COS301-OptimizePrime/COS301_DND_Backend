@@ -278,6 +278,8 @@ const Character$json = const {
     const {'1': 'session_id', '3': 36, '4': 1, '5': 9, '10': 'sessionId'},
     const {'1': 'features_and_traits', '3': 37, '4': 1, '5': 9, '10': 'featuresAndTraits'},
     const {'1': 'online', '3': 38, '4': 1, '5': 8, '10': 'online'},
+    const {'1': 'level', '3': 39, '4': 1, '5': 13, '10': 'level'},
+    const {'1': 'gender', '3': 40, '4': 1, '5': 9, '10': 'gender'},
   ],
 };
 

@@ -239,6 +239,8 @@ class Character(Base):
 
     features_and_traits = Column(String(350), nullable=False)
 
+    gender = Column(String(50), nullable=False)
+    level = Column(Integer, nullable=False)
 
 class SavingThrow(Base):
     __tablename__ = 'savingthrows'
