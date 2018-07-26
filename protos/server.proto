@@ -227,6 +227,8 @@ message Session {
     repeated User ready_users = 14;
     string last_updated = 15;
     uint32 ready_up_expiry_time = 16;
+
+    repeated Character charactersInSession = 17;
 }
 
 message User {

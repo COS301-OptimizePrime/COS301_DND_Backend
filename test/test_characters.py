@@ -4,9 +4,7 @@ import subprocess
 
 import firebase_admin
 import grpc
-import pytest
-import pytest_benchmark
-from firebase_admin import auth, credentials
+from firebase_admin import credentials
 
 import server_pb2
 import server_pb2_grpc

@@ -1,5 +1,4 @@
 import datetime
-import logging
 import os
 
 from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer,
@@ -8,37 +7,51 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 
-import config
-import log
+from . import config
 
 Base = declarative_base()
 
 
-def connect():
-    if os.environ['ENV'] == 'prod':
-        # logger = logging.getLogger('cos301-DND')
-        # logger.debug('Using PostgreSQL!')
-        engine = create_engine('postgresql://' +
-                               str(config.val['database']['username']) +
-                               ':' +
-                               str(config.val['database']['password']) +
-                               '@' +
-                               str(config.val['database']['address']) +
-                               ':' +
-                               str(config.val['database']['port']) +
-                               '/dnd_backend')
-    else:
-        engine = create_engine(
-            'sqlite:///./dnd_backend.db',
-            echo=False,
-            connect_args={
-                'check_same_thread': False})
+class Database:
+    conn = None
 
-    Base.metadata.create_all(engine)
+    def __init__(self):
+        self.conn = self._connect()
 
-    session_factory = sessionmaker(bind=engine)
-    session = scoped_session(session_factory)
-    return session
+    def _connect(self):
+        if os.environ['ENV'] == 'prod':
+            # logger = logging.getLogger('cos301-DND')
+            # logger.debug('Using PostgreSQL!')
+            engine = create_engine('postgresql://' +
+                                   str(config.val['database']['username']) +
+                                   ':' +
+                                   str(config.val['database']['password']) +
+                                   '@' +
+                                   str(config.val['database']['address']) +
+                                   ':' +
+                                   str(config.val['database']['port']) +
+                                   '/dnd_backend')
+        else:
+            engine = create_engine(
+                'sqlite:///./dnd_backend.db',
+                echo=False,
+                connect_args={
+                    'check_same_thread': False})
+
+        Base.metadata.create_all(engine)
+
+        session_factory = sessionmaker(bind=engine)
+        session = scoped_session(session_factory)
+
+        return session
+
+    def getDBInstance(self):
+        if not self.conn:
+            self.conn = self._connect()
+        return self.conn
+
+    def close(self):
+        self.conn.close()
 
 
 user_sessions = Table('usersessions', Base.metadata,
@@ -242,6 +255,7 @@ class Character(Base):
     gender = Column(String(50), nullable=False)
     level = Column(Integer, nullable=False)
 
+
 class SavingThrow(Base):
     __tablename__ = 'savingthrows'
 
@@ -382,3 +396,6 @@ class Equipment(Base):
 
     name = Column(String(100), nullable=False)
     value = Column(Integer, nullable=False)
+
+
+databaseConnection = Database()

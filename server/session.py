@@ -1,25 +1,18 @@
-import calendar
 import datetime
 import logging
 import uuid
 
 from sqlalchemy import and_, desc, exc
 
-import database.db as db
-import firebase
-import log
-import server_pb2
-import server_pb2_grpc
+from . import db
+from . import firebase
+from . import server_pb2
+from . import server_pb2_grpc
 
 
 class Session(server_pb2_grpc.SessionsManagerServicer):
     conn = None
     logger = logging.getLogger("cos301-DND")
-
-    def _connectDatabase(self):
-        if not self.conn:
-            self.conn = db.connect()
-        return self.conn
 
     # Converts a Database Session object to a grpc Session object
     def _convertToGrpcSession(self, session, status):
@@ -66,8 +59,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         sessionObj.status = status
 
-        self.conn.close()
-
         return sessionObj
 
     def Create(self, request, context):
@@ -75,7 +66,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         self.logger.info("Create new session called! Name:" + request.name)
 
         _auth_id_token = request.auth_id_token
-
         try:
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
@@ -93,7 +83,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _private = request.private
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
             user = self.conn.query(db.User).filter(db.User.uid == uid).first()
             if not user:
                 user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
@@ -139,8 +129,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     def Join(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -160,12 +148,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
             if not session:
-
                 logger.error("Failed to join session, that ID does not exist!")
                 return server_pb2.Session(
                     session_id="NULL",
@@ -215,8 +202,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     def Leave(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -236,7 +221,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -308,8 +294,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     def Ready(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -330,7 +314,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -350,7 +335,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[Ready] Can't ready up now. Not in the ready up phase!")
             else:
                 # If ready up older than 20 seconds it has expired
-                if session.state_ready_start_time < datetime.datetime.now() - datetime.timedelta(seconds=session.ready_up_expiry_time):
+                if session.state_ready_start_time < datetime.datetime.now() - datetime.timedelta(
+                        seconds=session.ready_up_expiry_time):
                     # Expired ready up phase reset.
                     # Delete all ready users in session
 
@@ -403,8 +389,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.ReadyUpReply(
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     def Kick(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -424,7 +408,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -489,8 +474,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     # This is a Dungeon Master only command.
     def SetMax(self, request, context):
@@ -508,7 +491,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -550,8 +534,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     # This is a Dungeon Master only command.
     def SetName(self, request, context):
@@ -569,7 +551,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -610,8 +593,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     # This is a Dungeon Master only command.
     def ChangeState(self, request, context):
@@ -629,7 +610,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -689,9 +670,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            # TODO: Investigate is this worsens performance
-            self.conn.close()
 
     # This is a Dungeon Master only command.
     def SetPrivate(self, request, context):
@@ -709,7 +687,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -750,11 +728,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
-        # This is a Dungeon Master only command.
-
+    # This is a Dungeon Master only command.
     def ChangeReadyUpExpiryTime(self, request, context):
         self.logger.info("ChangeReadyUpExpiryTime called!")
 
@@ -769,7 +744,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -810,8 +785,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     def List(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -831,7 +804,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         logger.debug("Successfully verified token! UID=" + uid)
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
 
             if _full:
                 _sessions_query = self.conn.query(
@@ -880,8 +853,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     def GetSessionById(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -904,7 +875,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         logger.debug("Successfully verified token! UID=" + uid)
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -919,7 +890,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[GetSessionById] No session"
                                    " with that ID exists!")
 
-            if session.state_ready_start_time < datetime.datetime.now() - datetime.timedelta(seconds=session.ready_up_expiry_time):
+            if session.state_ready_start_time < datetime.datetime.now() - datetime.timedelta(
+                    seconds=session.ready_up_expiry_time):
                 # Expired ready up phase reset.
                 # Delete all ready users in session
 
@@ -940,8 +912,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     def GetSessionsOfUser(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -960,7 +930,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         logger.debug("Successfully verified token! UID=" + uid)
 
         try:
-            self._connectDatabase()
+            self.conn = db.databaseConnection.getDBInstance()
 
             _sessions_query = self.conn.query(
                 db.User).filter(
@@ -971,7 +941,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             limit = 0
 
             user_sessions = _sessions_query.session_dungeon_masters + \
-                _sessions_query.joined_sessions
+                            _sessions_query.joined_sessions
 
             for _session in user_sessions:
                 limit = limit + 1
@@ -1029,9 +999,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
-        finally:
-            self.conn.close()
 
     def __del__(self):
-        self.logger.info("Socket destroyed closing DB connection...")
-        self.conn.close()
+        self.logger.info("Socket destroyed ...")
