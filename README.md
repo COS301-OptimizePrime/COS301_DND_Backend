@@ -10,14 +10,9 @@ Backed API Server
 ## Deployment Diagram
 ![deployment diagram](https://i.imgur.com/DFwdbp0.jpg)
 
-The implementation of the API uses gRPC (https://grpc.io/)
-
-The API "Language" uses ProtocolBuffers
-https://developers.google.com/protocol-buffers/docs/proto3
-
 ## Features
 
-- HTTP/2
+- HTTP/2 using gRPC (https://grpc.io/)
 - HTTPS in production mode
 - Real time sockets
 - Firebase authentication

@@ -14,6 +14,7 @@ password = \"\"
 
 [server]
 mode = "DEV"
+max_worker_threads = 20
 max_sessions_per_user = 500
 """
 

@@ -498,6 +498,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
+            return server_pb2.Session(
+                session_id="NULL",
+                name="NULL",
+                status="FAILED",
+                status_message="[SetMax] Failed to verify login!")
 
         _session_id = request.session_id
 
@@ -558,6 +563,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
+            return server_pb2.Session(
+                session_id="NULL",
+                name="NULL",
+                status="FAILED",
+                status_message="[SETNAME] Failed to verify login!")
 
         _session_id = request.session_id
 
@@ -617,6 +627,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             uid = decoded_token["uid"]
         except ValueError:
             logger.error("Failed to verify login!")
+            return server_pb2.Session(
+                    session_id="NULL",
+                    name="NULL",
+                    status="FAILED",
+                    status_message="[ChangeState] Failed to verify login!")
 
         _session_id = request.session_id
 
@@ -630,7 +645,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     "[ChangeState] Failed to change state of session,"
                     " that ID does not exist!")
 
-                return server_pb2.ChangeStateReply(
+                return server_pb2.Session(
                     session_id="NULL",
                     name="NULL",
                     status="FAILED",
@@ -641,7 +656,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     "[ChangeState] Unauthorised user tried to"
                     " modify (Not the dungeon master)")
 
-                return server_pb2.ChangeStateReply(
+                return server_pb2.Session(
                     session_id="NULL",
                     name="NULL",
                     status="FAILED",
@@ -671,9 +686,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             self.conn.commit()
 
-            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-            return grpcSession
+            return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
             self.logger.error("[ChangeState] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
