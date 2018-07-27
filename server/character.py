@@ -88,7 +88,9 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return server_pb2.Character(
                 status="FAILED",
                 status_message="Database error!")
-
+        finally:
+            self.conn.close()
+            
     # [CHEAP] Using light characters
     def GetCharacters(self, request, context):
         self.logger.debug(context.peer())
@@ -134,6 +136,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return server_pb2.GetCharactersReply(
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def DeleteCharacter(self, request, context):
         self.logger.debug(context.peer())
@@ -193,6 +197,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return server_pb2.DeleteCharacterReply(
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def GetCharacterById(self, request, context):
         self.logger.debug(context.peer())
@@ -244,6 +250,8 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return server_pb2.Character(
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def CreateCharacter(self, request, context):
         self.logger.debug(context.peer())
@@ -471,3 +479,5 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return server_pb2.Character(
                 status="FAILED",
                 status_message="[CreateCharacter] Database error!")
+        finally:
+            self.conn.close()
