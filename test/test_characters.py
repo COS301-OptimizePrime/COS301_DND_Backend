@@ -553,6 +553,7 @@ def test_character_deleted_should_not_be_in_session():
     # Since we deleted the character that character should no longer show.
     assert len(response.light_characters) == 0
 
+
 def test_remove_character_that_is_not_ours():
     channel = grpc.insecure_channel(server)
     stub = server_pb2_grpc.CharactersManagerStub(channel)

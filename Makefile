@@ -1,9 +1,9 @@
 .PHONY: test run install upload clean bootstrap benchmark generate
 test:
-	cd ./test; echo "===Runing python tests!==="; sh -c 'pytest test_sessions.py'; sh -c 'pytest test_characters.py'; echo "===Runing dart tests!==="; dart test.dart;
+	cd ./test; echo "===Runing python tests!==="; sh -c 'pytest'; echo "===Runing dart tests!==="; dart test.dart;
 
 run:
-	rm dnd_backend.db dnd_backend.log config.toml; export ENV=dev; sh -c 'python ./main.py'
+	rm dnd_backend.db dnd_backend.log config.toml; export ENV=dev; sh -c 'coverage run ./main.py'
 
 prod:
 	export ENV=prod; sh -c 'pypy3 ./server/main.py'

@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+* Added pbr to requirements. Fixed tests
+* Fixed sessions -> light\_sessions
+* Added new meta files
+* Bug fixes. Allow more sessions in development mode. Added proper package meta data
 * Massive changes to the API. Implemented Character and session relationships
 * Restructure project. Database should now not close after each call to opitimise usage. (Need to add long runnning tests). Started to experiment with PyPy. Started to add version info
 * Updated all exceptions to print sql error to log. Updted listSessions to have state included
