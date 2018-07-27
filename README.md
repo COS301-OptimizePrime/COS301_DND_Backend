@@ -3,8 +3,7 @@
 | Branch  |                                                                               Status                                                                               |
 | ------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | Master  | [![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=master)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend)  |
-| Develop | [![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=develop)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend) ![deployment diagram](https://img.shields.io/badge/coverage-80%25-brightgreen.svg)
- |
+| Develop | [![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=develop)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend) ![deployment diagram](https://img.shields.io/badge/coverage-80%25-brightgreen.svg) |
 
 Backed API Server
 
