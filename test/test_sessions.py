@@ -2,18 +2,10 @@ from __future__ import print_function
 
 import subprocess
 
-import firebase_admin
 import grpc
-import pytest
-import pytest_benchmark
-from firebase_admin import auth, credentials
-
 import server_pb2
 import server_pb2_grpc
-
-cred = credentials.Certificate(
-    "dnd-game-manager-firebase-adminsdk-34ek4-cccabd3dd6.json")
-firebase = firebase_admin.initialize_app(cred)
+from firebase_admin import auth
 
 server = 'localhost:50051'
 # server = 'develop.optimizeprime.co.za:50051'
@@ -26,7 +18,6 @@ def _create_rpc_good_login(token=str(
         'node ./login.mjs',
         shell=True,
         universal_newlines=False).decode("utf-8")).strip(), session_name=None):
-
     if session_name is None:
         session_name = 'mysession'
 
@@ -286,7 +277,7 @@ def test_setmax_rpc_good_login_setmax_session():
             auth_id_token=token,
             max_players=2))
 
-    assert(session.status == 'SUCCESS')
+    assert (session.status == 'SUCCESS')
 
     response = stub.SetMax(
         server_pb2.SetMaxPlayersRequest(
@@ -928,12 +919,12 @@ def test_list_user_sessions_rpc_good_login():
             auth_id_token=token, limit=3))
 
     assert response.status == 'SUCCESS'
-    assert len(response.sessions) == 1
+    assert len(response.light_sessions) == 1
 
     # Should not list a session where another user is not in.
-    assert response.sessions[0].dungeon_master.name == 'mockuser@test.co.za'
-    assert response.sessions[0].users[0].name == 'mockuser4@test.co.za'
-    assert len(response.sessions[0].users) == 1
+    assert response.light_sessions[0].dungeon_master.name == 'mockuser@test.co.za'
+    # Removed for light sessions
+    # assert response.light_sessions[0].users[0].name == 'mockuser4@test.co.za'
 
 
 def test_ready_up():
@@ -1037,6 +1028,7 @@ def test_ready_up():
     assert response.state_meta > org_state_meta
     assert response.state_ready_start_time == org_state_ready
 
+
 def test_expiry_readyup_session():
     channel = grpc.insecure_channel(server)
     stub = server_pb2_grpc.SessionsManagerStub(channel)
@@ -1092,8 +1084,6 @@ def test_expiry_readyup_session():
             auth_id_token=token,
             session_id=session.session_id))
     assert response.status == 'FAILED'
-
-
 
 # def test_max_sessions_for_user():
 #    auth.revoke_refresh_tokens(uid)

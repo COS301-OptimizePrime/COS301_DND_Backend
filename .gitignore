@@ -118,3 +118,7 @@ dnd-game-manager-firebase-adminsdk*.json
 dnd_backend.db
 
 config.toml
+
+package-lock.json
+
+dnd_backend.err

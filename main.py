@@ -1,4 +1,3 @@
-
 import os
 import signal
 import sys
@@ -7,13 +6,17 @@ from concurrent import futures
 
 import grpc
 
-import config
-import log
-import server_pb2
-import server_pb2_grpc
-from session import Session
-from character import CharacterManager
+from server import db
+from server import log
+from server import server_pb2_grpc
+from server.character import CharacterManager
+from server.session import Session
 
+from pbr.version import VersionInfo
+
+_v = VersionInfo('main').semantic_version()
+__version__ = _v.release_string()
+version_info = _v.version_tuple()
 
 class GracefulKiller:
     kill_now = False
@@ -35,11 +38,18 @@ def serve():
 
     logger.info("Starting...")
 
-    if os.environ["ENV"] == "prod":
-        logger.info("In production enviroment!")
-    else:
-        logger.info("In development enviroment!")
+    logger.info("Version: " + __version__)
 
+    if os.environ["ENV"] == "prod":
+        logger.info("In production environment!")
+    else:
+        logger.info("In development environment!")
+
+    logger.info("Connecting to database!")
+    db.databaseConnection.getDBInstance()
+
+    # Change between development environment and production.
+    # In production
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=20))
     server_pb2_grpc.add_SessionsManagerServicer_to_server(Session(), server)
     server_pb2_grpc.add_CharactersManagerServicer_to_server(CharacterManager(), server)
@@ -52,6 +62,7 @@ def serve():
         while True:
             if killer.kill_now:
                 logger.info("Received kill, stopping...")
+                db.databaseConnection.close()
                 break
             time.sleep(1)
 

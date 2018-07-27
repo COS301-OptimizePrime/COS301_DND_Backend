@@ -1,7 +1,9 @@
+pbr
 grpcio-tools
 firebase-admin
 SQLAlchemy
 psycopg2-binary
 pytest
 pytest-benchmark
+pytest-cov
 toml

@@ -14,9 +14,16 @@ def setup_custom_logger(name):
     fh.setLevel(logging.INFO)
     fh.setFormatter(formatter)
 
+    file_handler_error = logging.handlers.RotatingFileHandler('./dnd_backend.err',
+                                                              maxBytes=10240)
+    file_handler_error.setFormatter(formatter)
+    file_handler_error.setLevel(logging.ERROR)
+
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
     logger.addHandler(handler)
     logger.addHandler(fh)
+    logger.addHandler(file_handler_error)
+
     return logger

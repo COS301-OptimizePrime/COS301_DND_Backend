@@ -1,44 +1,57 @@
 import datetime
-import logging
 import os
 
 from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer,
-                        SmallInteger, String, Table, create_engine, Enum)
+                        SmallInteger, String, Table, create_engine)
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 
-import config
-import log
+from . import config
 
 Base = declarative_base()
 
 
-def connect():
-    if os.environ['ENV'] == 'prod':
-        # logger = logging.getLogger('cos301-DND')
-        # logger.debug('Using PostgreSQL!')
-        engine = create_engine('postgresql://' +
-                               str(config.val['database']['username']) +
-                               ':' +
-                               str(config.val['database']['password']) +
-                               '@' +
-                               str(config.val['database']['address']) +
-                               ':' +
-                               str(config.val['database']['port']) +
-                               '/dnd_backend')
-    else:
-        engine = create_engine(
-            'sqlite:///./dnd_backend.db',
-            echo=False,
-            connect_args={
-                'check_same_thread': False})
+class Database:
+    conn = None
 
-    Base.metadata.create_all(engine)
+    def __init__(self):
+        self.conn = self._connect()
 
-    session_factory = sessionmaker(bind=engine)
-    session = scoped_session(session_factory)
-    return session
+    def _connect(self):
+        if os.environ['ENV'] == 'prod':
+            # logger = logging.getLogger('cos301-DND')
+            # logger.debug('Using PostgreSQL!')
+            engine = create_engine('postgresql://' +
+                                   str(config.val['database']['username']) +
+                                   ':' +
+                                   str(config.val['database']['password']) +
+                                   '@' +
+                                   str(config.val['database']['address']) +
+                                   ':' +
+                                   str(config.val['database']['port']) +
+                                   '/dnd_backend')
+        else:
+            engine = create_engine(
+                'sqlite:///./dnd_backend.db',
+                echo=False,
+                connect_args={
+                    'check_same_thread': False})
+
+        Base.metadata.create_all(engine)
+
+        session_factory = sessionmaker(bind=engine)
+        session = scoped_session(session_factory)
+
+        return session
+
+    def getDBInstance(self):
+        if not self.conn:
+            self.conn = self._connect()
+        return self.conn
+
+    def close(self):
+        self.conn.close()
 
 
 user_sessions = Table('usersessions', Base.metadata,
@@ -48,6 +61,11 @@ user_sessions = Table('usersessions', Base.metadata,
 
 user_ready_sessions = Table('userreadysession', Base.metadata,
                             Column('users_id', Integer, ForeignKey('users.id')),
+                            Column('sessions_id', Integer, ForeignKey('sessions.id'))
+                            )
+
+characters_in_session = Table('charactersinsession', Base.metadata,
+                            Column('characters_id', Integer, ForeignKey('characters.id')),
                             Column('sessions_id', Integer, ForeignKey('sessions.id'))
                             )
 
@@ -148,13 +166,15 @@ class Session(Base):
 
     users = association_proxy('users_in_session', 'user')
 
+    characters_in_session = relationship(
+        "Character",
+        secondary=characters_in_session,
+        back_populates="session"
+    )
+
     def __repr__(self):
         return "<Session(id='%s', session_id='%s', name='%s', dungeon_master='%s')>" % (
             self.id, self.session_id, self.name, self.dungeon_master)
-
-
-# class Party(Base):
-# class Combat(Base):
 
 
 class Character(Base):
@@ -167,16 +187,23 @@ class Character(Base):
         DateTime,
         nullable=False,
         default=datetime.datetime.now)
+
+    date_updated = Column(
+        DateTime,
+        nullable=False,
+        default=datetime.datetime.now,
+        onupdate=datetime.datetime.now)
+
     # Character has only one creator/user
     creator_id = Column(Integer, ForeignKey('users.id'))
     creator = relationship(
         "User", back_populates="characters")
 
-    saving_throws = relationship(
-        "SavingThrow",
-        uselist=False,
-        back_populates="character",
-        cascade="all, delete-orphan")
+    session_id = Column(Integer, ForeignKey('sessions.id'))
+    session = relationship(
+        "Session",
+        back_populates="characters_in_session"
+    )
 
     skills = relationship(
         "Skill",
@@ -189,6 +216,7 @@ class Character(Base):
         uselist=False,
         back_populates="character",
         cascade="all, delete-orphan")
+
     hitpoints = relationship(
         "Hitpoints",
         uselist=False,
@@ -235,38 +263,12 @@ class Character(Base):
     bonds = Column(String(200), nullable=False)
     flaws = Column(String(200), nullable=False)
 
-    session_id = Column(String(36), nullable=False)
+    #session_id = Column(String(36), nullable=False)
 
     features_and_traits = Column(String(350), nullable=False)
 
     gender = Column(String(50), nullable=False)
     level = Column(Integer, nullable=False)
-
-class SavingThrow(Base):
-    __tablename__ = 'savingthrows'
-
-    id = Column(Integer, primary_key=True)
-    character_id = Column(Integer, ForeignKey('characters.id'))
-    character = relationship("Character", back_populates="saving_throws")
-    # Saving throws
-    strength = Column(Integer, nullable=False)
-    strength_proficient = Column(Boolean, nullable=False, default=False)
-
-    dexterity = Column(Integer, nullable=False)
-    dexterity_proficient = Column(Boolean, nullable=False, default=False)
-
-    constitution = Column(Integer, nullable=False)
-    constitution_proficient = Column(Boolean, nullable=False, default=False)
-
-    intelligence = Column(Integer, nullable=False)
-    intelligence_proficient = Column(Boolean, nullable=False, default=False)
-
-    wisdom = Column(Integer, nullable=False)
-    wisdom_proficient = Column(Boolean, nullable=False, default=False)
-
-    charisma = Column(Integer, nullable=False)
-    charisma_subscript = Column(Boolean, nullable=False, default=False)
-
 
 class Skill(Base):
     __tablename__ = 'skills'
@@ -357,20 +359,10 @@ class Hitpoints(Base):
     character = relationship("Character", back_populates="hitpoints")
 
     armor_class = Column(Integer, nullable=False)
-    initiative = Column(Integer, nullable=False)
-    speed = Column(Integer, nullable=False)
     current_hitpoints = Column(Integer, nullable=False)
     max_hitpoints = Column(Integer, nullable=False)
     temporary_hitpoints = Column(Integer, nullable=False)
     hitdice = Column(String(100), nullable=False)
-
-    deathsaves_success1 = Column(Boolean, nullable=False)
-    deathsaves_success2 = Column(Boolean, nullable=False)
-    deathsaves_success3 = Column(Boolean, nullable=False)
-
-    deathsaves_failures1 = Column(Boolean, nullable=False)
-    deathsaves_failures2 = Column(Boolean, nullable=False)
-    deathsaves_failures3 = Column(Boolean, nullable=False)
 
 
 class Equipment(Base):
@@ -382,3 +374,6 @@ class Equipment(Base):
 
     name = Column(String(100), nullable=False)
     value = Column(Integer, nullable=False)
+
+
+databaseConnection = Database()
