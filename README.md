@@ -42,7 +42,6 @@ Backed API Server
 |server/session.py             |584   | 152 |   74%|
 |TOTAL                         |1612  | 321|    80%|
 
-
 ## Requirements
 
 ```bash
