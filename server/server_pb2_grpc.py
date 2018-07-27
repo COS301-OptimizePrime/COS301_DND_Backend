@@ -62,7 +62,7 @@ class SessionsManagerStub(object):
     self.GetSessionsOfUser = channel.unary_unary(
         '/session.SessionsManager/GetSessionsOfUser',
         request_serializer=server__pb2.GetSessionsOfUserRequest.SerializeToString,
-        response_deserializer=server__pb2.ListReply.FromString,
+        response_deserializer=server__pb2.GetSessionsOfUserReply.FromString,
         )
     self.Ready = channel.unary_unary(
         '/session.SessionsManager/Ready',
@@ -263,7 +263,7 @@ def add_SessionsManagerServicer_to_server(servicer, server):
       'GetSessionsOfUser': grpc.unary_unary_rpc_method_handler(
           servicer.GetSessionsOfUser,
           request_deserializer=server__pb2.GetSessionsOfUserRequest.FromString,
-          response_serializer=server__pb2.ListReply.SerializeToString,
+          response_serializer=server__pb2.GetSessionsOfUserReply.SerializeToString,
       ),
       'Ready': grpc.unary_unary_rpc_method_handler(
           servicer.Ready,

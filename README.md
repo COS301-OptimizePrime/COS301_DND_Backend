@@ -7,6 +7,9 @@
 
 Backed API Server
 
+## Deployment Diagram
+![deployment diagram](https://i.imgur.com/DFwdbp0.jpg)
+
 The implementation of the API uses gRPC (https://grpc.io/)
 
 The API "Language" uses ProtocolBuffers
@@ -14,8 +17,17 @@ https://developers.google.com/protocol-buffers/docs/proto3
 
 ## Features
 
-- HTTP2
+- HTTP/2
+- HTTPS in production mode
 - Real time sockets
+- Firebase authentication
+- Strongly typed service and message definition (Protobuf3)
+- Easy configuration with TOML
+- pep8 Compliance
+- Regression testing
+- Developer mode (SQLite)
+- Production mode (PostgreSQL and PyPy3)
+- SystemD service file
 
 
 ## Requirements

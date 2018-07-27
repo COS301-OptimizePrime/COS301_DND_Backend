@@ -4,6 +4,7 @@ import uuid
 
 from sqlalchemy import and_, desc, exc
 
+from . import config
 from . import db
 from . import firebase
 from . import helpers
@@ -62,6 +63,19 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         return sessionObj
 
+    def _convertToGrpcLightSession(self, session, status):
+        sessionObj = server_pb2.LightSession()
+        sessionObj.session_id = session.session_id
+        sessionObj.name = session.name
+        sessionObj.dungeon_master.uid = session.dungeon_master.uid
+        sessionObj.dungeon_master.name = session.dungeon_master.name
+
+        sessionObj.state = session.state
+        sessionObj.last_updated = str(session.date_updated)
+        sessionObj.status = status
+
+        return sessionObj
+
     def Create(self, request, context):
         self.logger.debug(context.peer())
         self.logger.info("Create new session called! Name:" + request.name)
@@ -92,7 +106,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 self.conn.commit()
 
             # Check how many sessions the user has.
-            if len(user.session_dungeon_masters) >= 100:
+            if len(user.session_dungeon_masters) >= config.val['server']['max_sessions_per_user']:
                 self.logger.error(
                     "Failed to create new session, user has reached max sessions")
 
@@ -185,7 +199,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             if user in session.users_in_session:
                 logger.error(
                     "Failed to join session, you are already in this session!"
-                    " Returning normal sessison!")
+                    " Returning normal session!")
                 return self._convertToGrpcSession(session, "SUCCESS")
 
             session.users_in_session.append(user)
@@ -193,9 +207,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 session.full = True
             self.conn.commit()
 
-            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-            return grpcSession
+            return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
             self.logger.error("[JOIN] SQLAlchemyError!" + str(err))
             return server_pb2.Session(
@@ -901,8 +913,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 status_message="Database error!")
 
     def GetSessionsOfUser(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("GetSessionsOfUser sessions called!")
+        self.logger.info("GetSessionsOfUser sessions called!")
 
         _limit = request.limit
         _auth_id_token = request.auth_id_token
@@ -911,10 +922,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
-            return server_pb2.ListReply(status="FAILED")
+            self.logger.error("Failed to verify login!")
+            return server_pb2.GetSessionsOfUserReply(status="FAILED",
+                                                     status_message="[GetSessionsOfUser] Failed to verify login!")
 
-        logger.debug("Successfully verified token! UID=" + uid)
+        self.logger.debug("Successfully verified token! UID=" + uid)
 
         try:
             self.conn = db.databaseConnection.getDBInstance()
@@ -927,61 +939,19 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             limit = 0
 
-            user_sessions = _sessions_query.session_dungeon_masters + \
-                            _sessions_query.joined_sessions
+            user_sessions = _sessions_query.session_dungeon_masters + _sessions_query.joined_sessions
 
             for _session in user_sessions:
                 limit = limit + 1
 
-                # logger.debug(_session.session_id)
-
-                sessionObj = server_pb2.Session()
-                sessionObj.session_id = _session.session_id
-                sessionObj.name = _session.name
-                sessionObj.dungeon_master.uid = _session.dungeon_master.uid
-                sessionObj.dungeon_master.name = _session.dungeon_master.name
-                sessionObj.date_created = str(_session.date_created)
-                sessionObj.max_players = _session.max_players
-                sessionObj.full = _session.full
-                sessionObj.private = _session.private
-
-                sessionObj.state = _session.state
-                sessionObj.state_meta = _session.state_meta
-                sessionObj.state_ready_start_time = str(_session.state_ready_start_time)
-                sessionObj.last_updated = str(_session.date_updated)
-
-                sessionObj.users.extend([])
-
-                for _user in _session.users_in_session:
-                    userInSession = server_pb2.User()
-                    userInSession.uid = _user.uid
-                    userInSession.name = _user.name
-
-                    if _user in _session.ready_users:
-                        userInSession.ready_in_this_session = True
-                    else:
-                        userInSession.ready_in_this_session = False
-
-                    sessionObj.users.extend([userInSession])
-
-                sessionObj.ready_users.extend([])
-
-                for _user in _session.ready_users:
-                    userInSession = server_pb2.User()
-                    userInSession.uid = _user.uid
-                    userInSession.name = _user.name
-                    userInSession.ready_in_this_session = True
-                    sessionObj.ready_users.extend([userInSession])
-
-                _sessions.append(sessionObj)
-
+                _sessions.append(self._convertToGrpcLightSession(session=_session, status="SUCCESS"))
                 if limit >= _limit:
                     break
 
-            return server_pb2.ListReply(status="SUCCESS", sessions=_sessions)
+            return server_pb2.GetSessionsOfUserReply(status="SUCCESS", light_sessions=_sessions)
         except exc.SQLAlchemyError as err:
             self.logger.error("[GetSessionsOfUser] SQLAlchemyError! " + str(err))
-            return server_pb2.ListReply(
+            return server_pb2.GetSessionsOfUserReply(
                 status="FAILED",
                 status_message="[GetSessionsOfUser] Database error!")
 

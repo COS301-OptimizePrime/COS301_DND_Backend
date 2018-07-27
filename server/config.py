@@ -3,7 +3,6 @@ import sys
 
 import toml
 
-
 default_config = """
 title = \"DND Backend Config\"
 
@@ -12,6 +11,10 @@ address = \"localhost\"
 port = 5432
 username = \"develop\"
 password = \"\"
+
+[server]
+mode = "DEV"
+max_sessions_per_user = 500
 """
 
 
@@ -42,5 +45,5 @@ def getConfigDict(configPath):
         sys.exit(1)
     return configDict
 
-val = getConfigDict("config.toml")
 
+val = getConfigDict("config.toml")

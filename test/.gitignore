@@ -2,3 +2,5 @@ node_modules
 dnd-game-manager-firebase-adminsdk*.json
 .pytest_cache
 config.toml
+*.svg
+pubspec.lock

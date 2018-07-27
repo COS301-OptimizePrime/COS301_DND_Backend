@@ -130,6 +130,15 @@ const GetSessionsOfUserRequest$json = const {
   ],
 };
 
+const GetSessionsOfUserReply$json = const {
+  '1': 'GetSessionsOfUserReply',
+  '2': const [
+    const {'1': 'status', '3': 1, '4': 1, '5': 9, '10': 'status'},
+    const {'1': 'status_message', '3': 2, '4': 1, '5': 9, '10': 'statusMessage'},
+    const {'1': 'light_sessions', '3': 3, '4': 3, '5': 11, '6': '.session.LightSession', '10': 'lightSessions'},
+  ],
+};
+
 const GetSessionRequest$json = const {
   '1': 'GetSessionRequest',
   '2': const [
@@ -226,6 +235,31 @@ const LeaveReply$json = const {
   ],
 };
 
+const User$json = const {
+  '1': 'User',
+  '2': const [
+    const {'1': 'uid', '3': 1, '4': 1, '5': 9, '10': 'uid'},
+    const {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
+    const {'1': 'ready_in_this_session', '3': 3, '4': 1, '5': 8, '10': 'readyInThisSession'},
+  ],
+};
+
+const NewCharacterRequest$json = const {
+  '1': 'NewCharacterRequest',
+  '2': const [
+    const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
+    const {'1': 'character', '3': 2, '4': 1, '5': 11, '6': '.session.Character', '10': 'character'},
+  ],
+};
+
+const DeleteCharacterReply$json = const {
+  '1': 'DeleteCharacterReply',
+  '2': const [
+    const {'1': 'status', '3': 1, '4': 1, '5': 9, '10': 'status'},
+    const {'1': 'status_message', '3': 2, '4': 1, '5': 9, '10': 'statusMessage'},
+  ],
+};
+
 const LightSession$json = const {
   '1': 'LightSession',
   '2': const [
@@ -235,6 +269,7 @@ const LightSession$json = const {
     const {'1': 'name', '3': 4, '4': 1, '5': 9, '10': 'name'},
     const {'1': 'dungeon_master', '3': 5, '4': 1, '5': 11, '6': '.session.User', '10': 'dungeonMaster'},
     const {'1': 'last_updated', '3': 6, '4': 1, '5': 9, '10': 'lastUpdated'},
+    const {'1': 'state', '3': 7, '4': 1, '5': 9, '10': 'state'},
   ],
 };
 
@@ -258,31 +293,6 @@ const Session$json = const {
     const {'1': 'last_updated', '3': 15, '4': 1, '5': 9, '10': 'lastUpdated'},
     const {'1': 'ready_up_expiry_time', '3': 16, '4': 1, '5': 13, '10': 'readyUpExpiryTime'},
     const {'1': 'charactersInSession', '3': 17, '4': 3, '5': 11, '6': '.session.LightCharacter', '10': 'charactersInSession'},
-  ],
-};
-
-const User$json = const {
-  '1': 'User',
-  '2': const [
-    const {'1': 'uid', '3': 1, '4': 1, '5': 9, '10': 'uid'},
-    const {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
-    const {'1': 'ready_in_this_session', '3': 3, '4': 1, '5': 8, '10': 'readyInThisSession'},
-  ],
-};
-
-const NewCharacterRequest$json = const {
-  '1': 'NewCharacterRequest',
-  '2': const [
-    const {'1': 'auth_id_token', '3': 1, '4': 1, '5': 9, '10': 'authIdToken'},
-    const {'1': 'character', '3': 2, '4': 1, '5': 11, '6': '.session.Character', '10': 'character'},
-  ],
-};
-
-const DeleteCharacterReply$json = const {
-  '1': 'DeleteCharacterReply',
-  '2': const [
-    const {'1': 'status', '3': 1, '4': 1, '5': 9, '10': 'status'},
-    const {'1': 'status_message', '3': 2, '4': 1, '5': 9, '10': 'statusMessage'},
   ],
 };
 

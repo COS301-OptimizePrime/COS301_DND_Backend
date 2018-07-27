@@ -12,6 +12,11 @@ from server import server_pb2_grpc
 from server.character import CharacterManager
 from server.session import Session
 
+from pbr.version import VersionInfo
+
+_v = VersionInfo('main').semantic_version()
+__version__ = _v.release_string()
+version_info = _v.version_tuple()
 
 class GracefulKiller:
     kill_now = False
@@ -32,6 +37,8 @@ def serve():
         sys.exit("Should not be run as root!")
 
     logger.info("Starting...")
+
+    logger.info("Version: " + __version__)
 
     if os.environ["ENV"] == "prod":
         logger.info("In production environment!")

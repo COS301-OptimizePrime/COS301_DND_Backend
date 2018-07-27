@@ -32,7 +32,7 @@ service SessionsManager {
     rpc GetSessionById (GetSessionRequest) returns (Session) {
     }
     // [EXPENSIVE] Get all sessions of user
-    rpc GetSessionsOfUser (GetSessionsOfUserRequest) returns (ListReply) {
+    rpc GetSessionsOfUser (GetSessionsOfUserRequest) returns (GetSessionsOfUserReply) {
     }
     // Ready up a user in the requested session
     rpc Ready (ReadyUpRequest) returns (ReadyUpReply) {
@@ -155,6 +155,12 @@ message GetSessionsOfUserRequest {
     uint32 limit = 2;
 }
 
+message GetSessionsOfUserReply {
+    string status = 1;
+    string status_message = 2;
+    repeated LightSession light_sessions = 3;
+}
+
 message GetSessionRequest {
     string auth_id_token = 1;
     string session_id = 2;
@@ -239,6 +245,22 @@ message LeaveReply {
     string status_message = 2;
 }
 
+message User {
+    string uid = 1;
+    string name = 2;
+    bool ready_in_this_session = 3;
+}
+
+message NewCharacterRequest {
+    string auth_id_token = 1;
+    Character character = 2;
+}
+
+message DeleteCharacterReply {
+    string status = 1;
+    string status_message = 2;
+}
+
 message LightSession {
     string status = 1;
     string status_message = 2;
@@ -249,6 +271,7 @@ message LightSession {
     User dungeon_master = 5;
 
     string last_updated = 6;
+    string state = 7;
 }
 
 message Session {
@@ -278,22 +301,6 @@ message Session {
     repeated LightCharacter charactersInSession = 17;
 }
 
-message User {
-    string uid = 1;
-    string name = 2;
-    bool ready_in_this_session = 3;
-}
-
-message NewCharacterRequest {
-    string auth_id_token = 1;
-    Character character = 2;
-}
-
-message DeleteCharacterReply {
-    string status = 1;
-    string status_message = 2;
-}
-
 // This should be a cheaper character used for displaying in lists.
 message LightCharacter {
     string character_id = 1;
@@ -308,7 +315,6 @@ message LightCharacter {
 
     string last_updated = 9;
     string session_id = 10;
-
 }
 
 // Full fleged character object (expensive)

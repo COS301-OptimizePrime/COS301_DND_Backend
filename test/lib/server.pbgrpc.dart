@@ -49,10 +49,10 @@ class SessionsManagerClient extends Client {
       (GetSessionRequest value) => value.writeToBuffer(),
       (List<int> value) => new Session.fromBuffer(value));
   static final _$getSessionsOfUser =
-      new ClientMethod<GetSessionsOfUserRequest, ListReply>(
+      new ClientMethod<GetSessionsOfUserRequest, GetSessionsOfUserReply>(
           '/session.SessionsManager/GetSessionsOfUser',
           (GetSessionsOfUserRequest value) => value.writeToBuffer(),
-          (List<int> value) => new ListReply.fromBuffer(value));
+          (List<int> value) => new GetSessionsOfUserReply.fromBuffer(value));
   static final _$ready = new ClientMethod<ReadyUpRequest, ReadyUpReply>(
       '/session.SessionsManager/Ready',
       (ReadyUpRequest value) => value.writeToBuffer(),
@@ -149,7 +149,8 @@ class SessionsManagerClient extends Client {
     return new ResponseFuture(call);
   }
 
-  ResponseFuture<ListReply> getSessionsOfUser(GetSessionsOfUserRequest request,
+  ResponseFuture<GetSessionsOfUserReply> getSessionsOfUser(
+      GetSessionsOfUserRequest request,
       {CallOptions options}) {
     final call = $createCall(
         _$getSessionsOfUser, new Stream.fromIterable([request]),
@@ -275,13 +276,14 @@ abstract class SessionsManagerServiceBase extends Service {
         false,
         (List<int> value) => new GetSessionRequest.fromBuffer(value),
         (Session value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<GetSessionsOfUserRequest, ListReply>(
-        'GetSessionsOfUser',
-        getSessionsOfUser_Pre,
-        false,
-        false,
-        (List<int> value) => new GetSessionsOfUserRequest.fromBuffer(value),
-        (ListReply value) => value.writeToBuffer()));
+    $addMethod(
+        new ServiceMethod<GetSessionsOfUserRequest, GetSessionsOfUserReply>(
+            'GetSessionsOfUser',
+            getSessionsOfUser_Pre,
+            false,
+            false,
+            (List<int> value) => new GetSessionsOfUserRequest.fromBuffer(value),
+            (GetSessionsOfUserReply value) => value.writeToBuffer()));
     $addMethod(new ServiceMethod<ReadyUpRequest, ReadyUpReply>(
         'Ready',
         ready_Pre,
@@ -367,7 +369,7 @@ abstract class SessionsManagerServiceBase extends Service {
     return getSessionById(call, await request);
   }
 
-  Future<ListReply> getSessionsOfUser_Pre(
+  Future<GetSessionsOfUserReply> getSessionsOfUser_Pre(
       ServiceCall call, Future request) async {
     return getSessionsOfUser(call, await request);
   }
@@ -409,7 +411,7 @@ abstract class SessionsManagerServiceBase extends Service {
   Future<Session> setPrivate(ServiceCall call, SetPrivateRequest request);
   Future<ListReply> list(ServiceCall call, ListRequest request);
   Future<Session> getSessionById(ServiceCall call, GetSessionRequest request);
-  Future<ListReply> getSessionsOfUser(
+  Future<GetSessionsOfUserReply> getSessionsOfUser(
       ServiceCall call, GetSessionsOfUserRequest request);
   Future<ReadyUpReply> ready(ServiceCall call, ReadyUpRequest request);
   Future<Session> changeState(ServiceCall call, ChangeStateRequest request);
