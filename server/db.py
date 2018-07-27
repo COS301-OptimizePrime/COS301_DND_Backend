@@ -12,47 +12,32 @@ from . import config
 Base = declarative_base()
 
 
-class Database:
-    conn = None
+def connect():
+    if os.environ['ENV'] == 'prod':
+        # logger = logging.getLogger('cos301-DND')
+        # logger.debug('Using PostgreSQL!')
+        engine = create_engine('postgresql://' +
+                               str(config.val['database']['username']) +
+                               ':' +
+                               str(config.val['database']['password']) +
+                               '@' +
+                               str(config.val['database']['address']) +
+                               ':' +
+                               str(config.val['database']['port']) +
+                               '/dnd_backend')
+    else:
+        engine = create_engine(
+            'sqlite:///./dnd_backend.db',
+            echo=False,
+            connect_args={
+                'check_same_thread': False})
 
-    def __init__(self):
-        self.conn = self._connect()
+    Base.metadata.create_all(engine)
 
-    def _connect(self):
-        if os.environ['ENV'] == 'prod':
-            # logger = logging.getLogger('cos301-DND')
-            # logger.debug('Using PostgreSQL!')
-            engine = create_engine('postgresql://' +
-                                   str(config.val['database']['username']) +
-                                   ':' +
-                                   str(config.val['database']['password']) +
-                                   '@' +
-                                   str(config.val['database']['address']) +
-                                   ':' +
-                                   str(config.val['database']['port']) +
-                                   '/dnd_backend')
-        else:
-            engine = create_engine(
-                'sqlite:///./dnd_backend.db',
-                echo=False,
-                connect_args={
-                    'check_same_thread': False})
+    session_factory = sessionmaker(bind=engine)
+    session = scoped_session(session_factory)
 
-        Base.metadata.create_all(engine)
-
-        session_factory = sessionmaker(bind=engine)
-        session = scoped_session(session_factory)
-
-        return session
-
-    def getDBInstance(self):
-        if not self.conn:
-            self.conn = self._connect()
-        return self.conn
-
-    def close(self):
-        self.conn.close()
-
+    return session
 
 user_sessions = Table('usersessions', Base.metadata,
                       Column('users_id', Integer, ForeignKey('users.id')),
@@ -374,6 +359,3 @@ class Equipment(Base):
 
     name = Column(String(100), nullable=False)
     value = Column(Integer, nullable=False)
-
-
-databaseConnection = Database()

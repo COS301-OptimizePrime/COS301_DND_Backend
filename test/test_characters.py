@@ -14,7 +14,7 @@ cred = credentials.Certificate(
 firebase = firebase_admin.initialize_app(cred)
 
 server = 'localhost:50051'
-# server = 'develop.optimizeprime.co.za:50051'
+#server = 'develop.optimizeprime.co.za:50051'
 test_session_id = ''
 uid = 'mT8HzwXWjDc1FX472qTfcsUUcQt1'
 

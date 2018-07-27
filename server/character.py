@@ -16,11 +16,17 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
     conn = None
     logger = logging.getLogger("cos301-DND")
 
+    def _connectDatabase(self):
+        if not self.conn:
+            self.conn = db.connect()
+
+        return self.conn
+
     def _determineOnline(self, socket, user):
         # Associate socket with user uid.
         #     connectionId = str(uuid.uuid4())
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             user.socket = socket.peer()
             self.conn.commit()
         except exc.SQLAlchemyError:
@@ -45,7 +51,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 status="FAILED",
                 status_message="[UpdateCharacter] Failed to verify user token!")
 
-        self.conn = db.databaseConnection.getDBInstance()
+        self.conn = self._connectDatabase()
 
         user = self.conn.query(db.User).filter(db.User.uid == uid).first()
         if not user:
@@ -58,7 +64,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
         # _determineOnline(context, user)
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
 
             # Check if the user owns the character
             character = self.conn.query(db.Character).filter(
@@ -108,7 +114,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 status="FAILED",
                 status_message="[GetCharacters] Failed to verify user token!")
 
-        self.conn = db.databaseConnection.getDBInstance()
+        self.conn = self._connectDatabase()
         user = self.conn.query(db.User).filter(db.User.uid == uid).first()
         if not user:
             user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
@@ -119,7 +125,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
 
         # TODO: Implement limiting
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
 
             _characters_query = user.characters
             _characters = []
@@ -156,7 +162,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 status_message="[Delete Character] Failed to verify login!")
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             user = self.conn.query(db.User).filter(db.User.uid == uid).first()
             if not user:
                 user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
@@ -217,7 +223,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 status_message="[Delete Character] Failed to verify login!")
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             user = self.conn.query(db.User).filter(db.User.uid == uid).first()
             if not user:
                 user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
@@ -273,7 +279,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 status_message="[Create] Failed to verify user token!")
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             user = self.conn.query(db.User).filter(db.User.uid == uid).first()
             if not user:
                 user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)

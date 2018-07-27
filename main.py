@@ -6,7 +6,6 @@ from concurrent import futures
 
 import grpc
 
-from server import db
 from server import log
 from server import server_pb2_grpc
 from server.character import CharacterManager
@@ -45,9 +44,6 @@ def serve():
     else:
         logger.info("In development environment!")
 
-    logger.info("Connecting to database!")
-    db.databaseConnection.getDBInstance()
-
     # Change between development environment and production.
     # In production
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=20))
@@ -62,7 +58,6 @@ def serve():
         while True:
             if killer.kill_now:
                 logger.info("Received kill, stopping...")
-                db.databaseConnection.close()
                 break
             time.sleep(1)
 

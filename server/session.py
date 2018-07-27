@@ -16,6 +16,12 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
     conn = None
     logger = logging.getLogger("cos301-DND")
 
+    def _connectDatabase(self):
+        if not self.conn:
+            self.conn = db.connect()
+
+        return self.conn
+
     # Converts a Database Session object to a grpc Session object
     def _convertToGrpcSession(self, session, status):
         sessionObj = server_pb2.Session()
@@ -98,7 +104,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _private = request.private
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             user = self.conn.query(db.User).filter(db.User.uid == uid).first()
             if not user:
                 user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
@@ -165,7 +171,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -238,7 +244,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
 
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
@@ -333,7 +339,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
 
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
@@ -429,7 +435,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
 
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
@@ -517,7 +523,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
 
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
@@ -584,7 +590,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
 
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
@@ -650,7 +656,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -727,7 +733,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -784,7 +790,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -838,7 +844,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         logger.debug("Successfully verified token! UID=" + uid)
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
 
             if _full:
                 _sessions_query = self.conn.query(
@@ -909,7 +915,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         logger.debug("Successfully verified token! UID=" + uid)
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -966,7 +972,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         self.logger.debug("Successfully verified token! UID=" + uid)
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
 
             _sessions_query = self.conn.query(
                 db.User).filter(
@@ -1013,7 +1019,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -1058,7 +1064,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -1115,7 +1121,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         _session_id = request.session_id
 
         try:
-            self.conn = db.databaseConnection.getDBInstance()
+            self.conn = self._connectDatabase()
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
