@@ -1,0 +1,109 @@
+CHANGES
+=======
+
+* Massive changes to the API. Implemented Character and session relationships
+* Restructure project. Database should now not close after each call to opitimise usage. (Need to add long runnning tests). Started to experiment with PyPy. Started to add version info
+* Updated all exceptions to print sql error to log. Updted listSessions to have state included
+* Removed lock file
+* Added gender and level attributes to character. Closes #41
+* Ready functionality should be working and state change functionality
+* Started adding ready up functionality
+* autopep8 formatting
+* Fixed bug with character replies. (status message\_
+* added features and traits
+* Added session id to character. Fixed bug in updating character. Added test to check if character name is blank
+* Added back session tests
+* Added equipment for characters. Added tests for equipment. Fixed bug where old relationship rows are not deleted (cascading)
+* Updated dart library. Added pip upgrade to makefile for python modules
+* Added error handling on edge cases for database
+* Added more fields for character fields
+* Added hitpoints and savingthrows tests
+* Added more tests. Various bug fixes
+* Added more helper rpc functions for characters. Incomplete conversion between objects will finish tommorow
+* Multiple bug fixes for characters. More tests
+* Close connections to database
+* close database connections
+* formatting. desc sorting
+* Added ordering to relationships. DM sessions should now be listed
+* first semi working characters service. Need to write tests. Need to check performance
+* removed update npm and pip
+* updates to travis
+* added updates to makefile
+* changes to travis
+* Started adding character prototypes
+* fixed syntax error
+* more changes for python 2
+* Changes for python 2
+* Added configuration
+* Formatted all files with pep8. Added a extra benchmark test. Fixed assertions
+* Fixed get session bug. List sessions are also not updating the user's name. (Fixed)
+* forgot to add the actual test file
+* Modified test script to see if it works on travis
+* Changed testing. Added ability to get all the sessions of a user. Reuse connections when possible
+* Fixed a bug where joining the same session multiple times will make the session appear full
+* added gracefull stopping
+* Fixed service
+* Added service files. Fixed default size of a new session
+
+v0.0.1
+------
+
+* Added ability to switch to Postgresql for production enviroments. Do have some race conditions. Closes #7
+* Implemented limits for amount of sessions users can have. Closes #16
+* Implemented SetPrivate RPC. Closes #15
+* Removed duplicate code
+* Implemented SetName RPC. Closes #14
+* Leaving a session with no other players deletes the session. Fixes #10. If the Dungeon master leaves a new dungeon master is assigned
+* Fixes #13
+* Added privacy settings for session
+* Fixed #12, Completed #11
+* Added the ability to list sessions that are full based on parameter
+* List sessions now return the most recently created sessions (desc)
+* removed bin as it is replaced by actual tests for example code
+* Added test that users can not modify sessions if they are not the dungeon master
+* added get session by id. tests for if users try to leave a session they are not in
+* need to add tests to see if session is empty. also need to do getSessionByID
+* added leave session rpc
+* added tests for join
+* removed cache files
+* Updated readme
+* added module file
+* added SQLAlchemy to requirements
+* Moved to SQLAlchemy need to write additional tests. #1
+* travis
+* moved all installation to makefile
+* Added dart to travis
+* Started adding dart tests for the API
+* New protocol definitions
+* Started adding functionality for set max player
+* add build status to readme
+* hopefully this works on travis
+* fixed makefile for travis
+* removed travis python specifiers
+* switch back to default python to help with travis loading times
+* fixes
+* attempt to use pip3
+* updated to reflect python3
+* removed lock file
+* added node requirements
+* changes so travis doesnt get stuck
+* added encrypted file for travis
+* travis updates
+* travis updates
+* removed bad pip install
+* travis fixes
+* started adding travis
+* Added list sessions rpc
+* removed outdated dart libraries
+* protocol updates
+* Added proper login tests using nodejs. Will need to build a proper install setup for this
+* removed
+* removed
+* Added some basic tests. Hard to actually do with auth included
+* Added links to the readme
+* Working demo for how a client will be implemented
+* Removed lock file
+* Generated complementary dart library
+* Trying to generate dart code for client
+* Initial protocol buffers and gRPC implementation
+* Initial commit
