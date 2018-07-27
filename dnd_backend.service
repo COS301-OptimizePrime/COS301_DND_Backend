@@ -7,7 +7,7 @@ Type=simple
 User=develop
 WorkingDirectory=/home/develop/COS301_DND_Backend
 Environment=ENV=prod
-ExecStart=/usr/bin/python /home/develop/COS301_DND_Backend/server/main.py
+ExecStart=/usr/bin/pypy3 /home/develop/COS301_DND_Backend/main.py
 Restart=on-failure
 
 [Install]

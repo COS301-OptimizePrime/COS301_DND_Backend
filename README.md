@@ -75,3 +75,30 @@ make test
 ```bash
 python -m grpc.tools.protoc -I./protos --python_out=./server --grpc_python_out=./server ./protos/server.proto
 ```
+
+## Fedora Installation
+```bash
+sudo dnf update
+sudo dnf install postgresql-server postgresql-contrib
+sudo systemctl enable postgresql
+sudo postgresql-setup --initdb --unit postgresql
+sudo systemctl start postgresql
+pypy -m ensurepip
+```
+
+## Arch Linux Installation
+```bash
+pacman -S sudo
+sudo pacaman -Syyu
+sudo pacman -S postgresql
+
+sudo -u postgres -i
+initdb --locale en_US.UTF-8 -E UTF8 -D '/var/lib/postgres/data'
+exit
+
+sudo systemctl enable postgresql
+sudo systemctl start postgresql
+sudo -u postgres -i
+
+createuser --interactive
+```
