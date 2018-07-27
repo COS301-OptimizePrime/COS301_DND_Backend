@@ -144,6 +144,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def Join(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -215,6 +217,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def Leave(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -307,6 +311,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def Ready(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -402,6 +408,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.ReadyUpReply(
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def Kick(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -485,6 +493,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="[KICK] Database error!")
+        finally:
+            self.conn.close()
 
     # This is a Dungeon Master only command.
     def SetMax(self, request, context):
@@ -550,6 +560,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     # This is a Dungeon Master only command.
     def SetName(self, request, context):
@@ -614,6 +626,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="[SETNAME] Database error!")
+        finally:
+            self.conn.close()
 
     # This is a Dungeon Master only command.
     def ChangeState(self, request, context):
@@ -694,6 +708,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="[ChangeState] Database error!")
+        finally:
+            self.conn.close()
 
     # This is a Dungeon Master only command.
     def SetPrivate(self, request, context):
@@ -750,6 +766,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="[SETPRIVATE] Database error!")
+        finally:
+            self.conn.close()
 
     # This is a Dungeon Master only command.
     def ChangeReadyUpExpiryTime(self, request, context):
@@ -799,6 +817,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.ChangeReadyUpExpiryTimeResponse(
                 status="FAILED",
                 status_message="[ChangeReadyUpExpiryTime] Database error!")
+        finally:
+            self.conn.close()
 
     def List(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -865,6 +885,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.ListReply(
                 status="FAILED",
                 status_message="[List] Database error!")
+        finally:
+            self.conn.close()
 
     def GetSessionById(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -924,6 +946,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        finally:
+            self.conn.close()
 
     def GetSessionsOfUser(self, request, context):
         self.logger.info("GetSessionsOfUser sessions called!")
@@ -967,6 +991,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.GetSessionsOfUserReply(
                 status="FAILED",
                 status_message="[GetSessionsOfUser] Database error!")
+        finally:
+            self.conn.close()
 
     def GetCharactersInSession(self, request, context):
         self.logger.info("GetCharactersInSession called!")
@@ -1010,6 +1036,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.GetCharactersInSessionResponse(
                 status="FAILED",
                 status_message="[GetCharactersInSession] Database error!")
+        finally:
+            self.conn.close()
 
     def AddCharacterToSession(self, request, context):
         self.logger.info("AddCharacterToSession called!")
@@ -1065,6 +1093,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.Session(
                 status="FAILED",
                 status_message="[AddCharacterToSession] Database error!")
+        finally:
+            self.conn.close()
 
     def RemoveCharacterFromSession(self, request, context):
         self.logger.info("RemoveCharacterFromSession called!")
@@ -1128,6 +1158,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.Session(
                 status="FAILED",
                 status_message="[RemoveCharacterFromSession] Database error!")
+        finally:
+            self.conn.close()
 
     def __del__(self):
         self.logger.info("Socket destroyed ...")
