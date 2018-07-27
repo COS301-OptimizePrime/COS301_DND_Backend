@@ -932,7 +932,8 @@ def test_list_user_sessions_rpc_good_login():
 
     # Should not list a session where another user is not in.
     assert response.light_sessions[0].dungeon_master.name == 'mockuser@test.co.za'
-    assert response.light_sessions[0].users[0].name == 'mockuser4@test.co.za'
+    # Removed for light sessions
+    # assert response.light_sessions[0].users[0].name == 'mockuser4@test.co.za'
 
 def test_ready_up():
     channel = grpc.insecure_channel(server)
