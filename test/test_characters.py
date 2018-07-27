@@ -1,15 +1,13 @@
 from __future__ import print_function
 
+import random
 import subprocess
 
 import firebase_admin
 import grpc
-from firebase_admin import credentials
-
 import server_pb2
 import server_pb2_grpc
-
-import random
+from firebase_admin import credentials
 
 cred = credentials.Certificate(
     "dnd-game-manager-firebase-adminsdk-34ek4-cccabd3dd6.json")
@@ -54,22 +52,6 @@ def getRandomCharacter():
     _character.bonds = "TEST BONDS"
     _character.flaws = "TEST FLAWS"
 
-    _character.saving_throws.strength = random.randint(1, 50)
-    _character.saving_throws.strength_proficient = random.choice([True, False])
-    _character.saving_throws.dexterity = random.randint(1, 50)
-    _character.saving_throws.dexterity_proficient = random.choice([
-                                                                  True, False])
-    _character.saving_throws.constitution = random.randint(1, 50)
-    _character.saving_throws.constitution_proficient = random.choice([
-                                                                     True, False])
-    _character.saving_throws.intelligence = random.randint(1, 50)
-    _character.saving_throws.intelligence_proficient = random.choice([
-                                                                     True, False])
-    _character.saving_throws.wisdom = random.randint(1, 50)
-    _character.saving_throws.wisdom_proficient = random.choice([True, False])
-    _character.saving_throws.charisma = random.randint(1, 50)
-    _character.saving_throws.charisma_subscript = random.randint(1, 50)
-
     _character.skills.acrobatics = random.randint(1, 50)
     _character.skills.acrobatics_proficient = random.choice([True, False])
     _character.skills.animal_handling = random.randint(1, 50)
@@ -108,20 +90,10 @@ def getRandomCharacter():
     _character.skills.survival_proficient = random.choice([True, False])
 
     _character.hitpoints.armor_class = random.randint(1, 50)
-    _character.hitpoints.initiative = random.randint(1, 50)
-    _character.hitpoints.speed = random.randint(1, 50)
     _character.hitpoints.current_hitpoints = random.randint(1, 50)
     _character.hitpoints.max_hitpoints = random.randint(1, 50)
     _character.hitpoints.temporary_hitpoints = random.randint(1, 50)
     _character.hitpoints.hitdice = "HIT DICE"
-
-    _character.hitpoints.deathsaves_success1 = random.choice([True, False])
-    _character.hitpoints.deathsaves_success2 = random.choice([True, False])
-    _character.hitpoints.deathsaves_success3 = random.choice([True, False])
-
-    _character.hitpoints.deathsaves_failures1 = random.choice([True, False])
-    _character.hitpoints.deathsaves_failures2 = random.choice([True, False])
-    _character.hitpoints.deathsaves_failures3 = random.choice([True, False])
 
     _character.equipment.extend([])
 
@@ -135,7 +107,6 @@ def getRandomCharacter():
     _character.equipment.extend([_eq])
     _character.equipment.extend([_eq2])
 
-    _character.session_id = 'TESTSESSIONID'
     _character.features_and_traits = 'FEATURESANDTRAITS'
 
     return _character
@@ -175,33 +146,10 @@ def compareCharacters(character1, character2):
     assert character1.flaws == character2.flaws
 
     assert character1.hitpoints.armor_class == character2.hitpoints.armor_class
-    assert character1.hitpoints.initiative == character2.hitpoints.initiative
-    assert character1.hitpoints.speed == character2.hitpoints.speed
     assert character1.hitpoints.current_hitpoints == character2.hitpoints.current_hitpoints
     assert character1.hitpoints.max_hitpoints == character2.hitpoints.max_hitpoints
     assert character1.hitpoints.temporary_hitpoints == character2.hitpoints.temporary_hitpoints
     assert character1.hitpoints.hitdice == character2.hitpoints.hitdice
-
-    assert character1.hitpoints.deathsaves_success1 == character2.hitpoints.deathsaves_success1
-    assert character1.hitpoints.deathsaves_success2 == character2.hitpoints.deathsaves_success2
-    assert character1.hitpoints.deathsaves_success3 == character2.hitpoints.deathsaves_success3
-
-    assert character1.hitpoints.deathsaves_failures1 == character2.hitpoints.deathsaves_failures1
-    assert character1.hitpoints.deathsaves_failures2 == character2.hitpoints.deathsaves_failures2
-    assert character1.hitpoints.deathsaves_failures3 == character2.hitpoints.deathsaves_failures3
-
-    assert character1.saving_throws.strength == character2.saving_throws.strength
-    assert character1.saving_throws.strength_proficient == character2.saving_throws.strength_proficient
-    assert character1.saving_throws.dexterity == character2.saving_throws.dexterity
-    assert character1.saving_throws.dexterity_proficient == character2.saving_throws.dexterity_proficient
-    assert character1.saving_throws.constitution == character2.saving_throws.constitution
-    assert character1.saving_throws.constitution_proficient == character2.saving_throws.constitution_proficient
-    assert character1.saving_throws.intelligence == character2.saving_throws.intelligence
-    assert character1.saving_throws.intelligence_proficient == character2.saving_throws.intelligence_proficient
-    assert character1.saving_throws.wisdom == character2.saving_throws.wisdom
-    assert character1.saving_throws.wisdom_proficient == character2.saving_throws.wisdom_proficient
-    assert character1.saving_throws.charisma == character2.saving_throws.charisma
-    assert character1.saving_throws.charisma_subscript == character2.saving_throws.charisma_subscript
 
     assert character1.skills.acrobatics == character2.skills.acrobatics
     assert character1.skills.acrobatics_proficient == character2.skills.acrobatics_proficient
@@ -245,7 +193,7 @@ def compareCharacters(character1, character2):
     assert character1.equipment[0].value == character2.equipment[0].value
     assert character1.equipment[1].value == character2.equipment[1].value
 
-    assert character1.session_id == character2.session_id
+    # assert character1.session_id == character2.session_id
 
     assert character1.features_and_traits == character2.features_and_traits
 
@@ -310,9 +258,8 @@ def test_get_characters():
 
     assert response.status == 'SUCCESS'
     assert response.status_message == ''
-    assert len(response.characters) > 0
-    assert response.characters[0].name == 'MyTestCharacter'
-    assert response.characters[0].creator.name == 'mockuser@test.co.za'
+    assert len(response.light_characters) > 0
+    assert response.light_characters[0].name == 'MyTestCharacter'
 
 
 def test_delete_character_does_not_exist():
@@ -450,3 +397,215 @@ def test_update_character():
     assert response.gender == "Female"
 
     compareCharacters(_char, response)
+
+
+def test_character_added_to_session():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+    _char = getRandomCharacter()
+    _char.name = 'MyTestCharacter'
+
+    response = stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=global_token,
+            character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+
+    char_id = response.character_id
+
+    session_stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    response = session_stub.Create(
+        server_pb2.NewSessionRequest(
+            name='mysession',
+            auth_id_token=global_token,
+            max_players=7))
+
+    assert response.name == 'mysession'
+    assert len(response.session_id) == 36
+    assert response.status == 'SUCCESS'
+
+    sesh_id = response.session_id
+
+    response = session_stub.AddCharacterToSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+    assert response.status == 'SUCCESS'
+
+    response = session_stub.GetCharactersInSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id))
+    assert response.status == 'SUCCESS'
+
+    assert len(response.light_characters) == 1
+
+    # Test remove
+    response = session_stub.RemoveCharacterFromSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+    assert response.status == 'SUCCESS'
+
+    response = session_stub.GetCharactersInSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id))
+    assert response.status == 'SUCCESS'
+
+    assert len(response.light_characters) == 0
+
+
+def test_character_added_to_session_already_in():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+    _char = getRandomCharacter()
+    _char.name = 'MyTestCharacter'
+
+    response = stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=global_token,
+            character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+
+    char_id = response.character_id
+
+    session_stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    response = session_stub.Create(
+        server_pb2.NewSessionRequest(
+            name='mysession',
+            auth_id_token=global_token,
+            max_players=7))
+
+    assert response.name == 'mysession'
+    assert len(response.session_id) == 36
+    assert response.status == 'SUCCESS'
+
+    sesh_id = response.session_id
+
+    response = session_stub.AddCharacterToSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+    assert response.status == 'SUCCESS'
+
+    response = session_stub.AddCharacterToSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+    assert response.status == 'FAILED'
+
+    response = session_stub.GetCharactersInSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id))
+    assert response.status == 'SUCCESS'
+
+    # Since we added the same character the number should remain the same.
+    assert len(response.light_characters) == 1
+
+
+def test_character_deleted_should_not_be_in_session():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+    _char = getRandomCharacter()
+    _char.name = 'MyTestCharacter'
+
+    response = stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=global_token,
+            character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+
+    char_id = response.character_id
+
+    session_stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    response = session_stub.Create(
+        server_pb2.NewSessionRequest(
+            name='mysession',
+            auth_id_token=global_token,
+            max_players=7))
+
+    assert response.name == 'mysession'
+    assert len(response.session_id) == 36
+    assert response.status == 'SUCCESS'
+
+    sesh_id = response.session_id
+
+    response = session_stub.AddCharacterToSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+    assert response.status == 'SUCCESS'
+
+    response = stub.DeleteCharacter(
+        server_pb2.DeleteCharacterRequest(
+            auth_id_token=global_token,
+            character_id=char_id))
+    assert response.status == 'SUCCESS'
+
+    response = session_stub.GetCharactersInSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id))
+    assert response.status == 'SUCCESS'
+
+    # Since we deleted the character that character should no longer show.
+    assert len(response.light_characters) == 0
+
+def test_remove_character_that_is_not_ours():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+    _char = getRandomCharacter()
+    _char.name = 'MyTestCharacter'
+
+    response = stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=global_token,
+            character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+
+    char_id = response.character_id
+
+    session_stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    response = session_stub.Create(
+        server_pb2.NewSessionRequest(
+            name='mysession',
+            auth_id_token=global_token,
+            max_players=7))
+
+    assert response.name == 'mysession'
+    assert len(response.session_id) == 36
+    assert response.status == 'SUCCESS'
+
+    sesh_id = response.session_id
+
+    response = session_stub.AddCharacterToSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+    assert response.status == 'SUCCESS'
+
+    # Test remove as another ueer
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser3@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = session_stub.RemoveCharacterFromSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token, session_id=sesh_id, character_id=char_id))
+    assert response.status == 'FAILED'
+    assert response.status_message == '[RemoveCharacterFromSession] Failed to remove character from session, this is not your character'
+
+    response = session_stub.GetCharactersInSession(
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id))
+    assert response.status == 'SUCCESS'
+
+    assert len(response.light_characters) == 1
+
+# def test_get_all_characters_in_session():

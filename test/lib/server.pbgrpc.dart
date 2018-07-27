@@ -67,6 +67,22 @@ class SessionsManagerClient extends Client {
       (ChangeReadyUpExpiryTimeRequest value) => value.writeToBuffer(),
       (List<int> value) =>
           new ChangeReadyUpExpiryTimeResponse.fromBuffer(value));
+  static final _$addCharacterToSession =
+      new ClientMethod<AddCharacterToSessionRequest, Session>(
+          '/session.SessionsManager/AddCharacterToSession',
+          (AddCharacterToSessionRequest value) => value.writeToBuffer(),
+          (List<int> value) => new Session.fromBuffer(value));
+  static final _$removeCharacterFromSession =
+      new ClientMethod<RemoveCharacterFromSessionRequest, Session>(
+          '/session.SessionsManager/RemoveCharacterFromSession',
+          (RemoveCharacterFromSessionRequest value) => value.writeToBuffer(),
+          (List<int> value) => new Session.fromBuffer(value));
+  static final _$getCharactersInSession = new ClientMethod<
+          GetCharactersInSessionRequest, GetCharactersInSessionResponse>(
+      '/session.SessionsManager/GetCharactersInSession',
+      (GetCharactersInSessionRequest value) => value.writeToBuffer(),
+      (List<int> value) =>
+          new GetCharactersInSessionResponse.fromBuffer(value));
 
   SessionsManagerClient(ClientChannel channel, {CallOptions options})
       : super(channel, options: options);
@@ -160,6 +176,33 @@ class SessionsManagerClient extends Client {
       {CallOptions options}) {
     final call = $createCall(
         _$changeReadyUpExpiryTime, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<Session> addCharacterToSession(
+      AddCharacterToSessionRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$addCharacterToSession, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<Session> removeCharacterFromSession(
+      RemoveCharacterFromSessionRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$removeCharacterFromSession, new Stream.fromIterable([request]),
+        options: options);
+    return new ResponseFuture(call);
+  }
+
+  ResponseFuture<GetCharactersInSessionResponse> getCharactersInSession(
+      GetCharactersInSessionRequest request,
+      {CallOptions options}) {
+    final call = $createCall(
+        _$getCharactersInSession, new Stream.fromIterable([request]),
         options: options);
     return new ResponseFuture(call);
   }
@@ -262,6 +305,30 @@ abstract class SessionsManagerServiceBase extends Service {
         (List<int> value) =>
             new ChangeReadyUpExpiryTimeRequest.fromBuffer(value),
         (ChangeReadyUpExpiryTimeResponse value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<AddCharacterToSessionRequest, Session>(
+        'AddCharacterToSession',
+        addCharacterToSession_Pre,
+        false,
+        false,
+        (List<int> value) => new AddCharacterToSessionRequest.fromBuffer(value),
+        (Session value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<RemoveCharacterFromSessionRequest, Session>(
+        'RemoveCharacterFromSession',
+        removeCharacterFromSession_Pre,
+        false,
+        false,
+        (List<int> value) =>
+            new RemoveCharacterFromSessionRequest.fromBuffer(value),
+        (Session value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<GetCharactersInSessionRequest,
+            GetCharactersInSessionResponse>(
+        'GetCharactersInSession',
+        getCharactersInSession_Pre,
+        false,
+        false,
+        (List<int> value) =>
+            new GetCharactersInSessionRequest.fromBuffer(value),
+        (GetCharactersInSessionResponse value) => value.writeToBuffer()));
   }
 
   Future<Session> create_Pre(ServiceCall call, Future request) async {
@@ -318,6 +385,21 @@ abstract class SessionsManagerServiceBase extends Service {
     return changeReadyUpExpiryTime(call, await request);
   }
 
+  Future<Session> addCharacterToSession_Pre(
+      ServiceCall call, Future request) async {
+    return addCharacterToSession(call, await request);
+  }
+
+  Future<Session> removeCharacterFromSession_Pre(
+      ServiceCall call, Future request) async {
+    return removeCharacterFromSession(call, await request);
+  }
+
+  Future<GetCharactersInSessionResponse> getCharactersInSession_Pre(
+      ServiceCall call, Future request) async {
+    return getCharactersInSession(call, await request);
+  }
+
   Future<Session> create(ServiceCall call, NewSessionRequest request);
   Future<Session> join(ServiceCall call, JoinRequest request);
   Future<LeaveReply> leave(ServiceCall call, LeaveRequest request);
@@ -333,6 +415,12 @@ abstract class SessionsManagerServiceBase extends Service {
   Future<Session> changeState(ServiceCall call, ChangeStateRequest request);
   Future<ChangeReadyUpExpiryTimeResponse> changeReadyUpExpiryTime(
       ServiceCall call, ChangeReadyUpExpiryTimeRequest request);
+  Future<Session> addCharacterToSession(
+      ServiceCall call, AddCharacterToSessionRequest request);
+  Future<Session> removeCharacterFromSession(
+      ServiceCall call, RemoveCharacterFromSessionRequest request);
+  Future<GetCharactersInSessionResponse> getCharactersInSession(
+      ServiceCall call, GetCharactersInSessionRequest request);
 }
 
 class CharactersManagerClient extends Client {

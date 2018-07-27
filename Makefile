@@ -1,9 +1,9 @@
 .PHONY: test run install upload clean bootstrap
 test:
-	cd ./test; echo "===Runing python tests!==="; sh -c 'pytest test_sessions.py'; sh -c 'pytest test_characters.py'; echo "===Runing dart tests!==="; dart test.dart;
+	cd ./test; echo "===Runing python tests!==="; sh -c 'pytest test_sessions.py --benchmark-autosave --benchmark-compare --benchmark-histogram'; sh -c 'pytest test_characters.py'; echo "===Runing dart tests!==="; dart test.dart;
 
 run:
-	rm dnd_backend.db dnd_backend.log config.toml; export ENV=dev; sh -c 'pypy3 ./main.py'
+	rm dnd_backend.db dnd_backend.log config.toml; export ENV=dev; sh -c 'python3 ./main.py'
 
 prod:
 	export ENV=prod; sh -c 'pypy3 ./server/main.py'
@@ -11,7 +11,13 @@ prod:
 install:
 	cd ./test; pub get
 	npm install
+	pip3 -m pip install --upgrade --user -r requirements.txt
+
+install_prod:
+	cd ./test; pub get
+	npm install
 	pypy3 -m pip install --upgrade --user -r requirements.txt
+
 
 generate:
 	python -m grpc.tools.protoc -I./protos --python_out=./server --grpc_python_out=./server ./protos/server.proto

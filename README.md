@@ -12,6 +12,12 @@ The implementation of the API uses gRPC (https://grpc.io/)
 The API "Language" uses ProtocolBuffers
 https://developers.google.com/protocol-buffers/docs/proto3
 
+## Features
+
+- HTTP2
+- Real time sockets
+
+
 ## Requirements
 
 ```bash

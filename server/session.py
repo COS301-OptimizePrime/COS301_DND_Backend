@@ -6,6 +6,7 @@ from sqlalchemy import and_, desc, exc
 
 from . import db
 from . import firebase
+from . import helpers
 from . import server_pb2
 from . import server_pb2_grpc
 
@@ -273,7 +274,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status="FAILED",
                     status_message="[Leave] User is not in the session!")
 
-            logger.debug(user)
+            # logger.debug(user)
 
             session.users_in_session.remove(user)
             if session.max_players > len(session.users_in_session):
@@ -464,16 +465,14 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 session.full = False
             self.conn.commit()
 
-            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-            return grpcSession
+            return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
             self.logger.error("[KICK] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
-                status_message="Database error!")
+                status_message="[KICK] Database error!")
 
     # This is a Dungeon Master only command.
     def SetMax(self, request, context):
@@ -592,7 +591,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
-                status_message="Database error!")
+                status_message="[SETNAME] Database error!")
 
     # This is a Dungeon Master only command.
     def ChangeState(self, request, context):
@@ -669,7 +668,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
-                status_message="Database error!")
+                status_message="[ChangeState] Database error!")
 
     # This is a Dungeon Master only command.
     def SetPrivate(self, request, context):
@@ -718,16 +717,14 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             self.conn.commit()
 
-            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-            return grpcSession
+            return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
             self.logger.error("[SETPRIVATE] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
-                status_message="Database error!")
+                status_message="[SETPRIVATE] Database error!")
 
     # This is a Dungeon Master only command.
     def ChangeReadyUpExpiryTime(self, request, context):
@@ -753,9 +750,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     "[ChangeReadyUpExpiryTime] Failed to update expiry time of ready up of session,"
                     " that ID does not exist!")
 
-                return server_pb2.Session(
-                    session_id="NULL",
-                    name="NULL",
+                return server_pb2.ChangeReadyUpExpiryTimeResponse(
                     status="FAILED",
                     status_message="[ChangeReadyUpExpiryTime] No session with that ID exists!")
 
@@ -764,9 +759,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     "[ChangeReadyUpExpiryTime] Unauthorised user tried to modify"
                     " (Not the dungeon master)")
 
-                return server_pb2.Session(
-                    session_id="NULL",
-                    name="NULL",
+                return server_pb2.ChangeReadyUpExpiryTimeResponse(
                     status="FAILED",
                     status_message="[ChangeReadyUpExpiryTime] You must be the dungeon"
                                    " master to use this command!")
@@ -775,16 +768,12 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             self.conn.commit()
 
-            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-            return grpcSession
+            return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
             self.logger.error("[ChangeReadyUpExpiryTime] SQLAlchemyError! " + str(err))
-            return server_pb2.Session(
-                session_id="NULL",
-                name="NULL",
+            return server_pb2.ChangeReadyUpExpiryTimeResponse(
                 status="FAILED",
-                status_message="Database error!")
+                status_message="[ChangeReadyUpExpiryTime] Database error!")
 
     def List(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -847,12 +836,10 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             return server_pb2.ListReply(status="SUCCESS", sessions=_sessions)
         except exc.SQLAlchemyError as err:
-            self.logger.error("[SETPRIVATE] SQLAlchemyError! " + str(err))
-            return server_pb2.Session(
-                session_id="NULL",
-                name="NULL",
+            self.logger.error("[List] SQLAlchemyError! " + str(err))
+            return server_pb2.ListReply(
                 status="FAILED",
-                status_message="Database error!")
+                status_message="[List] Database error!")
 
     def GetSessionById(self, request, context):
         logger = logging.getLogger("cos301-DND")
@@ -994,11 +981,170 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.ListReply(status="SUCCESS", sessions=_sessions)
         except exc.SQLAlchemyError as err:
             self.logger.error("[GetSessionsOfUser] SQLAlchemyError! " + str(err))
-            return server_pb2.Session(
-                session_id="NULL",
-                name="NULL",
+            return server_pb2.ListReply(
                 status="FAILED",
-                status_message="Database error!")
+                status_message="[GetSessionsOfUser] Database error!")
+
+    def GetCharactersInSession(self, request, context):
+        self.logger.info("GetCharactersInSession called!")
+
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.error("Failed to verify login!")
+            return server_pb2.GetCharactersInSessionResponse(
+                status="FAILED",
+                status_message="[GetCharactersInSession] Failed to verify token!")
+
+        self.logger.debug("Successfully verified token! UID=" + uid)
+
+        _session_id = request.session_id
+
+        try:
+            self.conn = db.databaseConnection.getDBInstance()
+            session = self.conn.query(db.Session).filter(
+                db.Session.session_id == _session_id).first()
+
+            if not session:
+                self.logger.error("Failed to get characters in session, that ID does not exist!")
+                return server_pb2.GetCharactersInSessionResponse(
+                    status="FAILED",
+                    status_message="[GetCharactersInSession] No session with that ID exists!")
+
+            # Get all characters.
+            _light_characters = session.characters_in_session
+
+            light_characters = []
+            for _char in _light_characters:
+                light_characters.append(helpers._convertToGrpcLightCharacter(_char))
+
+            return server_pb2.GetCharactersInSessionResponse(status="SUCCESS", light_characters=light_characters)
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[GetCharactersInSession] SQLAlchemyError!" + str(err))
+            return server_pb2.GetCharactersInSessionResponse(
+                status="FAILED",
+                status_message="[GetCharactersInSession] Database error!")
+
+    def AddCharacterToSession(self, request, context):
+        self.logger.info("AddCharacterToSession called!")
+
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.error("Failed to verify login!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[AddCharacterToSession] Failed to verify token!")
+
+        self.logger.debug("Successfully verified token! UID=" + uid)
+
+        _session_id = request.session_id
+
+        try:
+            self.conn = db.databaseConnection.getDBInstance()
+            session = self.conn.query(db.Session).filter(
+                db.Session.session_id == _session_id).first()
+
+            if not session:
+                self.logger.error("Failed to add character to session, that ID does not exist!")
+                return server_pb2.Session(
+                    status="FAILED",
+                    status_message="[AddCharacterToSession] No session with that ID exists!")
+
+            _char_id = request.character_id
+            char = self.conn.query(db.Character).filter(db.Character.character_id == _char_id).first()
+
+            if not char:
+                self.logger.error("Failed to add character to session, that character does not exist!")
+                return server_pb2.Session(
+                    status="FAILED",
+                    status_message="[AddCharacterToSession] No character with that ID exists!")
+
+            if char.session:
+                self.logger.error("Failed to add character to session, that character is already in a session!")
+                return server_pb2.Session(
+                    status="FAILED",
+                    status_message="[AddCharacterToSession] Failed to add character to session, that character is already in a session!")
+
+            # Add character
+            session.characters_in_session.append(char)
+            self.conn.commit()
+
+            return self._convertToGrpcSession(session, status="SUCCESS")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[AddCharacterToSession] SQLAlchemyError!" + str(err))
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[AddCharacterToSession] Database error!")
+
+    def RemoveCharacterFromSession(self, request, context):
+        self.logger.info("RemoveCharacterFromSession called!")
+
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.error("Failed to verify login!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[RemoveCharacterFromSession] Failed to verify token!")
+
+        self.logger.debug("Successfully verified token! UID=" + uid)
+
+        _session_id = request.session_id
+
+        try:
+            self.conn = db.databaseConnection.getDBInstance()
+            session = self.conn.query(db.Session).filter(
+                db.Session.session_id == _session_id).first()
+
+            if not session:
+                self.logger.error("Failed to remove character from session, that ID does not exist!")
+                return server_pb2.Session(
+                    status="FAILED",
+                    status_message="[RemoveCharacterFromSession] No session with that ID exists!")
+
+            _char_id = request.character_id
+            char = self.conn.query(db.Character).filter(db.Character.character_id == _char_id).first()
+
+            if not char:
+                self.logger.error("Failed to remove character from session, that character does not exist!")
+                return server_pb2.Session(
+                    status="FAILED",
+                    status_message="[RemoveCharacterFromSession] No character with that ID exists!")
+
+            # Check if character is in the session.
+            if not char.session.session_id == session.session_id:
+                self.logger.error("Failed to remove character from session, that character is not in this session!")
+                return server_pb2.Session(
+                    status="FAILED",
+                    status_message="[RemoveCharacterFromSession] Failed to remove character from session, that character is not in this session!")
+
+            # Check that the character is owned by the user
+            if not char.creator.uid == uid:
+                self.logger.error("Failed to remove character from session, this is not your character!")
+                return server_pb2.Session(
+                    status="FAILED",
+                    status_message="[RemoveCharacterFromSession] Failed to remove character from session, this is not your character")
+
+            # Remove character
+            session.characters_in_session.remove(char)
+            self.conn.commit()
+
+            return self._convertToGrpcSession(session, status="SUCCESS")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[RemoveCharacterFromSession] SQLAlchemyError!" + str(err))
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[RemoveCharacterFromSession] Database error!")
 
     def __del__(self):
         self.logger.info("Socket destroyed ...")

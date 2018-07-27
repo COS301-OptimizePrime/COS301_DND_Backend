@@ -4,13 +4,13 @@ package session;
 
 // The sessions manager service definition.
 service SessionsManager {
-    // Creates a new session.
+    // [EXPENSIVE] Creates a new session.
     rpc Create (NewSessionRequest) returns (Session) {
     }
-    // Join a session.
+    // [EXPENSIVE] Join a session.
     rpc Join (JoinRequest) returns (Session) {
     }
-    // Leave a session.
+    // [EXPENSIVE] Leave a session.
     rpc Leave (LeaveRequest) returns (LeaveReply) {
     }
     // Set the max amount of players that can be in the session.
@@ -25,13 +25,13 @@ service SessionsManager {
     // Set the privacy status of the session.
     rpc SetPrivate (SetPrivateRequest) returns (Session) {
     }
-    // List available sessions.
+    // [EXPENSIVE] List available sessions.
     rpc List (ListRequest) returns (ListReply) {
     }
-    // Get session by ID
+    // [EXPENSIVE] Get session by ID
     rpc GetSessionById (GetSessionRequest) returns (Session) {
     }
-    // Get all sessions of user
+    // [EXPENSIVE] Get all sessions of user
     rpc GetSessionsOfUser (GetSessionsOfUserRequest) returns (ListReply) {
     }
     // Ready up a user in the requested session
@@ -40,9 +40,17 @@ service SessionsManager {
     // Change session state (DM only)
     rpc ChangeState (ChangeStateRequest) returns (Session) {
     }
-
     // Change the expiry time of ready up. (DM only)
     rpc ChangeReadyUpExpiryTime (ChangeReadyUpExpiryTimeRequest) returns (ChangeReadyUpExpiryTimeResponse) {
+    }
+
+    rpc AddCharacterToSession(AddCharacterToSessionRequest) returns (Session) {
+    }
+    rpc RemoveCharacterFromSession(RemoveCharacterFromSessionRequest) returns (Session) {
+    }
+
+    // [CHEAP] Returns an array of light characters.
+    rpc GetCharactersInSession(GetCharactersInSessionRequest) returns (GetCharactersInSessionResponse) {
     }
 }
 
@@ -51,12 +59,38 @@ service CharactersManager {
     }
     rpc DeleteCharacter (DeleteCharacterRequest) returns (DeleteCharacterReply) {
     }
+    // [CHEAP]
     rpc GetCharacters (GetCharactersRequest) returns (GetCharactersReply) {
     }
+    // [EXPENSIVE]
     rpc UpdateCharacter (UpdateCharacterRequest) returns (Character) {
     }
+    // [EXPENSIVE]
     rpc GetCharacterById (GetCharacterByIdRequest) returns (Character) {
     }
+}
+
+message AddCharacterToSessionRequest {
+    string auth_id_token = 1;
+    string session_id = 2;
+    string character_id = 3;
+}
+
+message RemoveCharacterFromSessionRequest {
+    string auth_id_token = 1;
+    string session_id = 2;
+    string character_id = 3;
+}
+
+message GetCharactersInSessionRequest {
+    string auth_id_token = 1;
+    string session_id = 2;
+}
+
+message GetCharactersInSessionResponse {
+    string status = 1;
+    string status_message = 2;
+    repeated LightCharacter light_characters = 3;
 }
 
 message ChangeReadyUpExpiryTimeRequest {
@@ -113,7 +147,7 @@ message GetCharactersRequest {
 message GetCharactersReply {
     string status = 1;
     string status_message = 2;
-    repeated Character characters = 3;
+    repeated LightCharacter light_characters = 3;
 }
 
 message GetSessionsOfUserRequest {
@@ -197,11 +231,24 @@ message SetNameRequest {
 message ListReply {
     repeated Session sessions = 1;
     string status = 2;
+    string status_message = 3;
 }
 
 message LeaveReply {
     string status = 1;
     string status_message = 2;
+}
+
+message LightSession {
+    string status = 1;
+    string status_message = 2;
+    // Session uuid
+    string session_id = 3;
+    // The session's name
+    string name = 4;
+    User dungeon_master = 5;
+
+    string last_updated = 6;
 }
 
 message Session {
@@ -228,7 +275,7 @@ message Session {
     string last_updated = 15;
     uint32 ready_up_expiry_time = 16;
 
-    repeated Character charactersInSession = 17;
+    repeated LightCharacter charactersInSession = 17;
 }
 
 message User {
@@ -247,10 +294,29 @@ message DeleteCharacterReply {
     string status_message = 2;
 }
 
+// This should be a cheaper character used for displaying in lists.
+message LightCharacter {
+    string character_id = 1;
+    string creator_id = 2;
+    string name = 3;
+
+    sint32 xp = 4;
+    string gender = 5;
+    string race = 6;
+    string character_class = 7;
+    Hitpoints hitpoints = 8;
+
+    string last_updated = 9;
+    string session_id = 10;
+
+}
+
+// Full fleged character object (expensive)
 message Character {
     string character_id = 1;
     User creator = 2;
     string name = 3;
+
     // Base stats
     sint32 strength = 4;
     sint32 strength_subscript = 5;
@@ -264,6 +330,7 @@ message Character {
     sint32 wisdom_subscript = 13;
     sint32 charisma = 14;
     sint32 charisma_subscript = 15;
+
     // Traits
     string character_class = 16;
     string race = 17;
@@ -274,52 +341,35 @@ message Character {
     sint32 inspiration = 21;
     sint32 proficiency_bonus = 22;
 
-    // Saving throws
-    SavingThrows saving_throws = 23;
     // Skills
-    Skills skills = 24;
+    Skills skills = 23;
     // PASSIVE WISDOM (PERCEPTION)
-    sint32 passive_wisdom = 25;
+    sint32 passive_wisdom = 24;
     // ATTACKS & SPELLCASTING
-    Attacks_Spellcasting attacks_spellcasting = 26;
+    Attacks_Spellcasting attacks_spellcasting = 25;
 
     // hitpoints and armor
-    Hitpoints hitpoints = 27;
+    Hitpoints hitpoints = 26;
 
     // Personality
-    string personality_traits = 28;
-    string ideals = 29;
-    string bonds = 30;
-    string flaws = 31;
+    string personality_traits = 27;
+    string ideals = 28;
+    string bonds = 29;
+    string flaws = 30;
 
-    string date_created = 32;
-    string status = 33;
-    string status_message = 34;
+    string date_created = 31;
+    string status = 32;
+    string status_message = 33;
 
-    repeated Equipment equipment = 35;
+    repeated Equipment equipment = 34;
 
-    string session_id = 36;
-    string features_and_traits = 37;
+    string session_id = 35;
+    string features_and_traits = 36;
 
-    bool online = 38;
+    uint32 level = 37;
+    string gender = 38;
 
-    uint32 level = 39;
-    string gender = 40;
-}
-
-message SavingThrows {
-    sint32 strength = 1;
-    bool strength_proficient = 2;
-    sint32 dexterity = 3;
-    bool dexterity_proficient = 4;
-    sint32 constitution = 5;
-    bool constitution_proficient = 6;
-    sint32 intelligence = 7;
-    bool intelligence_proficient = 8;
-    sint32 wisdom = 9;
-    bool wisdom_proficient = 10;
-    sint32 charisma = 11;
-    bool charisma_subscript = 12;
+    string last_updated = 39;
 }
 
 message Skills {
@@ -375,21 +425,10 @@ message Attacks_Spellcasting {
 
 message Hitpoints {
     sint32 armor_class = 1;
-    sint32 initiative = 2;
-    sint32 speed = 3;
-    sint32 current_hitpoints = 4;
-    sint32 max_hitpoints = 5;
-    sint32 temporary_hitpoints = 6;
-    string hitdice = 7;
-
-    // Death saves
-    bool deathsaves_success1 = 8;
-    bool deathsaves_success2 = 9;
-    bool deathsaves_success3 = 10;
-
-    bool deathsaves_failures1 = 11;
-    bool deathsaves_failures2 = 12;
-    bool deathsaves_failures3 = 13;
+    sint32 current_hitpoints = 2;
+    sint32 max_hitpoints = 3;
+    sint32 temporary_hitpoints = 4;
+    string hitdice = 5;
 }
 
 message Equipment {
