@@ -1,4 +1,5 @@
 pbr
+psycopg2cffi
 grpcio-tools
 firebase-admin
 SQLAlchemy

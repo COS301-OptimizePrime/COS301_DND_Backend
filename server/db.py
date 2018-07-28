@@ -16,7 +16,7 @@ def connect():
     if os.environ['ENV'] == 'prod':
         # logger = logging.getLogger('cos301-DND')
         # logger.debug('Using PostgreSQL!')
-        engine = create_engine('postgresql://' +
+        engine = create_engine('postgresql+psycopg2cffi://' +
                                str(config.val['database']['username']) +
                                ':' +
                                str(config.val['database']['password']) +
