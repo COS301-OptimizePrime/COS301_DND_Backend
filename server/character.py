@@ -46,7 +46,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Character(
                 status="FAILED",
                 status_message="[UpdateCharacter] Failed to verify user token!")
@@ -70,14 +70,14 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             character = self.conn.query(db.Character).filter(
                 db.Character.character_id == _character.character_id).first()
             if not character:
-                self.logger.error("Character doesn't exist!")
+                self.logger.warning("Character doesn't exist!")
                 return server_pb2.Character(
                     status="FAILED",
                     status_message="[UpdateCharacter] Character doesn't exist!")
 
             if character.creator.uid != uid:
                 # Not the creator.
-                self.logger.error("Character is not yours!")
+                self.logger.warning("Character is not yours!")
                 return server_pb2.Character(
                     status="FAILED",
                     status_message="[UpdateCharacter] Character doesn't exist!")
@@ -94,6 +94,11 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return server_pb2.Character(
                 status="FAILED",
                 status_message="Database error!")
+        except Exception:
+            self.logger.exception("[UpdateCharacter] Unhandled exception occurred!")
+            return server_pb2.Character(
+                status="FAILED",
+                status_message="[UpdateCharacter] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
             
@@ -109,7 +114,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.GetCharactersReply(
                 status="FAILED",
                 status_message="[GetCharacters] Failed to verify user token!")
@@ -142,6 +147,11 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return server_pb2.GetCharactersReply(
                 status="FAILED",
                 status_message="Database error!")
+        except Exception:
+            self.logger.exception("[GetCharacters] Unhandled exception occurred!")
+            return server_pb2.GetCharactersReply(
+                status="FAILED",
+                status_message="[GetCharacters] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -156,7 +166,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.DeleteCharacterReply(
                 status="FAILED",
                 status_message="[Delete Character] Failed to verify login!")
@@ -175,14 +185,14 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             character = self.conn.query(db.Character).filter(
                 db.Character.character_id == _character_id).first()
             if not character:
-                self.logger.error("Character doesn't exist!")
+                self.logger.warning("Character doesn't exist!")
                 return server_pb2.DeleteCharacterReply(
                     status="FAILED",
                     status_message="[Delete Character] Character doesn't exist!")
 
             if character.creator.uid != uid:
                 # Not the creator.
-                self.logger.error("Character is not yours!")
+                self.logger.warning("Character is not yours!")
                 return server_pb2.DeleteCharacterReply(
                     status="FAILED",
                     status_message="[Delete Character] Character is not yours!")
@@ -203,6 +213,11 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return server_pb2.DeleteCharacterReply(
                 status="FAILED",
                 status_message="Database error!")
+        except Exception:
+            self.logger.exception("[DeleteCharacters] Unhandled exception occurred!")
+            return server_pb2.DeleteCharacterReply(
+                status="FAILED",
+                status_message="[DeleteCharacters] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -217,7 +232,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Character(
                 status="FAILED",
                 status_message="[Delete Character] Failed to verify login!")
@@ -236,14 +251,14 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             character = self.conn.query(db.Character).filter(
                 db.Character.character_id == _character_id).first()
             if not character:
-                self.logger.error("Character doesn't exist!")
+                self.logger.warning("Character doesn't exist!")
                 return server_pb2.Character(
                     status="FAILED",
                     status_message="[GetCharacterById] Character doesn't exist!")
 
             if character.creator.uid != uid:
                 # Not the creator.
-                self.logger.error("Character is not yours!")
+                self.logger.warning("Character is not yours!")
                 return server_pb2.Character(
                     status="FAILED",
                     status_message="[GetCharacterById] Character doesn't exist!")
@@ -256,6 +271,11 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return server_pb2.Character(
                 status="FAILED",
                 status_message="Database error!")
+        except Exception:
+            self.logger.exception("[GetCharacterById] Unhandled exception occurred!")
+            return server_pb2.Character(
+                status="FAILED",
+                status_message="[GetCharacterById] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -272,7 +292,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Character(
                 name="NULL",
                 status="FAILED",
@@ -288,7 +308,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
 
             # Check how many characters the user has.
             if len(user.characters) >= 100:
-                self.logger.error(
+                self.logger.warning(
                     "Failed to create new character, user has reached max characters")
 
                 return server_pb2.Character(
@@ -297,7 +317,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
 
             # Name may not be blank
             if len(request.character.name.strip()) == 0:
-                self.logger.error(
+                self.logger.warning(
                     "Failed to create new character, character name can not be blank")
                 return server_pb2.Character(
                     status="FAILED",
@@ -485,5 +505,10 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             return server_pb2.Character(
                 status="FAILED",
                 status_message="[CreateCharacter] Database error!")
+        except Exception:
+            self.logger.exception("[CreateCharacter] Unhandled exception occurred!")
+            return server_pb2.Character(
+                status="FAILED",
+                status_message="[CreateCharacter] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()

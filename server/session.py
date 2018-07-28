@@ -148,6 +148,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        except Exception:
+            self.logger.exception("[CREATE] Unhandled exception occurred!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[CREATE] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -220,6 +225,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        except Exception:
+            self.logger.exception("[JOIN] Unhandled exception occurred!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[JOIN] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -313,6 +323,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        except Exception:
+            self.logger.exception("[LEAVE] Unhandled exception occurred!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[LEAVE] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -409,6 +424,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.ReadyUpReply(
                 status="FAILED",
                 status_message="Database error!")
+        except Exception:
+            self.logger.exception("[Ready] Unhandled exception occurred!")
+            return server_pb2.ReadyUpReply(
+                status="FAILED",
+                status_message="[Ready] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -493,6 +513,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="[KICK] Database error!")
+        except Exception:
+            self.logger.exception("[KICK] Unhandled exception occurred!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[KICK] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -557,6 +582,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        except Exception:
+            self.logger.exception("[SETMAX] Unhandled exception occurred!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[SETMAX] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -620,6 +650,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="[SETNAME] Database error!")
+        except Exception:
+            self.logger.exception("[SETNAME] Unhandled exception occurred!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[SETNAME] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -701,6 +736,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="[ChangeState] Database error!")
+        except Exception:
+            self.logger.exception("[ChangeState] Unhandled exception occurred!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[ChangeState] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -758,6 +798,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="[SETPRIVATE] Database error!")
+        except Exception:
+            self.logger.exception("[SETPRIVATE] Unhandled exception occurred!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[SETPRIVATE] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -809,6 +854,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.ChangeReadyUpExpiryTimeResponse(
                 status="FAILED",
                 status_message="[ChangeReadyUpExpiryTime] Database error!")
+        except Exception:
+            self.logger.exception("[ChangeReadyUpExpiryTime] Unhandled exception occurred!")
+            return server_pb2.ChangeReadyUpExpiryTimeResponse(
+                status="FAILED",
+                status_message="[ChangeReadyUpExpiryTime] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -876,6 +926,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.ListReply(
                 status="FAILED",
                 status_message="[List] Database error!")
+        except Exception:
+            self.logger.exception("[List] Unhandled exception occurred!")
+            return server_pb2.ListReply(
+                status="FAILED",
+                status_message="[List] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -1036,6 +1091,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.GetCharactersInSessionResponse(
                 status="FAILED",
                 status_message="[GetCharactersInSession] Database error!")
+        except Exception:
+            self.logger.exception("[GetCharactersInSession] Unhandled exception occurred!")
+            return server_pb2.GetCharactersInSessionResponse(
+                status="FAILED",
+                status_message="[GetCharactersInSession] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -1093,6 +1153,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.Session(
                 status="FAILED",
                 status_message="[AddCharacterToSession] Database error!")
+        except Exception:
+            self.logger.exception("[AddCharacterToSession] Unhandled exception occurred!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[AddCharacterToSession] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -1158,6 +1223,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.Session(
                 status="FAILED",
                 status_message="[RemoveCharacterFromSession] Database error!")
+        except Exception:
+            self.logger.exception("[RemoveCharacterFromSession] Unhandled exception occurred!")
+            return server_pb2.Session(
+                status="FAILED",
+                status_message="[RemoveCharacterFromSession] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
