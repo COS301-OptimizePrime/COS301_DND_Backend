@@ -13,7 +13,7 @@ Backed API Server
 ## Features
 
 - HTTP/2 using gRPC (https://grpc.io/)
-- HTTPS in production mode
+- ~~HTTPS in production mode~~
 - Real time sockets
 - Firebase authentication
 - Strongly typed service and message definition (Protobuf3)

@@ -14,8 +14,6 @@ install:
 	pip install --upgrade --user -r requirements.txt
 
 install_prod:
-	cd ./test; pub get
-	npm install
 	pypy3 -m pip install --upgrade --user -r requirements.txt
 
 generate:

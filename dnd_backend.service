@@ -1,6 +1,6 @@
 [Unit]
 Description=DND Backend Service
-After=network.target
+After=network.target postgresql.service
 
 [Service]
 Type=simple
