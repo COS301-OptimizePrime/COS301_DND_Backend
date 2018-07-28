@@ -49,12 +49,6 @@ user_ready_sessions = Table('userreadysession', Base.metadata,
                             Column('sessions_id', Integer, ForeignKey('sessions.id'))
                             )
 
-characters_in_session = Table('charactersinsession', Base.metadata,
-                            Column('characters_id', Integer, ForeignKey('characters.id')),
-                            Column('sessions_id', Integer, ForeignKey('sessions.id'))
-                            )
-
-
 class User(Base):
     __tablename__ = 'users'
 
@@ -153,7 +147,6 @@ class Session(Base):
 
     characters_in_session = relationship(
         "Character",
-        secondary=characters_in_session,
         back_populates="session"
     )
 
@@ -247,8 +240,6 @@ class Character(Base):
     ideals = Column(String(200), nullable=False)
     bonds = Column(String(200), nullable=False)
     flaws = Column(String(200), nullable=False)
-
-    #session_id = Column(String(36), nullable=False)
 
     features_and_traits = Column(String(350), nullable=False)
 

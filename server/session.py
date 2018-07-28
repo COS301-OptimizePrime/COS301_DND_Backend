@@ -91,7 +91,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -113,7 +113,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             # Check how many sessions the user has.
             if len(user.session_dungeon_masters) >= config.val['server']['max_sessions_per_user']:
-                self.logger.error(
+                self.logger.warning(
                     "Failed to create new session, user has reached max sessions")
 
                 return server_pb2.Session(
@@ -140,9 +140,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.add(session)
             self.conn.commit()
 
-            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-            return grpcSession
+            return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
             self.logger.error("[CREATE] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
@@ -154,19 +152,18 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Join(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("Join requested!")
+        self.logger.info("Join requested!")
         _auth_id_token = request.auth_id_token
 
         try:
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
                 session_id="NULL", name="NULL", status="FAILED")
 
-        logger.debug("Successfully verified token! UID=" + uid)
+        self.logger.debug("Successfully verified token! UID=" + uid)
 
         _session_id = request.session_id
 
@@ -176,7 +173,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                logger.error("Failed to join session, that ID does not exist!")
+                self.logger.warning("Failed to join session, that ID does not exist!")
                 return server_pb2.Session(
                     session_id="NULL",
                     name="NULL",
@@ -184,13 +181,13 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[JOIN] No session with that ID exists!")
 
             if uid == session.dungeon_master.uid:
-                logger.error(
+                self.logger.warning(
                     "Failed to join session, you can not join your own session!")
                 return self._convertToGrpcSession(session, "SUCCESS")
 
             if len(session.users_in_session) >= session.max_players:
                 session.full = True
-                logger.error("Failed to join session, this session is full!")
+                self.logger.warning("Failed to join session, this session is full!")
                 return server_pb2.Session(
                     session_id="NULL",
                     name="NULL",
@@ -205,7 +202,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 self.conn.commit()
 
             if user in session.users_in_session:
-                logger.error(
+                self.logger.warning(
                     "Failed to join session, you are already in this session!"
                     " Returning normal session!")
                 return self._convertToGrpcSession(session, "SUCCESS")
@@ -227,19 +224,18 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Leave(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("Leave request called!")
+        self.logger.info("Leave request called!")
         _auth_id_token = request.auth_id_token
 
         try:
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
                 session_id="NULL", name="NULL", status="FAILED")
 
-        logger.debug("Successfully verified token! UID=" + uid)
+        self.logger.debug("Successfully verified token! UID=" + uid)
 
         _session_id = request.session_id
 
@@ -250,7 +246,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                logger.error(
+                self.logger.warning(
                     "Failed to leave session, that ID does not exist!")
 
                 return server_pb2.Session(
@@ -259,7 +255,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             if uid == session.dungeon_master.uid:
                 if len(session.users_in_session) == 0:
-                    logger.info(
+                    self.logger.warning(
                         "No users left in this session, deleting the session!")
                     self.conn.delete(session)
                     self.conn.commit()
@@ -267,7 +263,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     return server_pb2.LeaveReply(status="SUCCESS")
                 elif len(session.users_in_session) > 0:
                     # Assign new dungeon master.
-                    logger.info(
+                    self.logger.info(
                         "Original Dungeon Master left assigning a new one!")
                     new_DM = self.conn.query(
                         db.User).join(
@@ -288,7 +284,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     db.User.uid == uid)).first()
 
             if not user:
-                logger.error(
+                self.logger.warning(
                     "User does not exist. This could mean that the"
                     " user is not in the session")
 
@@ -303,7 +299,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 session.full = False
 
             if len(session.users_in_session) == 0:
-                logger.info(
+                self.logger.info(
                     "No users left in this session, deleting the session!")
                 self.conn.delete(session)
 
@@ -321,20 +317,19 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Ready(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("Ready request called!")
+        self.logger.info("Ready request called!")
         _auth_id_token = request.auth_id_token
 
         try:
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.ReadyUpReply(
                 status="FAILED",
                 status_message="Failed to verify login!")
 
-        logger.debug("Successfully verified token! UID=" + uid)
+        self.logger.debug("Successfully verified token! UID=" + uid)
 
         _session_id = request.session_id
 
@@ -345,7 +340,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                logger.error(
+                self.logger.warning(
                     "Failed to ready up in session, that ID does not exist!")
 
                 return server_pb2.ReadyUpReply(
@@ -353,7 +348,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[Ready] No session with that ID exists!")
 
             if session.state != "READYUP":
-                logger.error(
+                self.logger.warning(
                     "Failed to ready up in session, not in READYUP phase!")
                 return server_pb2.ReadyUpReply(
                     status="FAILED",
@@ -372,7 +367,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     session.state = "PAUSED"
                     session.state_meta = session.state_meta + 1
 
-                    logger.error(
+                    self.logger.warning(
                         "Failed to ready up in session, READYUP phase has expired!")
 
                     return server_pb2.ReadyUpReply(
@@ -387,7 +382,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     db.User.uid == uid)).first()
 
             if not user:
-                logger.error(
+                self.logger.warning(
                     "User does not exist. This could mean that the"
                     " user is not in the session")
 
@@ -418,19 +413,18 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Kick(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("Kick player request called!")
+        self.logger.info("Kick player request called!")
         _auth_id_token = request.auth_id_token
 
         try:
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
                 session_id="NULL", name="NULL", status="FAILED")
 
-        logger.debug("Successfully verified token! UID=" + uid)
+        self.logger.debug("Successfully verified token! UID=" + uid)
 
         _session_id = request.session_id
 
@@ -441,7 +435,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                logger.error(
+                self.logger.warning(
                     "Failed to leave session, that ID does not exist!")
 
                 return server_pb2.Session(
@@ -449,7 +443,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[Kick] No session with that ID exists!")
 
             if session.dungeon_master.uid != uid:
-                logger.error(
+                self.logger.warning(
                     "[Kick] Unauthorised user tried to"
                     " modify (Not the dungeon master)")
 
@@ -463,7 +457,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             player_to_kick = request.user
 
             if player_to_kick.uid == uid:
-                logger.error("[Kick] Attempted to kick dungeon master!")
+                self.logger.warning("[Kick] Attempted to kick dungeon master!")
 
                 return server_pb2.Session(
                     status="FAILED",
@@ -478,7 +472,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             # logger.debug(player_to_kick)
 
             if not user:
-                logger.error(
+                self.logger.warning(
                     "User does not exist. This could mean that the"
                     " user is not in the session")
 
@@ -504,8 +498,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetMax(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("SetMax called!")
+        self.logger.info("SetMax called!")
 
         _auth_id_token = request.auth_id_token
 
@@ -513,7 +506,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -529,7 +522,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                logger.error(
+                self.logger.warning(
                     "[SetMax] Failed to update max players of session,"
                     " that ID does not exist!")
 
@@ -540,7 +533,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[SetMax] No session with that ID exists!")
 
             if session.dungeon_master.uid != uid:
-                logger.error(
+                self.logger.warning(
                     "[SetMax] Unauthorised user tried to modify"
                     " (Not the dungeon master)")
 
@@ -556,9 +549,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 session.full = True
             self.conn.commit()
 
-            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-            return grpcSession
+            return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
             self.logger.error("[SETMAX] SQLAlchemyError!" + str(err))
             return server_pb2.Session(
@@ -571,8 +562,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetName(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("SetName called!")
+        self.logger.info("SetName called!")
 
         _auth_id_token = request.auth_id_token
 
@@ -580,7 +570,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -596,7 +586,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                logger.error(
+                self.logger.warning(
                     "[SetName] Failed to update name of session,"
                     " that ID does not exist!")
 
@@ -607,7 +597,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[SetName] No session with that ID exists!")
 
             if session.dungeon_master.uid != uid:
-                logger.error(
+                self.logger.warning(
                     "[SetName] Unauthorised user tried to"
                     " modify (Not the dungeon master)")
 
@@ -622,9 +612,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             self.conn.commit()
 
-            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-            return grpcSession
+            return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError:
             self.logger.error("[SETNAME] SQLAlchemyError!")
             return server_pb2.Session(
@@ -637,8 +625,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def ChangeState(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("ChangeState called!")
+        self.logger.info("ChangeState called!")
 
         _auth_id_token = request.auth_id_token
 
@@ -646,7 +633,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
                     session_id="NULL",
                     name="NULL",
@@ -661,7 +648,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                logger.error(
+                self.logger.warning(
                     "[ChangeState] Failed to change state of session,"
                     " that ID does not exist!")
 
@@ -672,7 +659,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[ChangeState] No session with that ID exists!")
 
             if session.dungeon_master.uid != uid:
-                logger.error(
+                self.logger.warning(
                     "[ChangeState] Unauthorised user tried to"
                     " modify (Not the dungeon master)")
 
@@ -719,8 +706,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetPrivate(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("SetPrivate called!")
+        self.logger.info("SetPrivate called!")
 
         _auth_id_token = request.auth_id_token
 
@@ -728,7 +714,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
+            self.logger.error("Failed to verify login!")
 
         _session_id = request.session_id
 
@@ -738,7 +724,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                logger.error(
+                self.logger.warning(
                     "[SetPrivate] Failed to update privacy state of session,"
                     " that ID does not exist!")
 
@@ -749,7 +735,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[SetPrivate] No session with that ID exists!")
 
             if session.dungeon_master.uid != uid:
-                logger.error(
+                self.logger.warning(
                     "[SetPrivate] Unauthorised user tried to modify"
                     " (Not the dungeon master)")
 
@@ -785,7 +771,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
 
         _session_id = request.session_id
 
@@ -795,7 +781,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                self.logger.error(
+                self.logger.warning(
                     "[ChangeReadyUpExpiryTime] Failed to update expiry time of ready up of session,"
                     " that ID does not exist!")
 
@@ -804,7 +790,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[ChangeReadyUpExpiryTime] No session with that ID exists!")
 
             if session.dungeon_master.uid != uid:
-                self.logger.error(
+                self.logger.warning(
                     "[ChangeReadyUpExpiryTime] Unauthorised user tried to modify"
                     " (Not the dungeon master)")
 
@@ -827,8 +813,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def List(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("List sessions called!")
+        self.logger.info("List sessions called!")
 
         _limit = request.limit
         _full = request.full
@@ -838,10 +823,10 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.ListReply(status="FAILED")
 
-        logger.debug("Successfully verified token! UID=" + uid)
+        self.logger.debug("Successfully verified token! UID=" + uid)
 
         try:
             self.conn = self._connectDatabase()
@@ -895,8 +880,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetSessionById(self, request, context):
-        logger = logging.getLogger("cos301-DND")
-        logger.info("GetSessionById called!")
+        self.logger.info("GetSessionById called!")
 
         _session_id = request.session_id
         _auth_id_token = request.auth_id_token
@@ -905,14 +889,14 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
                 status="FAILED",
                 status_message="[GetSessionById] Failed to verify token!")
 
-        logger.debug("Successfully verified token! UID=" + uid)
+        self.logger.debug("Successfully verified token! UID=" + uid)
 
         try:
             self.conn = self._connectDatabase()
@@ -920,7 +904,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                logger.error(
+                self.logger.warning(
                     "[GetSessionById] Failed to get session,"
                     " that ID does not exist!")
                 return server_pb2.Session(
@@ -942,9 +926,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 session.state = "PAUSED"
                 self.conn.commit()
 
-            grpcSession = self._convertToGrpcSession(session, "SUCCESS")
-
-            return grpcSession
+            return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
             self.logger.error("[SETPRIVATE] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
@@ -952,6 +934,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 name="NULL",
                 status="FAILED",
                 status_message="Database error!")
+        except Exception:
+            self.logger.exception("[GetSessionsOfUser] Unhandled exception occurred!")
+            return server_pb2.GetSessionsOfUserReply(
+                status="FAILED",
+                status_message="[GetSessionsOfUser] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -965,7 +952,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.GetSessionsOfUserReply(status="FAILED",
                                                      status_message="[GetSessionsOfUser] Failed to verify login!")
 
@@ -977,6 +964,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             _sessions_query = self.conn.query(
                 db.User).filter(
                 db.User.uid == uid).first()
+
+            # TODO Check if anything is returned!
 
             _sessions = []
 
@@ -997,6 +986,11 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.GetSessionsOfUserReply(
                 status="FAILED",
                 status_message="[GetSessionsOfUser] Database error!")
+        except Exception:
+            self.logger.exception("[GetSessionsOfUser] Unhandled exception occurred!")
+            return server_pb2.GetSessionsOfUserReply(
+                status="FAILED",
+                status_message="[GetSessionsOfUser] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -1009,7 +1003,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.GetCharactersInSessionResponse(
                 status="FAILED",
                 status_message="[GetCharactersInSession] Failed to verify token!")
@@ -1024,7 +1018,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                self.logger.error("Failed to get characters in session, that ID does not exist!")
+                self.logger.warning("Failed to get characters in session, that ID does not exist!")
                 return server_pb2.GetCharactersInSessionResponse(
                     status="FAILED",
                     status_message="[GetCharactersInSession] No session with that ID exists!")
@@ -1054,7 +1048,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
                 status="FAILED",
                 status_message="[AddCharacterToSession] Failed to verify token!")
@@ -1069,7 +1063,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                self.logger.error("Failed to add character to session, that ID does not exist!")
+                self.logger.warning("Failed to add character to session, that ID does not exist!")
                 return server_pb2.Session(
                     status="FAILED",
                     status_message="[AddCharacterToSession] No session with that ID exists!")
@@ -1078,13 +1072,13 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             char = self.conn.query(db.Character).filter(db.Character.character_id == _char_id).first()
 
             if not char:
-                self.logger.error("Failed to add character to session, that character does not exist!")
+                self.logger.warning("Failed to add character to session, that character does not exist!")
                 return server_pb2.Session(
                     status="FAILED",
                     status_message="[AddCharacterToSession] No character with that ID exists!")
 
             if char.session:
-                self.logger.error("Failed to add character to session, that character is already in a session!")
+                self.logger.warning("Failed to add character to session, that character is already in a session!")
                 return server_pb2.Session(
                     status="FAILED",
                     status_message="[AddCharacterToSession] Failed to add character to session, that character is already in a session!")
@@ -1111,7 +1105,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             decoded_token = firebase.auth.verify_id_token(_auth_id_token)
             uid = decoded_token["uid"]
         except ValueError:
-            self.logger.error("Failed to verify login!")
+            self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
                 status="FAILED",
                 status_message="[RemoveCharacterFromSession] Failed to verify token!")
@@ -1126,7 +1120,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.Session.session_id == _session_id).first()
 
             if not session:
-                self.logger.error("Failed to remove character from session, that ID does not exist!")
+                self.logger.warning("Failed to remove character from session, that ID does not exist!")
                 return server_pb2.Session(
                     status="FAILED",
                     status_message="[RemoveCharacterFromSession] No session with that ID exists!")
@@ -1135,21 +1129,21 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             char = self.conn.query(db.Character).filter(db.Character.character_id == _char_id).first()
 
             if not char:
-                self.logger.error("Failed to remove character from session, that character does not exist!")
+                self.logger.warning("Failed to remove character from session, that character does not exist!")
                 return server_pb2.Session(
                     status="FAILED",
                     status_message="[RemoveCharacterFromSession] No character with that ID exists!")
 
             # Check if character is in the session.
             if not char.session.session_id == session.session_id:
-                self.logger.error("Failed to remove character from session, that character is not in this session!")
+                self.logger.warning("Failed to remove character from session, that character is not in this session!")
                 return server_pb2.Session(
                     status="FAILED",
                     status_message="[RemoveCharacterFromSession] Failed to remove character from session, that character is not in this session!")
 
             # Check that the character is owned by the user
             if not char.creator.uid == uid:
-                self.logger.error("Failed to remove character from session, this is not your character!")
+                self.logger.warning("Failed to remove character from session, this is not your character!")
                 return server_pb2.Session(
                     status="FAILED",
                     status_message="[RemoveCharacterFromSession] Failed to remove character from session, this is not your character")

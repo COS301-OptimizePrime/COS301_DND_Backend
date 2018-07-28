@@ -1085,6 +1085,23 @@ def test_expiry_readyup_session():
             session_id=session.session_id))
     assert response.status == 'FAILED'
 
+def test_list_user_sessions_when_none_exist():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser5@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.GetSessionsOfUser(
+        server_pb2.GetSessionsOfUserRequest(
+            auth_id_token=token, limit=3))
+
+    assert response.status == 'SUCCESS'
+    assert len(response.light_sessions) == 0
+
 # def test_max_sessions_for_user():
 #    auth.revoke_refresh_tokens(uid)
 
