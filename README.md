@@ -37,7 +37,6 @@ Backed API Server
 |server/log.py           |  18    |  0   |100%|
 |server/server_pb2.py    | 186    |  0   |100%|
 |server/session.py       | 643    |200   | 69%|
-|------------------------|--------|------|----|
 |TOTAL                   |1530    |282   | 82%|
 
 
