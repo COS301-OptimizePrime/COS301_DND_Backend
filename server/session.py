@@ -1016,17 +1016,21 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         try:
             self.conn = self._connectDatabase()
 
-            _sessions_query = self.conn.query(
+            user = self.conn.query(
                 db.User).filter(
                 db.User.uid == uid).first()
 
             # TODO Check if anything is returned!
+            if not user:
+                self.logger.warning("User does not exist adding!")
+                user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
+                self.conn.add(user)
+                self.conn.commit()
 
             _sessions = []
-
             limit = 0
 
-            user_sessions = _sessions_query.session_dungeon_masters + _sessions_query.joined_sessions
+            user_sessions = user.session_dungeon_masters + user.joined_sessions
 
             for _session in user_sessions:
                 limit = limit + 1
