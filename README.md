@@ -2,8 +2,8 @@
 
 | Branch  |                                                                               Status                                                                               |
 | ------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Master  | [![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=master)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend)  |
-| Develop | [![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=develop)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend) ![deployment diagram](https://img.shields.io/badge/coverage-80%25-brightgreen.svg) |
+| Master  | [![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=master)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend)  ![deployment diagram](https://img.shields.io/badge/coverage-82%25-brightgreen.svg)|
+| Develop | [![Build Status](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend.svg?branch=develop)](https://travis-ci.org/COS301-OptimizePrime/COS301_DND_Backend) ![deployment diagram](https://img.shields.io/badge/coverage-82%25-brightgreen.svg) |
 
 Backed API Server
 
@@ -29,18 +29,17 @@ Backed API Server
 
 |Name                          |Stmts  | Miss| Cover|
 |:-----------------------------|-----:|----:|-----:|
-|main.py                       | 54   |   5 |   91%|
-|server/__init__.py            |  0   |   0 |  100%|
-|server/character.py           |257   |  58 |   77%|
-|server/config.py              | 28   |  11 |   61%|
-|server/db.py                  |179   |   4 |   98%|
-|server/firebase.py            |  4   |   0 |  100%|
-|server/helpers.py             |181   |   1 |   99%|
-|server/log.py                 | 18   |   6 |   67%|
-|server/server_pb2.py          |186   |   0 |  100%|
-|server/server_pb2_grpc.py     |121   |  84 |   31%|
-|server/session.py             |584   | 152 |   74%|
-|TOTAL                         |1612  | 321|    80%|
+|main.py                 |  50    |  5   | 90%|
+|server/character.py     | 281    | 73   | 74%|
+|server/db.py            | 167    |  3   | 98%|
+|server/firebase.py      |   4    |  0   |100%|
+|server/helpers.py       | 181    |  1   | 99%|
+|server/log.py           |  18    |  0   |100%|
+|server/server_pb2.py    | 186    |  0   |100%|
+|server/session.py       | 643    |200   | 69%|
+|------------------------|--------|------|----|
+|TOTAL                   |1530    |282   | 82%|
+
 
 ## Requirements
 
