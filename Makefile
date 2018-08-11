@@ -1,6 +1,6 @@
 .PHONY: test run install upload clean bootstrap benchmark generate
 test:
-	cd ./test; echo "===Runing python tests!==="; sh -c 'pytest'; echo "===Runing dart tests!==="; dart test.dart;
+	cd ./test; echo "===Runing python tests!==="; sh -c 'pytest'
 
 run:
 	rm dnd_backend.db dnd_backend.log dnd_backend.err; export ENV=dev; sh -c 'python3 ./main.py'
@@ -9,7 +9,6 @@ prod:
 	export ENV=prod; sh -c 'pypy3 ./main.py'
 
 install:
-	cd ./test; pub get
 	npm install
 	pip install --upgrade --user -r requirements.txt
 
