@@ -91,6 +91,8 @@ class User(Base):
     # Last socket
     # socket = Column(String, nullable=False)
 
+    #online = Column(Boolean, default=False)
+
     def __repr__(self):
         return "<User(id='%s', uid='%s', name='%s')>" % (
             self.id, self.uid, self.name)

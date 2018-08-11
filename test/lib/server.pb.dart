@@ -1064,6 +1064,7 @@ class User extends GeneratedMessage {
     ..aOS(1, 'uid')
     ..aOS(2, 'name')
     ..aOB(3, 'readyInThisSession')
+    ..aOB(4, 'online')
     ..hasRequiredFields = false
   ;
 
@@ -1097,6 +1098,11 @@ class User extends GeneratedMessage {
   set readyInThisSession(bool v) { $_setBool(2, v); }
   bool hasReadyInThisSession() => $_has(2);
   void clearReadyInThisSession() => clearField(3);
+
+  bool get online => $_get(3, false);
+  set online(bool v) { $_setBool(3, v); }
+  bool hasOnline() => $_has(3);
+  void clearOnline() => clearField(4);
 }
 
 class _ReadonlyUser extends User with ReadonlyMessageMixin {}

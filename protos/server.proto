@@ -249,6 +249,7 @@ message User {
     string uid = 1;
     string name = 2;
     bool ready_in_this_session = 3;
+    bool online = 4;
 }
 
 message NewCharacterRequest {
