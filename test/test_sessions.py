@@ -1102,19 +1102,57 @@ def test_list_user_sessions_when_none_exist():
     assert response.status == 'SUCCESS'
     assert len(response.light_sessions) == 0
 
-# def test_max_sessions_for_user():
-#    auth.revoke_refresh_tokens(uid)
 
-#    channel = grpc.insecure_channel(server)
-#    stub = server_pb2_grpc.SessionsManagerStub(channel)
+def test_list_user_sessions_check_that_both_dm_and_non_dm_show():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
 
-#    token = str(subprocess.check_output('node ./login.mjs', shell=True, universal_newlines=False).decode("utf-8")).strip()
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser5@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
 
-#    for i in range(0, 9):
-#        session = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
-#        assert(session.status, 'SUCCESS')
+    stub.Create(
+        server_pb2.NewSessionRequest(
+            name='test',
+            auth_id_token=token,
+            max_players=7))
 
-#    response = stub.Create(server_pb2.NewSessionRequest(name='mysession', auth_id_token=token, max_players=2, private=False))
+    response = stub.GetSessionsOfUser(
+        server_pb2.GetSessionsOfUserRequest(
+            auth_id_token=token, limit=3))
 
-#    assert(response.status, 'FAILED')
-#    assert(response.status_message, '[Create] User has too many sessions already!')
+    assert response.status == 'SUCCESS'
+    assert len(response.light_sessions) == 1
+
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser4@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    session = stub.Create(
+        server_pb2.NewSessionRequest(
+            name='test',
+            auth_id_token=token,
+            max_players=7))
+
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser5@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.Join(
+        server_pb2.JoinRequest(
+            auth_id_token=token, session_id=session.session_id))
+
+    assert response.status == 'SUCCESS'
+
+    response = stub.GetSessionsOfUser(
+        server_pb2.GetSessionsOfUserRequest(
+            auth_id_token=token, limit=3))
+    assert response.status == 'SUCCESS'
+    assert len(response.light_sessions) == 2
+
