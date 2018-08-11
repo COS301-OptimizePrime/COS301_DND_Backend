@@ -2,6 +2,8 @@ name: COS301_DND_Backend
 version: 0.0.1
 description: >-
   Runs the api server
+environment:
+  sdk: '<2.0.0-dev.infinity'
 
 dependencies:
   async: '>=1.13.3 <3.0.0'
