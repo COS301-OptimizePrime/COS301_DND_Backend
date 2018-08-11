@@ -1,10 +1,7 @@
 sudo: required
-language: dart
+language: python
 python:
 - '3.7.0'
-dart:
-# Install the latest stable release
-- stable
 node_js: "10.1.0"
 
 branches:
