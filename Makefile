@@ -9,9 +9,9 @@ prod:
 	export ENV=prod; sh -c 'pypy3 ./main.py'
 
 install:
-	cd ./test; pub get
 	npm install
 	python3 -m pip install --upgrade --user -r requirements.txt
+	cd ./test; pub get
 
 install_prod:
 	pypy3 -m pip install --upgrade --user -r requirements.txt
