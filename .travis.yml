@@ -1,7 +1,7 @@
 sudo: required
 language: dart
 python:
-- '3.6.5'
+- '3.7.0'
 dart:
 # Install the latest stable release
 - stable
