@@ -1020,7 +1020,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 db.User).filter(
                 db.User.uid == uid).first()
 
-            # TODO Check if anything is returned!
             if not user:
                 self.logger.warning("User does not exist adding!")
                 user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)

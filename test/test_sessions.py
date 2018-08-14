@@ -1115,7 +1115,7 @@ def test_list_user_sessions_check_that_both_dm_and_non_dm_show():
 
     stub.Create(
         server_pb2.NewSessionRequest(
-            name='test',
+            name='my session mock5',
             auth_id_token=token,
             max_players=7))
 
@@ -1125,6 +1125,7 @@ def test_list_user_sessions_check_that_both_dm_and_non_dm_show():
 
     assert response.status == 'SUCCESS'
     assert len(response.light_sessions) == 1
+    assert response.light_sessions[0].name == 'my session mock5'
 
     token = str(
         subprocess.check_output(
@@ -1134,7 +1135,7 @@ def test_list_user_sessions_check_that_both_dm_and_non_dm_show():
 
     session = stub.Create(
         server_pb2.NewSessionRequest(
-            name='test',
+            name='not my session mock4',
             auth_id_token=token,
             max_players=7))
 
@@ -1155,4 +1156,6 @@ def test_list_user_sessions_check_that_both_dm_and_non_dm_show():
             auth_id_token=token, limit=3))
     assert response.status == 'SUCCESS'
     assert len(response.light_sessions) == 2
+    assert response.light_sessions[0].name == 'my session mock5'
+    assert response.light_sessions[1].name == 'not my session mock4'
 
