@@ -10,7 +10,7 @@ prod:
 
 install:
 	npm install
-	pip install --upgrade --user -r requirements.txt
+	pip install --upgrade -r requirements.txt
 
 install_dev:
 	cd ./test; pub get
