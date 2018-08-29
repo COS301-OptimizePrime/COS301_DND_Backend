@@ -2,7 +2,6 @@
 //  Generated code. Do not modify.
 ///
 // ignore_for_file: non_constant_identifier_names,library_prefixes
-library session_server_pbjson;
 
 const AddCharacterToSessionRequest$json = const {
   '1': 'AddCharacterToSessionRequest',

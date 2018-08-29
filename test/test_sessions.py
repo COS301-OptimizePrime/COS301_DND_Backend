@@ -348,6 +348,28 @@ def test_rpc_good_login_get_session_by_id():
     assert response.session_id == session.session_id
     assert response.status == 'SUCCESS'
 
+def test_rpc_good_login_get_light_session_by_id():
+    auth.revoke_refresh_tokens(uid)
+
+    token = str(
+        subprocess.check_output(
+            'node ./login.mjs',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    session = _create_rpc_good_login(token)
+    response = stub.GetLightSessionById(
+        server_pb2.GetSessionRequest(
+            auth_id_token=token,
+            session_id=session.session_id))
+
+    assert response.name == 'mysession'
+    assert response.session_id == session.session_id
+    assert response.status == 'SUCCESS'
+
 
 def test_setmax_rpc_good_login_setmax_session_invalid_user():
     auth.revoke_refresh_tokens(uid)

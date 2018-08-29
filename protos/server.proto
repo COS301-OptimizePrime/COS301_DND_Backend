@@ -4,13 +4,13 @@ package session;
 
 // The sessions manager service definition.
 service SessionsManager {
-    // [EXPENSIVE] Creates a new session.
+    // EXPENSIVE Creates a new session.
     rpc Create (NewSessionRequest) returns (Session) {
     }
-    // [EXPENSIVE] Join a session.
+    // EXPENSIVE Join a session.
     rpc Join (JoinRequest) returns (Session) {
     }
-    // [EXPENSIVE] Leave a session.
+    // EXPENSIVE Leave a session.
     rpc Leave (LeaveRequest) returns (LeaveReply) {
     }
     // Set the max amount of players that can be in the session.
@@ -25,13 +25,16 @@ service SessionsManager {
     // Set the privacy status of the session.
     rpc SetPrivate (SetPrivateRequest) returns (Session) {
     }
-    // [EXPENSIVE] List available sessions.
+    // EXPENSIVE List available sessions.
     rpc List (ListRequest) returns (ListReply) {
     }
-    // [EXPENSIVE] Get session by ID
+    // EXPENSIVE Get session by ID
     rpc GetSessionById (GetSessionRequest) returns (Session) {
     }
-    // [EXPENSIVE] Get all sessions of user
+    // CHEAP Get light session by ID
+    rpc GetLightSessionById (GetSessionRequest) returns (LightSession) {
+    }
+    // EXPENSIVE Get all sessions of user
     rpc GetSessionsOfUser (GetSessionsOfUserRequest) returns (GetSessionsOfUserReply) {
     }
     // Ready up a user in the requested session
@@ -49,7 +52,7 @@ service SessionsManager {
     rpc RemoveCharacterFromSession(RemoveCharacterFromSessionRequest) returns (Session) {
     }
 
-    // [CHEAP] Returns an array of light characters.
+    // CHEAP Returns an array of light characters.
     rpc GetCharactersInSession(GetCharactersInSessionRequest) returns (GetCharactersInSessionResponse) {
     }
 }
@@ -59,13 +62,13 @@ service CharactersManager {
     }
     rpc DeleteCharacter (DeleteCharacterRequest) returns (DeleteCharacterReply) {
     }
-    // [CHEAP]
+    // CHEAP
     rpc GetCharacters (GetCharactersRequest) returns (GetCharactersReply) {
     }
-    // [EXPENSIVE]
+    // EXPENSIVE
     rpc UpdateCharacter (UpdateCharacterRequest) returns (Character) {
     }
-    // [EXPENSIVE]
+    // EXPENSIVE
     rpc GetCharacterById (GetCharacterByIdRequest) returns (Character) {
     }
 }

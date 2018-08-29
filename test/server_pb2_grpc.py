@@ -59,6 +59,11 @@ class SessionsManagerStub(object):
         request_serializer=server__pb2.GetSessionRequest.SerializeToString,
         response_deserializer=server__pb2.Session.FromString,
         )
+    self.GetLightSessionById = channel.unary_unary(
+        '/session.SessionsManager/GetLightSessionById',
+        request_serializer=server__pb2.GetSessionRequest.SerializeToString,
+        response_deserializer=server__pb2.LightSession.FromString,
+        )
     self.GetSessionsOfUser = channel.unary_unary(
         '/session.SessionsManager/GetSessionsOfUser',
         request_serializer=server__pb2.GetSessionsOfUserRequest.SerializeToString,
@@ -101,21 +106,21 @@ class SessionsManagerServicer(object):
   """
 
   def Create(self, request, context):
-    """[EXPENSIVE] Creates a new session.
+    """EXPENSIVE Creates a new session.
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
   def Join(self, request, context):
-    """[EXPENSIVE] Join a session.
+    """EXPENSIVE Join a session.
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
   def Leave(self, request, context):
-    """[EXPENSIVE] Leave a session.
+    """EXPENSIVE Leave a session.
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -150,21 +155,28 @@ class SessionsManagerServicer(object):
     raise NotImplementedError('Method not implemented!')
 
   def List(self, request, context):
-    """[EXPENSIVE] List available sessions.
+    """EXPENSIVE List available sessions.
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
   def GetSessionById(self, request, context):
-    """[EXPENSIVE] Get session by ID
+    """EXPENSIVE Get session by ID
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def GetLightSessionById(self, request, context):
+    """CHEAP Get light session by ID
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
   def GetSessionsOfUser(self, request, context):
-    """[EXPENSIVE] Get all sessions of user
+    """EXPENSIVE Get all sessions of user
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -206,7 +218,7 @@ class SessionsManagerServicer(object):
     raise NotImplementedError('Method not implemented!')
 
   def GetCharactersInSession(self, request, context):
-    """[CHEAP] Returns an array of light characters.
+    """CHEAP Returns an array of light characters.
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -259,6 +271,11 @@ def add_SessionsManagerServicer_to_server(servicer, server):
           servicer.GetSessionById,
           request_deserializer=server__pb2.GetSessionRequest.FromString,
           response_serializer=server__pb2.Session.SerializeToString,
+      ),
+      'GetLightSessionById': grpc.unary_unary_rpc_method_handler(
+          servicer.GetLightSessionById,
+          request_deserializer=server__pb2.GetSessionRequest.FromString,
+          response_serializer=server__pb2.LightSession.SerializeToString,
       ),
       'GetSessionsOfUser': grpc.unary_unary_rpc_method_handler(
           servicer.GetSessionsOfUser,
@@ -357,21 +374,21 @@ class CharactersManagerServicer(object):
     raise NotImplementedError('Method not implemented!')
 
   def GetCharacters(self, request, context):
-    """[CHEAP]
+    """CHEAP
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
   def UpdateCharacter(self, request, context):
-    """[EXPENSIVE]
+    """EXPENSIVE
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
   def GetCharacterById(self, request, context):
-    """[EXPENSIVE]
+    """EXPENSIVE
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')

@@ -983,7 +983,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
-            self.logger.error("[SETPRIVATE] SQLAlchemyError! " + str(err))
+            self.logger.error("[GetSessionsOfUser] SQLAlchemyError! " + str(err))
             return server_pb2.Session(
                 session_id="NULL",
                 name="NULL",
@@ -991,9 +991,72 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 status_message="Database error!")
         except Exception:
             self.logger.exception("[GetSessionsOfUser] Unhandled exception occurred!")
-            return server_pb2.GetSessionsOfUserReply(
+            return server_pb2.Session(
                 status="FAILED",
                 status_message="[GetSessionsOfUser] Internal server error! Blame Thomas!")
+        finally:
+            self.conn.close()
+
+    def GetLightSessionById(self, request, context):
+        self.logger.info("GetLightSessionById called!")
+
+        _session_id = request.session_id
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.warning("Failed to verify login!")
+            return server_pb2.LightSession(
+                session_id="NULL",
+                name="NULL",
+                status="FAILED",
+                status_message="[GetLightSessionById] Failed to verify token!")
+
+        self.logger.debug("Successfully verified token! UID=" + uid)
+
+        try:
+            self.conn = self._connectDatabase()
+            session = self.conn.query(db.Session).filter(
+                db.Session.session_id == _session_id).first()
+
+            if not session:
+                self.logger.warning(
+                    "[GetLightSessionById] Failed to get session,"
+                    " that ID does not exist!")
+                return server_pb2.LightSession(
+                    session_id="NULL",
+                    name="NULL",
+                    status="FAILED",
+                    status_message="[GetLightSessionById] No session"
+                                   " with that ID exists!")
+
+            if session.state_ready_start_time < datetime.datetime.now() - datetime.timedelta(
+                    seconds=session.ready_up_expiry_time):
+                # Expired ready up phase reset.
+                # Delete all ready users in session
+
+                for _user in session.ready_users:
+                    session.ready_users.remove(_user)
+
+                # Update state
+                session.state = "PAUSED"
+                self.conn.commit()
+
+            return self._convertToGrpcLightSession(session, "SUCCESS")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[GetLightSessionById] SQLAlchemyError! " + str(err))
+            return server_pb2.LightSession(
+                session_id="NULL",
+                name="NULL",
+                status="FAILED",
+                status_message="Database error!")
+        except Exception:
+            self.logger.exception("[GetLightSessionById] Unhandled exception occurred!")
+            return server_pb2.LightSession(
+                status="FAILED",
+                status_message="[GetLightSessionById] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
