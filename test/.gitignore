@@ -4,3 +4,4 @@ dnd-game-manager-firebase-adminsdk*.json
 config.toml
 *.svg
 pubspec.lock
+.benchmarks
