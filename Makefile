@@ -1,6 +1,6 @@
 .PHONY: test run install upload clean bootstrap benchmark generate
 test:
-	cd ./test; echo "===Runing python tests!==="; sh -c 'pytest'
+	cd ./test; echo "===Runing python tests!==="; sh -c 'python3 -m pytest'
 
 run:
 	rm dnd_backend.db dnd_backend.log dnd_backend.err; export ENV=dev; sh -c 'python3 ./main.py'

@@ -3,6 +3,7 @@ import grpc
 
 from . import server_pb2 as server__pb2
 
+
 class SessionsManagerStub(object):
   """The sessions manager service definition.
   """

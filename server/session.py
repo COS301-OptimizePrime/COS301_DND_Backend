@@ -16,6 +16,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
     conn = None
     logger = logging.getLogger("cos301-DND")
 
+    ip = ""
+
     def _connectDatabase(self):
         if not self.conn:
             self.conn = db.connect()
@@ -48,6 +50,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             userInSession = server_pb2.User()
             userInSession.uid = _user.uid
             userInSession.name = _user.name
+            userInSession.online = _user.online
 
             if _user in session.ready_users:
                 userInSession.ready_in_this_session = True
@@ -62,6 +65,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             userInSession = server_pb2.User()
             userInSession.uid = _user.uid
             userInSession.name = _user.name
+            userInSession.online = _user.online
+
             userInSession.ready_in_this_session = True
             sessionObj.ready_users.extend([userInSession])
 
@@ -83,7 +88,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         return sessionObj
 
     def Create(self, request, context):
-        self.logger.debug(context.peer())
+        
+        self.ip = context.peer()
         self.logger.info("Create new session called! Name:" + request.name)
 
         _auth_id_token = request.auth_id_token
@@ -105,11 +111,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
-            user = self.conn.query(db.User).filter(db.User.uid == uid).first()
-            if not user:
-                user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
-                self.conn.add(user)
-                self.conn.commit()
+            # Go Online
+            user = helpers.goOnline(self.conn, uid, self.ip)
 
             # Check how many sessions the user has.
             if len(user.session_dungeon_masters) >= config.val['server']['max_sessions_per_user']:
@@ -157,6 +160,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Join(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("Join requested!")
         _auth_id_token = request.auth_id_token
 
@@ -200,11 +205,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[JOIN] This session is full!",
                     full=True)
 
-            user = self.conn.query(db.User).filter(db.User.uid == uid).first()
-            if not user:
-                user = db.User(uid=uid, name=firebase.auth.get_user(uid).email)
-                self.conn.add(user)
-                self.conn.commit()
+            # Go Online
+            user = helpers.goOnline(self.conn, uid, self.ip)
 
             if user in session.users_in_session:
                 self.logger.warning(
@@ -234,6 +236,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Leave(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("Leave request called!")
         _auth_id_token = request.auth_id_token
 
@@ -251,6 +255,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
 
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
@@ -332,6 +338,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Ready(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("Ready request called!")
         _auth_id_token = request.auth_id_token
 
@@ -350,6 +358,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
 
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
@@ -433,6 +443,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Kick(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("Kick player request called!")
         _auth_id_token = request.auth_id_token
 
@@ -450,6 +462,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
 
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
@@ -523,6 +537,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetMax(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("SetMax called!")
 
         _auth_id_token = request.auth_id_token
@@ -542,6 +558,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
 
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
@@ -592,6 +610,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetName(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("SetName called!")
 
         _auth_id_token = request.auth_id_token
@@ -611,6 +631,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
 
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
@@ -660,6 +682,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def ChangeState(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("ChangeState called!")
 
         _auth_id_token = request.auth_id_token
@@ -679,6 +703,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -746,6 +773,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetPrivate(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("SetPrivate called!")
 
         _auth_id_token = request.auth_id_token
@@ -760,6 +789,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -808,6 +840,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def ChangeReadyUpExpiryTime(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("ChangeReadyUpExpiryTime called!")
 
         _auth_id_token = request.auth_id_token
@@ -822,6 +856,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -863,6 +900,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def List(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("List sessions called!")
 
         _limit = request.limit
@@ -880,6 +919,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
 
             if _full:
                 _sessions_query = self.conn.query(
@@ -935,6 +976,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetSessionById(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("GetSessionById called!")
 
         _session_id = request.session_id
@@ -955,6 +998,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -998,6 +1044,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetLightSessionById(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("GetLightSessionById called!")
 
         _session_id = request.session_id
@@ -1018,6 +1066,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -1061,6 +1112,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetSessionsOfUser(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("GetSessionsOfUser sessions called!")
 
         _limit = request.limit
@@ -1078,10 +1131,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
-
-            user = self.conn.query(
-                db.User).filter(
-                db.User.uid == uid).first()
+            # Go Online
+            user = helpers.goOnline(self.conn, uid, self.ip)
 
             if not user:
                 self.logger.warning("User does not exist adding!")
@@ -1116,6 +1167,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetCharactersInSession(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("GetCharactersInSession called!")
 
         _auth_id_token = request.auth_id_token
@@ -1135,6 +1188,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -1166,6 +1222,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def AddCharacterToSession(self, request, context):
+        
+        self.ip = context.peer()
         self.logger.info("AddCharacterToSession called!")
 
         _auth_id_token = request.auth_id_token
@@ -1185,6 +1243,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -1228,6 +1289,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def RemoveCharacterFromSession(self, request, context):
+        self.ip = context.peer()
         self.logger.info("RemoveCharacterFromSession called!")
 
         _auth_id_token = request.auth_id_token
@@ -1247,6 +1309,9 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
         try:
             self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
+
             session = self.conn.query(db.Session).filter(
                 db.Session.session_id == _session_id).first()
 
@@ -1297,5 +1362,3 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         finally:
             self.conn.close()
 
-    def __del__(self):
-        self.logger.info("Socket destroyed ...")

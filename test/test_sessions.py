@@ -64,6 +64,7 @@ def test_create_rpc_good_login_reuse_stub(benchmark):
     channel = grpc.insecure_channel(server)
     stub = server_pb2_grpc.SessionsManagerStub(channel)
     benchmark(_create_rpc_good_login_reuse_stub, stub, token)
+    channel.close()
 
 
 def test_create_rpc_bad_login():
@@ -78,7 +79,7 @@ def test_create_rpc_bad_login():
     assert response.name == 'NULL'
     assert response.session_id == 'NULL'
     assert response.status == 'FAILED'
-
+    channel.close()
 
 def test_list_rpc_good_login():
     auth.revoke_refresh_tokens(uid)
@@ -95,7 +96,7 @@ def test_list_rpc_good_login():
 
     assert response.status == 'SUCCESS'
     assert len(response.sessions) <= 3
-
+    channel.close()
 
 def test_rpc_good_login_leave_if_not_in_session():
     auth.revoke_refresh_tokens(uid)
@@ -127,6 +128,7 @@ def test_rpc_good_login_leave_if_not_in_session():
 
     assert response.status == 'FAILED'
     assert response.status_message == '[Leave] User is not in the session!'
+    channel.close()
 
 
 def test_join_rpc_good_login_existing_session():
@@ -151,6 +153,7 @@ def test_join_rpc_good_login_existing_session():
     assert response.name == 'mysession'
     assert len(response.session_id) == 36
     assert response.status == 'SUCCESS'
+    channel.close()
 
 
 def test_leave_rpc_good_login_leave_session_multiple_already_joined():
@@ -229,6 +232,7 @@ def test_leave_rpc_good_login_leave_session_multiple_already_joined():
     assert response.status == 'SUCCESS'
     assert len(response.users) == 1
     assert response.users[0].name == 'mockuser3@test.co.za'
+    channel.close()
 
 
 def test_join_rpc_good_login_nonexisting_session():
@@ -251,6 +255,7 @@ def test_join_rpc_good_login_nonexisting_session():
     assert response.session_id == 'NULL'
     assert response.status == 'FAILED'
     assert response.status_message == '[JOIN] No session with that ID exists!'
+    channel.close()
 
 
 def test_setmax_rpc_good_login_setmax_session():
@@ -289,6 +294,7 @@ def test_setmax_rpc_good_login_setmax_session():
     assert len(response.session_id) == 36
     assert response.status == 'SUCCESS'
     assert response.max_players == 0
+    channel.close()
 
 
 def test_join_rpc_good_login_full_session():
@@ -324,6 +330,7 @@ def test_join_rpc_good_login_full_session():
     assert response.status == 'FAILED'
     assert response.status_message == '[JOIN] This session is full!'
     assert response.full
+    channel.close()
 
 
 def test_rpc_good_login_get_session_by_id():
@@ -347,6 +354,8 @@ def test_rpc_good_login_get_session_by_id():
     assert response.name == 'mysession'
     assert response.session_id == session.session_id
     assert response.status == 'SUCCESS'
+    channel.close()
+
 
 def test_rpc_good_login_get_light_session_by_id():
     auth.revoke_refresh_tokens(uid)
@@ -369,7 +378,7 @@ def test_rpc_good_login_get_light_session_by_id():
     assert response.name == 'mysession'
     assert response.session_id == session.session_id
     assert response.status == 'SUCCESS'
-
+    channel.close()
 
 def test_setmax_rpc_good_login_setmax_session_invalid_user():
     auth.revoke_refresh_tokens(uid)
@@ -394,6 +403,7 @@ def test_setmax_rpc_good_login_setmax_session_invalid_user():
     assert response.name == 'NULL'
     assert response.status_message == '[SetMax] You must be the dungeon master to use this command!'
     assert response.status == 'FAILED'
+    channel.close()
 
 
 def test_list_rpc_good_login_list_sessions_that_are_full():
@@ -427,6 +437,7 @@ def test_list_rpc_good_login_list_sessions_that_are_full():
     assert response.status == 'SUCCESS'
     assert response.sessions[0].full
     assert len(response.sessions) <= 3
+    channel.close()
 
 
 def test_kick_good_login():

@@ -13,7 +13,7 @@ username = \"develop\"
 password = \"\"
 
 [server]
-mode = "DEV"
+mode = \"DEV\"
 max_worker_threads = 20
 max_sessions_per_user = 500
 """

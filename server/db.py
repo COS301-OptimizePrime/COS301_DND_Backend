@@ -88,10 +88,8 @@ class User(Base):
         secondary=user_ready_sessions,
         order_by="desc(Session.date_created)")
 
-    # Last socket
-    # socket = Column(String, nullable=False)
-
-    #online = Column(Boolean, default=False)
+    ip = Column(String, nullable=False)
+    online = Column(Boolean, default=False)
 
     def __repr__(self):
         return "<User(id='%s', uid='%s', name='%s')>" % (

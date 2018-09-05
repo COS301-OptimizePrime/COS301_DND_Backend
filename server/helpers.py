@@ -1,4 +1,7 @@
+import datetime
+
 from . import db
+from . import firebase
 from . import server_pb2
 
 
@@ -218,3 +221,16 @@ def _convertToGrpcLightCharacter(character):
     charObj.last_updated = str(character.date_updated)
 
     return charObj
+
+
+def goOnline(conn, uid, ip):
+    user = conn.query(db.User).filter(db.User.uid == uid).first()
+    if not user:
+        user = db.User(uid=uid, name=firebase.auth.get_user(uid).email, online=True, ip=str(ip))
+        conn.add(user)
+
+    user.online = True
+    user.ip = ip
+    user.date_updated = datetime.datetime.now()
+    conn.commit()
+    return user

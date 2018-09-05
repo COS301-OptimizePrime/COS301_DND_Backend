@@ -5,17 +5,19 @@ import time
 from concurrent import futures
 
 import grpc
+from pbr.version import VersionInfo
 
+from server import backgroundworker
+from server import config
 from server import log
 from server import server_pb2_grpc
 from server.character import CharacterManager
 from server.session import Session
 
-from pbr.version import VersionInfo
-
 _v = VersionInfo('main').semantic_version()
 __version__ = _v.release_string()
 version_info = _v.version_tuple()
+
 
 class GracefulKiller:
     kill_now = False
@@ -46,11 +48,15 @@ def serve():
 
     # Change between development environment and production.
     # In production
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=20))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=int(config.val['server']['max_worker_threads'])))
     server_pb2_grpc.add_SessionsManagerServicer_to_server(Session(), server)
     server_pb2_grpc.add_CharactersManagerServicer_to_server(CharacterManager(), server)
     server.add_insecure_port("[::]:50051")
     server.start()
+
+    # Background daemon
+    bw = backgroundworker.BackgroundWorker()
+    bw.start()
 
     logger.info("Started!")
 
