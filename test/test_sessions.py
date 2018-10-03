@@ -1192,3 +1192,66 @@ def test_list_user_sessions_check_that_both_dm_and_non_dm_show():
     assert response.light_sessions[0].name == 'my session mock5'
     assert response.light_sessions[1].name == 'not my session mock4'
 
+
+def test_multiple_ready_up_should_not_cause_sessions_to_start_if_from_same_user():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    token5 = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser5@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    session = stub.Create(
+        server_pb2.NewSessionRequest(
+            name='my session mock5',
+            auth_id_token=token5,
+            max_players=7))
+
+    assert session.status == 'SUCCESS'
+
+    stub.ChangeState(
+        server_pb2.ChangeStateRequest(
+            auth_id_token=token5,
+            session_id=session.session_id,
+            state='READYUP'))
+
+    token4 = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser4@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.Join(
+            server_pb2.JoinRequest(
+                auth_id_token=token4, session_id=session.session_id))
+
+    assert response.status == 'SUCCESS'
+    token3 = str(
+        subprocess.check_output(
+            'node ./login.mjs mockuser3@test.co.za',
+            shell=True,
+            universal_newlines=False).decode("utf-8")).strip()
+
+    response = stub.Join(
+            server_pb2.JoinRequest(
+                auth_id_token=token3, session_id=session.session_id))
+
+    assert response.status == 'SUCCESS'
+
+    response = stub.Ready(
+        server_pb2.ReadyUpRequest(
+            auth_id_token=token4, session_id=session.session_id))
+
+    assert response.status == 'SUCCESS'
+    response = stub.Ready(
+        server_pb2.ReadyUpRequest(
+            auth_id_token=token4, session_id=session.session_id))
+
+    assert response.status == 'SUCCESS'
+
+    session = stub.GetSessionById(server_pb2.GetSessionRequest(auth_id_token=token4, session_id=session.session_id))
+
+    assert session.state == 'READYUP'
+    assert len(session.users) == 2

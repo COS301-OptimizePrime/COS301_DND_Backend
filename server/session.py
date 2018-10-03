@@ -88,7 +88,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         return sessionObj
 
     def Create(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("Create new session called! Name:" + request.name)
 
@@ -160,7 +160,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Join(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("Join requested!")
         _auth_id_token = request.auth_id_token
@@ -236,7 +236,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Leave(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("Leave request called!")
         _auth_id_token = request.auth_id_token
@@ -338,7 +338,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Ready(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("Ready request called!")
         _auth_id_token = request.auth_id_token
@@ -392,6 +392,8 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     session.state = "PAUSED"
                     session.state_meta = session.state_meta + 1
 
+                    self.conn.commit()
+
                     self.logger.warning(
                         "Failed to ready up in session, READYUP phase has expired!")
 
@@ -415,7 +417,10 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status="FAILED",
                     status_message="[Ready] User is not in the session!")
 
-            session.ready_users.append(user)
+            if user not in session.ready_users:
+                session.ready_users.append(user)
+            else:
+                self.logger.warning("[READY] User is already 'Ready'!")
 
             # TODO: There should be a more optimal way of doing this.
             if len(session.ready_users) == len(session.users_in_session):
@@ -443,7 +448,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def Kick(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("Kick player request called!")
         _auth_id_token = request.auth_id_token
@@ -537,7 +542,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetMax(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("SetMax called!")
 
@@ -610,7 +615,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetName(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("SetName called!")
 
@@ -682,7 +687,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def ChangeState(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("ChangeState called!")
 
@@ -694,10 +699,10 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         except ValueError:
             self.logger.warning("Failed to verify login!")
             return server_pb2.Session(
-                    session_id="NULL",
-                    name="NULL",
-                    status="FAILED",
-                    status_message="[ChangeState] Failed to verify login!")
+                session_id="NULL",
+                name="NULL",
+                status="FAILED",
+                status_message="[ChangeState] Failed to verify login!")
 
         _session_id = request.session_id
 
@@ -773,7 +778,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def SetPrivate(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("SetPrivate called!")
 
@@ -840,7 +845,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
     # This is a Dungeon Master only command.
     def ChangeReadyUpExpiryTime(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("ChangeReadyUpExpiryTime called!")
 
@@ -900,7 +905,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def List(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("List sessions called!")
 
@@ -976,7 +981,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetSessionById(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("GetSessionById called!")
 
@@ -1044,7 +1049,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetLightSessionById(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("GetLightSessionById called!")
 
@@ -1112,7 +1117,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetSessionsOfUser(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("GetSessionsOfUser sessions called!")
 
@@ -1167,7 +1172,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def GetCharactersInSession(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("GetCharactersInSession called!")
 
@@ -1222,7 +1227,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             self.conn.close()
 
     def AddCharacterToSession(self, request, context):
-        
+
         self.ip = context.peer()
         self.logger.info("AddCharacterToSession called!")
 
@@ -1361,4 +1366,3 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 status_message="[RemoveCharacterFromSession] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
-
