@@ -1,5 +1,6 @@
 import datetime
 import logging
+import math
 import uuid
 
 from sqlalchemy import and_, desc, exc
@@ -35,6 +36,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
         sessionObj.max_players = session.max_players
         sessionObj.full = session.full
         sessionObj.private = session.private
+        sessionObj.first_started_time = str(session.first_started_time)
 
         sessionObj.state = session.state
         sessionObj.state_meta = session.state_meta
@@ -428,6 +430,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                 # All users are ready change the state
                 session.state = "EXPLORING"
                 session.state_meta = session.state_meta + 1
+                session.first_started_time = datetime.datetime.now()
                 for _user in session.ready_users:
                     session.ready_users.remove(_user)
 
@@ -537,6 +540,153 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             return server_pb2.Session(
                 status="FAILED",
                 status_message="[KICK] Internal server error! Blame Thomas!")
+        finally:
+            self.conn.close()
+
+    # This is a Dungeon Master only command.
+    def GiveXp(self, request, context):
+        self.logger.info("GiveXp called!")
+
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.warning("Failed to verify login!")
+            return server_pb2.GiveXpReply(
+                status="FAILED",
+                status_message="[GiveXp] Failed to verify login!")
+
+        _session_id = request.session_id
+        _character_id = request.character_id
+        _xp = request.xp
+        try:
+            self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
+
+            session = self.conn.query(db.Session).filter(
+                db.Session.session_id == _session_id).first()
+
+            if not session:
+                self.logger.warning(
+                    "[GiveXp] Failed to give xp,"
+                    " that session ID does not exist!")
+
+                return server_pb2.GiveXpReply(
+                    status="FAILED",
+                    status_message="[GiveXp] No session with that ID exists!")
+            if session.dungeon_master.uid != uid:
+                self.logger.warning(
+                    "[GiveXp] Unauthorised user tried to modify"
+                    " (Not the dungeon master)")
+
+                return server_pb2.GiveXpReply(
+                    status="FAILED",
+                    status_message="[GiveXp] You must be the dungeon"
+                                   " master to use this command!")
+
+            # Character to modify.
+            character = self.conn.query(db.Character).filter(
+                db.Character.character_id == _character_id).first()
+            if not character:
+                self.logger.warning(
+                    "[GiveXp] Failed to give xp,"
+                    " that character ID does not exist!")
+                return server_pb2.GiveXpReply(
+                    status="FAILED",
+                    status_message="[GiveXp] No character with that ID exists!")
+            if character not in session.characters_in_session:
+                self.logger.warning(
+                    "[GiveXp] Failed to give xp,"
+                    " that character is not in the Dungeon master's session!")
+                return server_pb2.GiveXpReply(
+                    status="FAILED",
+                    status_message="[GiveXp] This character is not in your session!")
+
+            character.xp += _xp
+            self.conn.commit()
+            return server_pb2.GiveXpReply(
+                status="SUCCESS")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[GiveXp] SQLAlchemyError!" + str(err))
+            return server_pb2.GiveXpReply(
+                status="FAILED",
+                status_message="Database error!")
+        except Exception:
+            self.logger.exception("[GiveXp] Unhandled exception occurred!")
+            return server_pb2.GiveXpReply(
+                status="FAILED",
+                status_message="[GiveXp] Internal server error! Blame Thomas!")
+        finally:
+            self.conn.close()
+
+    # This is a Dungeon Master only command.
+    def DistributeXp(self, request, context):
+        self.logger.info("DistributeXp called!")
+
+        _auth_id_token = request.auth_id_token
+
+        try:
+            decoded_token = firebase.auth.verify_id_token(_auth_id_token)
+            uid = decoded_token["uid"]
+        except ValueError:
+            self.logger.warning("Failed to verify login!")
+            return server_pb2.DistributeXpReply(
+                status="FAILED",
+                status_message="[DistributeXp] Failed to verify login!")
+
+        _session_id = request.session_id
+        _xp = request.xp
+        try:
+            self.conn = self._connectDatabase()
+            # Go Online
+            helpers.goOnline(self.conn, uid, self.ip)
+
+            session = self.conn.query(db.Session).filter(
+                db.Session.session_id == _session_id).first()
+
+            if not session:
+                self.logger.warning(
+                    "[DistributeXp] Failed to give xp,"
+                    " that session ID does not exist!")
+
+                return server_pb2.DistributeXpReply(
+                    status="FAILED",
+                    status_message="[DistributeXp] No session with that ID exists!")
+            if session.dungeon_master.uid != uid:
+                self.logger.warning(
+                    "[DistributeXp] Unauthorised user tried to modify"
+                    " (Not the dungeon master)")
+
+                return server_pb2.DistributeXpReply(
+                    status="FAILED",
+                    status_message="[DistributeXp] You must be the dungeon"
+                                   " master to use this command!")
+
+            # Divide XP up and distribute evenly between all characters in the session.
+            num_characters = len(session.characters_in_session)
+            xp_to_give = math.ceil(_xp / num_characters)
+
+            for character in session.characters_in_session:
+                character.xp += xp_to_give
+
+            self.conn.commit()
+            self.logger.debug("Successfully gave each character: " + str(xp_to_give) + " xp.")
+            return server_pb2.DistributeXpReply(
+                status="SUCCESS",
+                status_message="Successfully gave each character: " + str(xp_to_give) + " xp.")
+        except exc.SQLAlchemyError as err:
+            self.logger.error("[DistributeXp] SQLAlchemyError!" + str(err))
+            return server_pb2.DistributeXpReply(
+                status="FAILED",
+                status_message="Database error!")
+        except Exception:
+            self.logger.exception("[DistributeXp] Unhandled exception occurred!")
+            return server_pb2.DistributeXpReply(
+                status="FAILED",
+                status_message="[DistributeXp] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
 
@@ -1277,6 +1427,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             # Add character
             session.characters_in_session.append(char)
+            char.session = session
             self.conn.commit()
 
             return self._convertToGrpcSession(session, status="SUCCESS")

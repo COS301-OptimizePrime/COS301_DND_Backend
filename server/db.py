@@ -39,6 +39,7 @@ def connect():
 
     return session
 
+
 user_sessions = Table('usersessions', Base.metadata,
                       Column('users_id', Integer, ForeignKey('users.id')),
                       Column('sessions_id', Integer, ForeignKey('sessions.id'))
@@ -48,6 +49,7 @@ user_ready_sessions = Table('userreadysession', Base.metadata,
                             Column('users_id', Integer, ForeignKey('users.id')),
                             Column('sessions_id', Integer, ForeignKey('sessions.id'))
                             )
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -113,6 +115,8 @@ class Session(Base):
         default=datetime.datetime.now,
         onupdate=datetime.datetime.now)
 
+    first_started_time = Column(DateTime)
+
     max_players = Column(SmallInteger, nullable=False)
     full = Column(Boolean, nullable=False, default=False)
     private = Column(Boolean, nullable=False, default=False)
@@ -175,8 +179,10 @@ class Character(Base):
     # Character has only one creator/user
     creator_id = Column(Integer, ForeignKey('users.id'))
     creator = relationship(
-        "User", back_populates="characters")
+        "User",
+        back_populates="characters")
 
+    # Character has only one session
     session_id = Column(Integer, ForeignKey('sessions.id'))
     session = relationship(
         "Session",
@@ -245,6 +251,7 @@ class Character(Base):
 
     gender = Column(String(50), nullable=False)
     level = Column(Integer, nullable=False)
+
 
 class Skill(Base):
     __tablename__ = 'skills'

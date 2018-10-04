@@ -3,8 +3,9 @@ import logging
 import threading
 import time
 
-from . import db
 from sqlalchemy import and_
+
+from . import db
 
 
 class BackgroundWorker:
@@ -26,11 +27,11 @@ class BackgroundWorker:
                 self.conn = self._connectDatabase()
                 users = self.conn.query(db.User).filter(and_(
                     db.User.date_updated < datetime.datetime.now() - datetime.timedelta(
-                        seconds=5), db.User.online == True))
+                        seconds=6), db.User.online == True))
                 for _user in users:
-                        _user.online = False
-                        self.logger.info("User: " + _user.name + " is now offline!")
-                        self.conn.commit()
+                    _user.online = False
+                    self.logger.info("User: " + _user.name + " is now inactive!")
+                    self.conn.commit()
         except exc.SQLAlchemyError as err:
             self.logger.error("SQLAlchemyError! " + str(err))
         except Exception as err:

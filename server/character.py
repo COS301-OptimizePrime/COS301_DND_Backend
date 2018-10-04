@@ -6,10 +6,9 @@ from sqlalchemy import exc
 
 from . import db
 from . import firebase
+from . import helpers
 from . import server_pb2
 from . import server_pb2_grpc
-
-from . import helpers
 
 
 class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
@@ -22,7 +21,6 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             self.conn = db.connect()
 
         return self.conn
-
 
     def UpdateCharacter(self, request, context):
         self.ip = context.peer()
@@ -81,7 +79,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                 status_message="[UpdateCharacter] Internal server error! Blame Thomas!")
         finally:
             self.conn.close()
-            
+
     # [CHEAP] Using light characters
     def GetCharacters(self, request, context):
         self.ip = context.peer()
@@ -221,12 +219,18 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                     status="FAILED",
                     status_message="[GetCharacterById] Character doesn't exist!")
 
-            if character.creator.uid != uid:
+            # This allows the DM of the session to get the character.
+            # This blocks anyone else.
+            if character.session and character.session.dungeon_master.uid == uid:
+                self.logger.debug("[GetCharacterById] DM accessed character!")
+                return helpers._convertToGrpcCharacter(
+                    character=character, status="SUCCESS")
+            elif character.creator.uid != uid:
                 # Not the creator.
                 self.logger.warning("Character is not yours!")
                 return server_pb2.Character(
                     status="FAILED",
-                    status_message="[GetCharacterById] Character doesn't exist!")
+                    status_message="[GetCharacterById] Character is not yours!")
 
             # Else return the character
             return helpers._convertToGrpcCharacter(
@@ -314,7 +318,7 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
             _bonds = request.character.bonds
             _flaws = request.character.flaws
 
-            #_session_id = request.character.session_id
+            # _session_id = request.character.session_id
             _features_and_traits = request.character.features_and_traits
 
             _gender = request.character.gender

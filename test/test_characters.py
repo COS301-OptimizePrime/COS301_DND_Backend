@@ -198,20 +198,34 @@ def compareCharacters(character1, character2):
     assert character1.features_and_traits == character2.features_and_traits
 
 
-global_token = str(
+token1 = str(
     subprocess.check_output(
         'node ./login.mjs',
+        shell=True,
+        universal_newlines=False).decode("utf-8")).strip()
+token2 = str(
+    subprocess.check_output(
+        'node ./login.mjs mockuser2@test.co.za',
+        shell=True,
+        universal_newlines=False).decode("utf-8")).strip()
+token3 = str(
+    subprocess.check_output(
+        'node ./login.mjs mockuser3@test.co.za',
+        shell=True,
+        universal_newlines=False).decode("utf-8")).strip()
+token4 = str(
+    subprocess.check_output(
+        'node ./login.mjs mockuser4@test.co.za',
+        shell=True,
+        universal_newlines=False).decode("utf-8")).strip()
+token5 = str(
+    subprocess.check_output(
+        'node ./login.mjs mockuser5@test.co.za',
         shell=True,
         universal_newlines=False).decode("utf-8")).strip()
 
 
 def test_create_character():
-    token = str(
-        subprocess.check_output(
-            'node ./login.mjs',
-            shell=True,
-            universal_newlines=False).decode("utf-8")).strip()
-
     channel = grpc.insecure_channel(server)
     stub = server_pb2_grpc.CharactersManagerStub(channel)
 
@@ -221,7 +235,7 @@ def test_create_character():
 
     response = stub.CreateCharacter(
         server_pb2.NewCharacterRequest(
-            auth_id_token=token,
+            auth_id_token=token1,
             character=_char))
     assert response.status == 'SUCCESS'
 
@@ -231,21 +245,21 @@ def test_create_character():
 
     compareCharacters(_char, response)
 
-    # Appears to be a front end error.
-    # Will however test for empty name
-    def test_create_character_empty_name():
-        channel = grpc.insecure_channel(server)
-        stub = server_pb2_grpc.CharactersManagerStub(channel)
 
-        _char = server_pb2.Character()
-        _char.name = ""
+# Will however test for empty name
+def test_create_character_empty_name():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.CharactersManagerStub(channel)
 
-        response = stub.CreateCharacter(
-            server_pb2.NewCharacterRequest(
-                auth_id_token=global_token,
-                character=_char))
-        assert response.status == 'FAILED'
-        assert response.status_message == '[CreateChar] Character name may not be blank!'
+    _char = server_pb2.Character()
+    _char.name = ""
+
+    response = stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=token1,
+            character=_char))
+    assert response.status == 'FAILED'
+    assert response.status_message == '[CreateChar] Character name may not be blank!'
 
 
 def test_get_characters():
@@ -254,7 +268,7 @@ def test_get_characters():
 
     response = stub.GetCharacters(
         server_pb2.GetCharactersRequest(
-            auth_id_token=global_token))
+            auth_id_token=token1))
 
     assert response.status == 'SUCCESS'
     assert response.status_message == ''
@@ -267,7 +281,7 @@ def test_delete_character_does_not_exist():
     stub = server_pb2_grpc.CharactersManagerStub(channel)
     response = stub.DeleteCharacter(
         server_pb2.NewCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character=None))
 
     assert response.status == 'FAILED'
@@ -278,28 +292,17 @@ def test_delete_character_that_not_ours():
     channel = grpc.insecure_channel(server)
     stub = server_pb2_grpc.CharactersManagerStub(channel)
 
-    token = str(
-        subprocess.check_output(
-            'node ./login.mjs mockuser@test.co.za',
-            shell=True,
-            universal_newlines=False).decode("utf-8")).strip()
-
     _char = getRandomCharacter()
     _char.name = 'MyTestCharacter'
 
     character = stub.CreateCharacter(
         server_pb2.NewCharacterRequest(
-            auth_id_token=token, character=_char))
+            auth_id_token=token1, character=_char))
     assert character.status == "SUCCESS"
 
-    token = str(
-        subprocess.check_output(
-            'node ./login.mjs mockuser2@test.co.za',
-            shell=True,
-            universal_newlines=False).decode("utf-8")).strip()
     response = stub.DeleteCharacter(
         server_pb2.DeleteCharacterRequest(
-            auth_id_token=token,
+            auth_id_token=token2,
             character_id=character.character_id))
 
     assert response.status == "FAILED"
@@ -315,7 +318,7 @@ def test_delete_character():
 
     response = stub.CreateCharacter(
         server_pb2.NewCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character=_char))
     assert response.status == 'SUCCESS'
     assert response.creator.name == 'mockuser@test.co.za'
@@ -326,7 +329,7 @@ def test_delete_character():
     # Delete
     response = stub.DeleteCharacter(
         server_pb2.DeleteCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character_id=_char.character_id))
 
     assert response.status == "SUCCESS"
@@ -341,7 +344,7 @@ def test_get_character_by_id():
 
     response = stub.CreateCharacter(
         server_pb2.NewCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character=_char))
     assert response.status == 'SUCCESS'
     assert response.creator.name == 'mockuser@test.co.za'
@@ -351,12 +354,37 @@ def test_get_character_by_id():
 
     response = stub.GetCharacterById(
         server_pb2.GetCharacterByIdRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character_id=_char_id))
     assert response.status == 'SUCCESS'
     assert response.character_id == _char_id
     assert response.creator.name == 'mockuser@test.co.za'
     assert response.name == 'MyTestCharacter'
+
+
+def test_get_character_by_id_user_should_not_have_access():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+    _char = getRandomCharacter()
+    _char.name = 'MyTestCharacter'
+
+    response = stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=token1,
+            character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser@test.co.za'
+    assert response.name == 'MyTestCharacter'
+
+    _char_id = response.character_id
+
+    response = stub.GetCharacterById(
+        server_pb2.GetCharacterByIdRequest(
+            auth_id_token=token3,
+            character_id=_char_id))
+    assert response.status == 'FAILED'
+    assert response.status_message == '[GetCharacterById] Character is not yours!'
 
 
 def test_update_character():
@@ -368,7 +396,7 @@ def test_update_character():
 
     response = stub.CreateCharacter(
         server_pb2.NewCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character=_char))
     assert response.status == 'SUCCESS'
     assert response.creator.name == 'mockuser@test.co.za'
@@ -386,7 +414,7 @@ def test_update_character():
 
     response = stub.UpdateCharacter(
         server_pb2.UpdateCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character=_char))
     assert response.status == 'SUCCESS'
     assert response.creator.name == 'mockuser@test.co.za'
@@ -408,7 +436,7 @@ def test_character_added_to_session():
 
     response = stub.CreateCharacter(
         server_pb2.NewCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character=_char))
     assert response.status == 'SUCCESS'
     assert response.creator.name == 'mockuser@test.co.za'
@@ -423,7 +451,7 @@ def test_character_added_to_session():
     response = session_stub.Create(
         server_pb2.NewSessionRequest(
             name='mysession',
-            auth_id_token=global_token,
+            auth_id_token=token1,
             max_players=7))
 
     assert response.name == 'mysession'
@@ -433,22 +461,22 @@ def test_character_added_to_session():
     sesh_id = response.session_id
 
     response = session_stub.AddCharacterToSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id, character_id=char_id))
     assert response.status == 'SUCCESS'
 
     response = session_stub.GetCharactersInSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id))
     assert response.status == 'SUCCESS'
 
     assert len(response.light_characters) == 1
 
     # Test remove
     response = session_stub.RemoveCharacterFromSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id, character_id=char_id))
     assert response.status == 'SUCCESS'
 
     response = session_stub.GetCharactersInSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id))
     assert response.status == 'SUCCESS'
 
     assert len(response.light_characters) == 0
@@ -463,7 +491,7 @@ def test_character_added_to_session_already_in():
 
     response = stub.CreateCharacter(
         server_pb2.NewCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character=_char))
     assert response.status == 'SUCCESS'
     assert response.creator.name == 'mockuser@test.co.za'
@@ -478,7 +506,7 @@ def test_character_added_to_session_already_in():
     response = session_stub.Create(
         server_pb2.NewSessionRequest(
             name='mysession',
-            auth_id_token=global_token,
+            auth_id_token=token1,
             max_players=7))
 
     assert response.name == 'mysession'
@@ -488,15 +516,15 @@ def test_character_added_to_session_already_in():
     sesh_id = response.session_id
 
     response = session_stub.AddCharacterToSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id, character_id=char_id))
     assert response.status == 'SUCCESS'
 
     response = session_stub.AddCharacterToSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id, character_id=char_id))
     assert response.status == 'FAILED'
 
     response = session_stub.GetCharactersInSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id))
     assert response.status == 'SUCCESS'
 
     # Since we added the same character the number should remain the same.
@@ -512,7 +540,7 @@ def test_character_deleted_should_not_be_in_session():
 
     response = stub.CreateCharacter(
         server_pb2.NewCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character=_char))
     assert response.status == 'SUCCESS'
     assert response.creator.name == 'mockuser@test.co.za'
@@ -527,7 +555,7 @@ def test_character_deleted_should_not_be_in_session():
     response = session_stub.Create(
         server_pb2.NewSessionRequest(
             name='mysession',
-            auth_id_token=global_token,
+            auth_id_token=token1,
             max_players=7))
 
     assert response.name == 'mysession'
@@ -537,17 +565,17 @@ def test_character_deleted_should_not_be_in_session():
     sesh_id = response.session_id
 
     response = session_stub.AddCharacterToSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id, character_id=char_id))
     assert response.status == 'SUCCESS'
 
     response = stub.DeleteCharacter(
         server_pb2.DeleteCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character_id=char_id))
     assert response.status == 'SUCCESS'
 
     response = session_stub.GetCharactersInSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id))
     assert response.status == 'SUCCESS'
 
     # Since we deleted the character that character should no longer show.
@@ -563,7 +591,7 @@ def test_remove_character_that_is_not_ours():
 
     response = stub.CreateCharacter(
         server_pb2.NewCharacterRequest(
-            auth_id_token=global_token,
+            auth_id_token=token1,
             character=_char))
     assert response.status == 'SUCCESS'
     assert response.creator.name == 'mockuser@test.co.za'
@@ -578,7 +606,7 @@ def test_remove_character_that_is_not_ours():
     response = session_stub.Create(
         server_pb2.NewSessionRequest(
             name='mysession',
-            auth_id_token=global_token,
+            auth_id_token=token1,
             max_players=7))
 
     assert response.name == 'mysession'
@@ -588,25 +616,337 @@ def test_remove_character_that_is_not_ours():
     sesh_id = response.session_id
 
     response = session_stub.AddCharacterToSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id, character_id=char_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id, character_id=char_id))
     assert response.status == 'SUCCESS'
 
     # Test remove as another ueer
-    token = str(
-        subprocess.check_output(
-            'node ./login.mjs mockuser3@test.co.za',
-            shell=True,
-            universal_newlines=False).decode("utf-8")).strip()
-
     response = session_stub.RemoveCharacterFromSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=token, session_id=sesh_id, character_id=char_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token3, session_id=sesh_id, character_id=char_id))
     assert response.status == 'FAILED'
     assert response.status_message == '[RemoveCharacterFromSession] Failed to remove character from session, this is not your character'
 
     response = session_stub.GetCharactersInSession(
-        server_pb2.AddCharacterToSessionRequest(auth_id_token=global_token, session_id=sesh_id))
+        server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id))
     assert response.status == 'SUCCESS'
 
     assert len(response.light_characters) == 1
 
+
 # def test_get_all_characters_in_session():
+
+def test_give_xp():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    session = stub.Create(
+        server_pb2.NewSessionRequest(
+            name='my session mock4',
+            auth_id_token=token4,
+            max_players=7))
+
+    assert session.status == 'SUCCESS'
+
+    char_stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+    _char = getRandomCharacter()
+    _char.name = 'MyTestCharacter'
+
+    response = char_stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=token4,
+            character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser4@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+
+    previous_xp = response.xp
+    _char_id = response.character_id
+
+    # Add char to session
+    response = stub.AddCharacterToSession(
+        server_pb2.AddCharacterToSessionRequest(
+            auth_id_token=token4,
+            session_id=session.session_id,
+            character_id=_char_id))
+    assert response.status == 'SUCCESS'
+
+    # Give own character xp
+    response = stub.GiveXp(
+        server_pb2.GiveXpRequest(
+            auth_id_token=token4,
+            session_id=session.session_id,
+            character_id=_char_id,
+            xp=100))
+    assert response.status == 'SUCCESS'
+
+    # Check if character gained xp
+    response = char_stub.GetCharacterById(
+        server_pb2.GetCharacterByIdRequest(
+            auth_id_token=token4,
+            character_id=_char_id))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser4@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+    assert response.xp == (previous_xp + 100)
+    assert response.character_id == _char_id
+
+
+def test_give_xp_invalid_session():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+    response = stub.GiveXp(
+        server_pb2.GiveXpRequest(
+            auth_id_token=token1,
+            session_id='',
+            character_id='',
+            xp=100))
+    assert response.status == 'FAILED'
+    assert response.status_message == '[GiveXp] No session with that ID exists!'
+
+
+def test_give_xp_invalid_character():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    session = stub.Create(
+        server_pb2.NewSessionRequest(
+            name='my session mock global',
+            auth_id_token=token1,
+            max_players=7))
+
+    assert session.status == 'SUCCESS'
+
+    response = stub.GiveXp(
+        server_pb2.GiveXpRequest(
+            auth_id_token=token1,
+            session_id=session.session_id,
+            character_id='',
+            xp=100))
+    assert response.status == 'FAILED'
+    assert response.status_message == '[GiveXp] No character with that ID exists!'
+
+
+def test_give_xp_valid_session_valid_character_but_not_in_the_dm_session():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    session = stub.Create(
+        server_pb2.NewSessionRequest(
+            name='my session mock4',
+            auth_id_token=token4,
+            max_players=7))
+
+    assert session.status == 'SUCCESS'
+
+    char_stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+    _char = getRandomCharacter()
+    _char.name = 'MyTestCharacter'
+
+    response = char_stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=token4,
+            character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser4@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+
+    _char_id = response.character_id
+
+    # Give own character xp
+    response = stub.GiveXp(
+        server_pb2.GiveXpRequest(
+            auth_id_token=token4,
+            session_id=session.session_id,
+            character_id=_char_id,
+            xp=100))
+    assert response.status == 'FAILED'
+    assert response.status_message == '[GiveXp] This character is not in your session!'
+
+
+def test_distribute_xp():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    session = stub.Create(
+        server_pb2.NewSessionRequest(
+            name='my session mock4',
+            auth_id_token=token4,
+            max_players=7))
+
+    assert session.status == 'SUCCESS'
+
+    char_stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+    _char = getRandomCharacter()
+    _char.name = 'MyTestCharacter'
+
+    response = char_stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=token4,
+            character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser4@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+
+    previous_xp_1 = response.xp
+    char_1_id = response.character_id
+
+    _char = getRandomCharacter()
+    _char.name = 'MyTestCharacter'
+
+    response = char_stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=token3,
+            character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser3@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+
+    previous_xp_2 = response.xp
+    char_2_id = response.character_id
+
+    # Add char to session
+    response = stub.AddCharacterToSession(
+        server_pb2.AddCharacterToSessionRequest(
+            auth_id_token=token4,
+            session_id=session.session_id,
+            character_id=char_1_id))
+    assert response.status == 'SUCCESS'
+    response = stub.AddCharacterToSession(
+        server_pb2.AddCharacterToSessionRequest(
+            auth_id_token=token3,
+            session_id=session.session_id,
+            character_id=char_2_id))
+    assert response.status == 'SUCCESS'
+
+    # Distribute xp
+    response = stub.DistributeXp(
+        server_pb2.DistributeXpRequest(
+            auth_id_token=token4,
+            session_id=session.session_id,
+            xp=100))
+    assert response.status == 'SUCCESS'
+
+    # Check if character gained xp
+    response = char_stub.GetCharacterById(
+        server_pb2.GetCharacterByIdRequest(
+            auth_id_token=token4,
+            character_id=char_1_id))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser4@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+    assert response.xp == (previous_xp_1 + 50)
+    assert response.character_id == char_1_id
+
+    response = char_stub.GetCharacterById(
+        server_pb2.GetCharacterByIdRequest(
+            auth_id_token=token3,
+            character_id=char_2_id))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser3@test.co.za'
+    assert response.name == 'MyTestCharacter'
+    assert response.level == 34
+    assert response.gender == "Male"
+    assert response.xp == (previous_xp_2 + 50)
+    assert response.character_id == char_2_id
+
+
+def test_distribute_xp_invalid_session():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+    response = stub.DistributeXp(
+        server_pb2.DistributeXpRequest(
+            auth_id_token=token1,
+            session_id='',
+            xp=100))
+    assert response.status == 'FAILED'
+    assert response.status_message == '[DistributeXp] No session with that ID exists!'
+
+
+def test_distribute_xp_valid_session_but_not_dm_session():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    session = stub.Create(
+        server_pb2.NewSessionRequest(
+            name='my session mock4',
+            auth_id_token=token4,
+            max_players=7))
+
+    assert session.status == 'SUCCESS'
+
+    # Give own character xp
+    response = stub.DistributeXp(
+        server_pb2.DistributeXpRequest(
+            auth_id_token=token3,
+            session_id=session.session_id,
+            xp=100))
+    assert response.status == 'FAILED'
+    assert response.status_message == "[DistributeXp] You must be the dungeon master to use this command!"
+
+
+def test_get_character_by_id_dm_should_have_access():
+    channel = grpc.insecure_channel(server)
+    stub = server_pb2_grpc.CharactersManagerStub(channel)
+
+    _char = getRandomCharacter()
+    _char.name = 'MyTestCharacter'
+
+    response = stub.CreateCharacter(
+        server_pb2.NewCharacterRequest(
+            auth_id_token=token1,
+            character=_char))
+    assert response.status == 'SUCCESS'
+    assert response.creator.name == 'mockuser@test.co.za'
+    assert response.name == 'MyTestCharacter'
+
+    _char_id = response.character_id
+
+    response = stub.GetCharacterById(
+        server_pb2.GetCharacterByIdRequest(
+            auth_id_token=token1,
+            character_id=_char_id))
+    assert response.status == 'SUCCESS'
+    assert response.character_id == _char_id
+    assert response.creator.name == 'mockuser@test.co.za'
+    assert response.name == 'MyTestCharacter'
+
+    sess_stub = server_pb2_grpc.SessionsManagerStub(channel)
+
+    session = sess_stub.Create(
+        server_pb2.NewSessionRequest(
+            name='my session mock4',
+            auth_id_token=token4,
+            max_players=7))
+
+    assert session.status == 'SUCCESS'
+
+    # Add char to session
+    response = sess_stub.AddCharacterToSession(
+        server_pb2.AddCharacterToSessionRequest(
+            auth_id_token=token1,
+            session_id=session.session_id,
+            character_id=_char_id))
+    assert response.status == 'SUCCESS'
+
+    response = stub.GetCharacterById(
+        server_pb2.GetCharacterByIdRequest(
+            auth_id_token=token4,
+            character_id=_char_id))
+    assert response.status == 'SUCCESS'
+    assert response.character_id == _char_id
+    assert response.creator.name == 'mockuser@test.co.za'
+    assert response.name == 'MyTestCharacter'

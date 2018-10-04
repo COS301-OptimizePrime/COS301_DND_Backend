@@ -55,6 +55,17 @@ service SessionsManager {
     // CHEAP Returns an array of light characters.
     rpc GetCharactersInSession(GetCharactersInSessionRequest) returns (GetCharactersInSessionResponse) {
     }
+
+    /*
+     * Gives Xp to a specific character.
+     */
+    rpc GiveXp(GiveXpRequest) returns (GiveXpReply) {
+    }
+    /*
+     * Distributes Xp evenly to all characters in the session.
+     */
+    rpc DistributeXp(DistributeXpRequest) returns (DistributeXpReply) {
+    }
 }
 
 service CharactersManager {
@@ -71,6 +82,29 @@ service CharactersManager {
     // EXPENSIVE
     rpc GetCharacterById (GetCharacterByIdRequest) returns (Character) {
     }
+}
+
+message GiveXpRequest {
+    string auth_id_token = 1;
+    string session_id = 2;
+    string character_id = 3;
+    uint32 xp = 4;
+}
+
+message GiveXpReply {
+    string status = 1;
+    string status_message = 2;
+}
+
+message DistributeXpRequest {
+    string auth_id_token = 1;
+    string session_id = 2;
+    uint32 xp = 4;
+}
+
+message DistributeXpReply {
+    string status = 1;
+    string status_message = 2;
 }
 
 message AddCharacterToSessionRequest {
@@ -303,6 +337,7 @@ message Session {
     uint32 ready_up_expiry_time = 16;
 
     repeated LightCharacter charactersInSession = 17;
+    string first_started_time = 18;
 }
 
 // This should be a cheaper character used for displaying in lists.

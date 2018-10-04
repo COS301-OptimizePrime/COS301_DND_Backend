@@ -99,6 +99,16 @@ class SessionsManagerStub(object):
         request_serializer=server__pb2.GetCharactersInSessionRequest.SerializeToString,
         response_deserializer=server__pb2.GetCharactersInSessionResponse.FromString,
         )
+    self.GiveXp = channel.unary_unary(
+        '/session.SessionsManager/GiveXp',
+        request_serializer=server__pb2.GiveXpRequest.SerializeToString,
+        response_deserializer=server__pb2.GiveXpReply.FromString,
+        )
+    self.DistributeXp = channel.unary_unary(
+        '/session.SessionsManager/DistributeXp',
+        request_serializer=server__pb2.DistributeXpRequest.SerializeToString,
+        response_deserializer=server__pb2.DistributeXpReply.FromString,
+        )
 
 
 class SessionsManagerServicer(object):
@@ -224,6 +234,22 @@ class SessionsManagerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def GiveXp(self, request, context):
+    """
+    Gives Xp to a specific character.
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def DistributeXp(self, request, context):
+    """
+    Distributes Xp evenly to all characters in the session.
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_SessionsManagerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -311,6 +337,16 @@ def add_SessionsManagerServicer_to_server(servicer, server):
           servicer.GetCharactersInSession,
           request_deserializer=server__pb2.GetCharactersInSessionRequest.FromString,
           response_serializer=server__pb2.GetCharactersInSessionResponse.SerializeToString,
+      ),
+      'GiveXp': grpc.unary_unary_rpc_method_handler(
+          servicer.GiveXp,
+          request_deserializer=server__pb2.GiveXpRequest.FromString,
+          response_serializer=server__pb2.GiveXpReply.SerializeToString,
+      ),
+      'DistributeXp': grpc.unary_unary_rpc_method_handler(
+          servicer.DistributeXp,
+          request_deserializer=server__pb2.DistributeXpRequest.FromString,
+          response_serializer=server__pb2.DistributeXpReply.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
