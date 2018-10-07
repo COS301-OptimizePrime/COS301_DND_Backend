@@ -1,6 +1,7 @@
 pbr
-psycopg2cffi
+grpcio
 grpcio-tools
+googleapis-common-protos
 firebase-admin
 SQLAlchemy
 psycopg2-binary
@@ -8,3 +9,4 @@ pytest
 pytest-benchmark
 pytest-cov
 toml
+psycopg2cffi

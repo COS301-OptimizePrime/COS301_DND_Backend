@@ -458,11 +458,16 @@ def test_character_added_to_session():
     assert len(response.session_id) == 36
     assert response.status == 'SUCCESS'
 
+    session_last_updated = response.last_updated
+    assert len(session_last_updated) > 0
+
     sesh_id = response.session_id
 
     response = session_stub.AddCharacterToSession(
         server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id, character_id=char_id))
     assert response.status == 'SUCCESS'
+    assert response.last_updated != session_last_updated
+    session_last_updated = response.last_updated
 
     response = session_stub.GetCharactersInSession(
         server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id))
@@ -474,6 +479,7 @@ def test_character_added_to_session():
     response = session_stub.RemoveCharacterFromSession(
         server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id, character_id=char_id))
     assert response.status == 'SUCCESS'
+    assert response.last_updated != session_last_updated
 
     response = session_stub.GetCharactersInSession(
         server_pb2.AddCharacterToSessionRequest(auth_id_token=token1, session_id=sesh_id))
@@ -671,6 +677,8 @@ def test_give_xp():
             session_id=session.session_id,
             character_id=_char_id))
     assert response.status == 'SUCCESS'
+    session_last_updated = response.last_updated
+    assert len(session_last_updated) > 0
 
     # Give own character xp
     response = stub.GiveXp(
@@ -680,6 +688,14 @@ def test_give_xp():
             character_id=_char_id,
             xp=100))
     assert response.status == 'SUCCESS'
+
+    # Test server updating
+    response = stub.GetLightSessionById(server_pb2.GetSessionRequest(
+        auth_id_token=token4,
+        session_id=session.session_id,
+    ))
+    assert response.status == 'SUCCESS'
+    assert len(response.last_updated) != session_last_updated
 
     # Check if character gained xp
     response = char_stub.GetCharacterById(
@@ -781,6 +797,8 @@ def test_distribute_xp():
             max_players=7))
 
     assert session.status == 'SUCCESS'
+    session_last_updated = session.last_updated
+    assert len(session_last_updated) > 0
 
     char_stub = server_pb2_grpc.CharactersManagerStub(channel)
 
@@ -823,12 +841,16 @@ def test_distribute_xp():
             session_id=session.session_id,
             character_id=char_1_id))
     assert response.status == 'SUCCESS'
+    assert len(response.last_updated) != session_last_updated
+    session_last_updated = response.last_updated
+
     response = stub.AddCharacterToSession(
         server_pb2.AddCharacterToSessionRequest(
             auth_id_token=token3,
             session_id=session.session_id,
             character_id=char_2_id))
     assert response.status == 'SUCCESS'
+    assert len(response.last_updated) != session_last_updated
 
     # Distribute xp
     response = stub.DistributeXp(
@@ -887,6 +909,8 @@ def test_distribute_xp_valid_session_but_not_dm_session():
             max_players=7))
 
     assert session.status == 'SUCCESS'
+    session_last_updated = session.last_updated
+    assert len(session_last_updated) > 0
 
     # Give own character xp
     response = stub.DistributeXp(
@@ -933,6 +957,8 @@ def test_get_character_by_id_dm_should_have_access():
             max_players=7))
 
     assert session.status == 'SUCCESS'
+    session_last_updated = session.last_updated
+    assert len(session_last_updated) > 0
 
     # Add char to session
     response = sess_stub.AddCharacterToSession(
@@ -941,6 +967,9 @@ def test_get_character_by_id_dm_should_have_access():
             session_id=session.session_id,
             character_id=_char_id))
     assert response.status == 'SUCCESS'
+
+    # Session should update last updated time
+    assert session_last_updated != response.last_updated
 
     response = stub.GetCharacterById(
         server_pb2.GetCharacterByIdRequest(

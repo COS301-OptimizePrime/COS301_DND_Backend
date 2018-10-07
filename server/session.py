@@ -606,6 +606,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[GiveXp] This character is not in your session!")
 
             character.xp += _xp
+            session.date_updated = datetime.datetime.now()
             self.conn.commit()
             return server_pb2.GiveXpReply(
                 status="SUCCESS")
@@ -672,6 +673,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             for character in session.characters_in_session:
                 character.xp += xp_to_give
 
+            session.date_updated = datetime.datetime.now()
             self.conn.commit()
             self.logger.debug("Successfully gave each character: " + str(xp_to_give) + " xp.")
             return server_pb2.DistributeXpReply(
@@ -746,7 +748,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             if session.max_players <= len(session.users_in_session):
                 session.full = True
             self.conn.commit()
-
             return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
             self.logger.error("[SETMAX] SQLAlchemyError!" + str(err))
@@ -816,7 +817,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                                    " master to use this command!")
 
             session.name = request.name
-
             self.conn.commit()
 
             return self._convertToGrpcSession(session, "SUCCESS")
@@ -909,7 +909,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                     status_message="[ChangeState] Invalid state can only be PAUSED, READYUP, BATTLE or EXPLORING")
 
             self.conn.commit()
-
             return self._convertToGrpcSession(session, "SUCCESS")
         except exc.SQLAlchemyError as err:
             self.logger.error("[ChangeState] SQLAlchemyError! " + str(err))
@@ -974,7 +973,6 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                                    " master to use this command!")
 
             session.private = request.private
-
             self.conn.commit()
 
             return self._convertToGrpcSession(session, "SUCCESS")
@@ -1037,6 +1035,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
                                    " master to use this command!")
 
             session.ready_up_expiry_time = request.ready_up_expiry_time
+            session.date_updated = datetime.datetime.now()
 
             self.conn.commit()
 
@@ -1428,6 +1427,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
             # Add character
             session.characters_in_session.append(char)
             char.session = session
+            session.date_updated = datetime.datetime.now()
             self.conn.commit()
 
             return self._convertToGrpcSession(session, status="SUCCESS")
@@ -1502,6 +1502,7 @@ class Session(server_pb2_grpc.SessionsManagerServicer):
 
             # Remove character
             session.characters_in_session.remove(char)
+            session.date_updated = datetime.datetime.now()
             self.conn.commit()
 
             return self._convertToGrpcSession(session, status="SUCCESS")

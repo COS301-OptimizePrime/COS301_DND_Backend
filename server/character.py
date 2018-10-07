@@ -61,6 +61,10 @@ class CharacterManager(server_pb2_grpc.CharactersManagerServicer):
                     status_message="[UpdateCharacter] Character doesn't exist!")
 
             helpers._conecterToORMCharacter(character, _character, self.conn)
+
+            if character.session:
+                character.session.last_updated = datetime.datetime.now()
+
             self.conn.commit()
 
             self.logger.info("Updated character!")

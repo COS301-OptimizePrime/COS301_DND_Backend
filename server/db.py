@@ -186,8 +186,7 @@ class Character(Base):
     session_id = Column(Integer, ForeignKey('sessions.id'))
     session = relationship(
         "Session",
-        back_populates="characters_in_session"
-    )
+        back_populates="characters_in_session")
 
     skills = relationship(
         "Skill",

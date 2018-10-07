@@ -13,6 +13,6 @@
   },
   "homepage": "https://github.com/COS301-OptimizePrime/COS301_DND_Backend#readme",
   "dependencies": {
-    "firebase": "^4.12.1"
+    "firebase": "^5.5.3"
   }
 }

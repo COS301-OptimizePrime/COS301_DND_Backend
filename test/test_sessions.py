@@ -883,7 +883,6 @@ def test_list_user_sessions_when_none_exist():
     response = stub.GetSessionsOfUser(
         server_pb2.GetSessionsOfUserRequest(
             auth_id_token=token5, limit=3))
-
     assert response.status == 'SUCCESS'
     assert len(response.light_sessions) == 0
 
